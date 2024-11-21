@@ -1,9 +1,12 @@
 import { Link } from 'react-router-dom';
+import { Dialog } from '@radix-ui/react-dialog';
 
-import { Container } from '@/components/Container/Container';
-import { SeachInput } from '@/components/SearchInput.tsx/SeachInput';
-import { cn } from '@/utils/lib/utils';
+import { AuthModal } from '@/modules/Auth/ui/AuthModal';
 import { Button } from '@/shared/ui/button';
+import { DialogTrigger } from '@/shared/ui/dialog';
+import { cn } from '@/utils/lib/utils';
+import { Container } from '@/widgets/Container';
+import { SeachInput } from '@/widgets/SeachInput';
 
 interface HeaderProps {
    className?: string;
@@ -24,10 +27,12 @@ export const Header = ({ className }: HeaderProps) => {
                   <Button size={'small'} className='flex gap-[10px]'>
                      <p>Кнопка обычная</p>
                   </Button>
-                  <Button size={'small'} variant={'secondary'} className='flex gap-[10px]'>
-                     <p>Кнопка другая</p>
-                  </Button>
-                  {/* <ModeToggle /> */}
+                  {/* <Dialog>
+                     <Button size={'small'} variant={'secondary'} className='flex gap-[10px]'>
+                        <DialogTrigger>Авторизоваться</DialogTrigger>
+                     </Button>
+                  </Dialog> */}
+                  <AuthModal />
                </div>
             </div>
          </Container>

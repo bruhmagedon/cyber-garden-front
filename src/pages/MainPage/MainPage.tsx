@@ -1,7 +1,10 @@
-import { useEffect } from 'react';
-
-import { routeConfig } from '@/utils/config/pagesConfig';
+import { Container } from '@/widgets/Container';
+import { EventCard } from '@/widgets/EventCard';
 
 export const MainPage = () => {
-   return <div>Главная страница</div>;
+   return (
+      <Container>
+         <EventCard />
+      </Container>
+   );
 };
