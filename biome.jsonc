@@ -1,0 +1,102 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": false
+  },
+  "formatter": {
+    "enabled": true,
+    "useEditorconfig": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 110,
+    "attributePosition": "auto",
+    "bracketSpacing": true
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+
+      // Правила, направленные на проверку сложного кода, который можно упростить
+      "complexity": {
+        "noUselessStringConcat": "error",
+        "useLiteralKeys": "off",
+        "noForEach": "warn",
+        "noUselessUndefinedInitialization": "error",
+        "useDateNow": "warn",
+        "useSimplifiedLogicExpression": "off" // TODO: Включить после проверок на null
+      },
+      // Правила, которые определяют код, который гарантированно неверен или бесполезен.
+      "correctness": {
+        "noNodejsModules": "off",
+        "noUndeclaredVariables": "error",
+        "noUnusedPrivateClassMembers": "info",
+        "noUnusedVariables": "info",
+        "useExhaustiveDependencies": "off",
+        "useUniqueElementIds": "off"
+      },
+      // Ранний доступ
+      "nursery": {
+        "useSortedClasses": {
+          "fix": "safe",
+          "level": "warn"
+        }
+        // "noDuplicateElseIf": "error",
+      },
+      // Правила, определяющие способы написания вашего кода, чтобы он работал быстрее или в целом был более эффективным
+      "performance": {},
+      // Правила, которые обнаруживают потенциальные недостатки безопасности
+      "security": {},
+      // Правила, обеспечивающие последовательный и идиоматический способ написания кода
+      "style": {
+        // "noDefaultExport": "info",
+        "noDoneCallback": "warn",
+        "noRestrictedGlobals": "warn",
+        "noYodaExpression": "warn",
+        "useBlockStatements": "warn",
+        "useImportType": "off",
+        "noUnusedTemplateLiteral": "warn",
+        "useCollapsedElseIf": "warn",
+        "useConsistentArrayType": "warn",
+        "useDefaultSwitchClause": "warn",
+        "useExplicitLengthCheck": "warn",
+        "useForOf": "warn",
+        "useShorthandAssign": "warn",
+        "useThrowNewError": "error",
+        "useThrowOnlyError": "error"
+      },
+      // Правила, определяющие код, который может оказаться неправильным или бесполезным
+      "suspicious": {
+        "noUnknownAtRules": "warn",
+        "noExplicitAny": "off",
+        "noEmptyBlockStatements": "warn",
+        "noMisplacedAssertion": "error",
+        "useAwait": "warn",
+        "useErrorMessage": "warn"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "trailingCommas": "all",
+      "semicolons": "always",
+      "arrowParentheses": "always",
+      "bracketSameLine": false,
+      "quoteStyle": "single",
+      "attributePosition": "auto",
+      "bracketSpacing": true
+    },
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
+    }
+  }
+}

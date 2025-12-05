@@ -1,0 +1,98 @@
+{
+  "title": "Meetings",
+  "subtitle": "Manage your meetings and view summaries",
+  "actions": {
+    "create": "Create Meeting",
+    "schedule": "Schedule",
+    "join": "Join",
+    "edit": "Edit Meeting",
+    "delete": "Delete Meeting",
+    "cancel": "Cancel Meeting",
+    "start": "Start Meeting",
+    "end": "End Meeting",
+    "export": "Export Summary",
+    "share": "Share"
+  },
+  "filters": {
+    "all": "All Meetings",
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "ongoing": "Ongoing",
+    "cancelled": "Cancelled",
+    "search_placeholder": "Search meetings..."
+  },
+  "form": {
+    "title_label": "Meeting Title",
+    "title_placeholder": "Enter meeting title",
+    "description_label": "Description",
+    "description_placeholder": "Add meeting description",
+    "date_label": "Date",
+    "time_label": "Time",
+    "duration_label": "Duration",
+    "location_label": "Location",
+    "location_placeholder": "Add location or meeting link",
+    "participants_label": "Participants",
+    "participants_placeholder": "Add participants",
+    "project_label": "Related Project",
+    "project_placeholder": "Select project",
+    "notes_label": "Notes",
+    "notes_placeholder": "Add notes"
+  },
+  "details": {
+    "organizer": "Organizer",
+    "participants": "Participants",
+    "date": "Date",
+    "time": "Time",
+    "duration": "Duration",
+    "location": "Location",
+    "project": "Project",
+    "status": "Status",
+    "created": "Created",
+    "updated": "Updated",
+    "summary": "Summary",
+    "action_items": "Action Items",
+    "decisions": "Decisions",
+    "recording": "Recording"
+  },
+  "status": {
+    "scheduled": "Scheduled",
+    "ongoing": "Ongoing",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "rescheduled": "Rescheduled"
+  },
+  "duration": {
+    "15min": "15 minutes",
+    "30min": "30 minutes",
+    "45min": "45 minutes",
+    "1hour": "1 hour",
+    "1hour30min": "1 hour 30 minutes",
+    "2hours": "2 hours",
+    "custom": "Custom"
+  },
+  "empty": {
+    "title": "No meetings found",
+    "description": "Create your first meeting to get started",
+    "cta": "Create Meeting"
+  },
+  "messages": {
+    "create_success": "Meeting created successfully",
+    "create_error": "Failed to create meeting",
+    "update_success": "Meeting updated successfully",
+    "update_error": "Failed to update meeting",
+    "delete_success": "Meeting deleted successfully",
+    "delete_error": "Failed to delete meeting",
+    "delete_confirm": "Are you sure you want to delete this meeting?",
+    "cancel_confirm": "Are you sure you want to cancel this meeting?",
+    "join_error": "Failed to join meeting",
+    "start_success": "Meeting started",
+    "end_success": "Meeting ended"
+  },
+  "notifications": {
+    "reminder_5min": "Meeting starts in 5 minutes",
+    "reminder_15min": "Meeting starts in 15 minutes",
+    "reminder_1hour": "Meeting starts in 1 hour",
+    "started": "Meeting has started",
+    "ended": "Meeting has ended"
+  }
+}

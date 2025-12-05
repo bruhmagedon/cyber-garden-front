@@ -1,0 +1,100 @@
+{
+  "title": "Встречи",
+  "subtitle": "Управляйте своими встречами",
+  "actions": {
+    "create": "Создать встречу",
+    "edit": "Редактировать",
+    "delete": "Удалить",
+    "join": "Присоединиться",
+    "schedule": "Запланировать",
+    "cancel": "Отменить встречу",
+    "reschedule": "Перенести",
+    "view_details": "Подробнее"
+  },
+  "filters": {
+    "all": "Все встречи",
+    "upcoming": "Предстоящие",
+    "past": "Прошедшие",
+    "today": "Сегодня",
+    "this_week": "На этой неделе",
+    "this_month": "В этом месяце"
+  },
+  "form": {
+    "title_label": "Название встречи",
+    "title_placeholder": "Введите название",
+    "description_label": "Описание",
+    "description_placeholder": "Добавьте описание встречи",
+    "date_label": "Дата",
+    "time_label": "Время",
+    "duration_label": "Длительность",
+    "participants_label": "Участники",
+    "participants_placeholder": "Добавить участников",
+    "location_label": "Место проведения",
+    "location_placeholder": "Ссылка или адрес",
+    "reminder_label": "Напоминание",
+    "notes_label": "Заметки",
+    "submit": "Создать встречу",
+    "update": "Обновить встречу"
+  },
+  "status": {
+    "scheduled": "Запланирована",
+    "in_progress": "Идёт сейчас",
+    "completed": "Завершена",
+    "cancelled": "Отменена",
+    "rescheduled": "Перенесена"
+  },
+  "duration": {
+    "15min": "15 минут",
+    "30min": "30 минут",
+    "45min": "45 минут",
+    "1hour": "1 час",
+    "1_5hour": "1.5 часа",
+    "2hours": "2 часа",
+    "custom": "Произвольная"
+  },
+  "reminder": {
+    "none": "Без напоминания",
+    "5min": "За 5 минут",
+    "10min": "За 10 минут",
+    "15min": "За 15 минут",
+    "30min": "За 30 минут",
+    "1hour": "За 1 час",
+    "1day": "За 1 день"
+  },
+  "card": {
+    "participants_count": "{{count}} участник",
+    "participants_count_plural": "{{count}} участника",
+    "participants_count_many": "{{count}} участников",
+    "starts_in": "Начнётся через",
+    "started": "Началась",
+    "ended": "Завершилась",
+    "no_description": "Описание отсутствует",
+    "no_participants": "Нет участников"
+  },
+  "messages": {
+    "create_success": "Встреча успешно создана",
+    "create_error": "Не удалось создать встречу",
+    "update_success": "Встреча обновлена",
+    "update_error": "Не удалось обновить встречу",
+    "delete_success": "Встреча удалена",
+    "delete_error": "Не удалось удалить встречу",
+    "delete_confirm": "Вы уверены, что хотите удалить эту встречу?",
+    "cancel_confirm": "Вы уверены, что хотите отменить эту встречу?",
+    "no_meetings": "У вас пока нет встреч",
+    "no_upcoming": "Нет предстоящих встреч",
+    "no_past": "Нет прошедших встреч",
+    "loading": "Загрузка встреч..."
+  },
+  "details": {
+    "title": "Детали встречи",
+    "organizer": "Организатор",
+    "date_time": "Дата и время",
+    "duration": "Длительность",
+    "participants": "Участники",
+    "location": "Место проведения",
+    "description": "Описание",
+    "notes": "Заметки",
+    "created_at": "Создана",
+    "updated_at": "Обновлена"
+  }
+}

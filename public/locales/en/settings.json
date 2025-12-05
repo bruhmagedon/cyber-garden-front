@@ -1,0 +1,68 @@
+{
+  "title": "Settings",
+  "sections": {
+    "profile": {
+      "title": "Personal Information",
+      "name_label": "Full Name",
+      "email_label": "Email",
+      "specialization_label": "Specialization",
+      "help_text": "help text",
+      "avatar": {
+        "upload": "Upload",
+        "delete": "Delete",
+        "change": "Change"
+      }
+    },
+    "interface": {
+      "title": "Theme",
+      "themes": {
+        "dark": "Dark Theme",
+        "light": "Light Theme",
+        "system": "Auto Theme"
+      }
+    },
+    "language": {
+      "title": "Language",
+      "options": {
+        "ru": "Русский",
+        "en": "English"
+      }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "meeting_reminders": "Reminders for scheduled meetings",
+      "result_notifications": "Notifications about generated results and to-do"
+    },
+    "storage": {
+      "title": "Storage and Export",
+      "export_path_label": "Export Path",
+      "export_path_placeholder": "Insert path",
+      "select_folder": "Select Folder",
+      "help_text": "help text"
+    }
+  },
+  "specializations": {
+    "project-manager": "Project Manager",
+    "developer": "Developer",
+    "designer": "Designer",
+    "analyst": "Analyst",
+    "qa": "QA Engineer",
+    "product-owner": "Product Owner",
+    "scrum-master": "Scrum Master",
+    "other": "Other"
+  },
+  "sidebar": {
+    "profile": "Personal Information",
+    "interface": "Theme",
+    "language": "Language",
+    "notifications": "Notifications",
+    "storage": "Storage and Export"
+  },
+  "messages": {
+    "avatar_upload_success": "Avatar uploaded successfully",
+    "avatar_upload_error": "Failed to upload avatar",
+    "avatar_delete_success": "Avatar deleted successfully",
+    "settings_saved": "Settings saved",
+    "settings_error": "Failed to save settings"
+  }
+}

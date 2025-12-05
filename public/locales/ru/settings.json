@@ -1,0 +1,68 @@
+{
+  "title": "Настройки",
+  "sections": {
+    "profile": {
+      "title": "Личная информация",
+      "name_label": "Имя Фамилия",
+      "email_label": "Почта",
+      "specialization_label": "Специализация",
+      "help_text": "текст помощь",
+      "avatar": {
+        "upload": "Добавить фото",
+        "delete": "Удалить",
+        "change": "Изменить"
+      }
+    },
+    "interface": {
+      "title": "Тема",
+      "themes": {
+        "dark": "Тёмная тема",
+        "light": "Светлая тема",
+        "system": "Авто тема"
+      }
+    },
+    "language": {
+      "title": "Язык",
+      "options": {
+        "ru": "Русский",
+        "en": "English"
+      }
+    },
+    "notifications": {
+      "title": "Уведомления",
+      "meeting_reminders": "Напоминания о запланированных встречах",
+      "result_notifications": "Уведомления о сформированных итогах и to-do"
+    },
+    "storage": {
+      "title": "Хранение и экспорт",
+      "export_path_label": "Путь для экспорта",
+      "export_path_placeholder": "Вставить путь",
+      "select_folder": "Выбрать папку",
+      "help_text": "текст помощь"
+    }
+  },
+  "specializations": {
+    "project-manager": "Проект-менеджер",
+    "developer": "Разработчик",
+    "designer": "Дизайнер",
+    "analyst": "Аналитик",
+    "qa": "Тестировщик",
+    "product-owner": "Владелец продукта",
+    "scrum-master": "Скрам-мастер",
+    "other": "Другое"
+  },
+  "sidebar": {
+    "profile": "Личная информация",
+    "interface": "Тема",
+    "language": "Язык",
+    "notifications": "Уведомления",
+    "storage": "Хранение и экспорт"
+  },
+  "messages": {
+    "avatar_upload_success": "Аватар успешно загружен",
+    "avatar_upload_error": "Не удалось загрузить аватар",
+    "avatar_delete_success": "Аватар успешно удалён",
+    "settings_saved": "Настройки сохранены",
+    "settings_error": "Не удалось сохранить настройки"
+  }
+}

@@ -1,0 +1,135 @@
+import { useEffect, useId, useState } from 'react';
+import { Controller } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { useRegister } from '@/features/auth/model/api';
+import { PasswordValidator } from '@/features/auth/ui/PasswordValidator';
+import { Button, Checkbox, Input, Label } from '@/shared/ui';
+import type { RegisterFormValues } from '../../model/form/register-form.control';
+import { registerControl } from '../../model/form/register-form.control';
+import { useRegisterForm } from '../../model/hooks';
+import { AuthCard } from '../../ui/AuthCard';
+import { AuthFormWrapper } from '../../ui/AuthFormWrapper';
+import { AuthHeader } from '../../ui/AuthHeader';
+import { AuthNavLink } from '../../ui/AuthNavLink';
+import { FormError } from '../../ui/FormError';
+import { PasswordInput } from '../../ui/PasswordInput';
+
+export const RegisterForm = () => {
+  const termsId = useId();
+  const [passwordFocused, setPasswordFocused] = useState(false);
+  const { register, handleSubmit, watch, errors, reset } = useRegisterForm();
+  const { register: registerUser, isPending, isSuccess } = useRegister();
+  const password = watch('password');
+  const navigate = useNavigate();
+
+  // Редирект на главную после успешной регистрации
+  useEffect(() => {
+    if (isSuccess) {
+      reset();
+      navigate('/', { replace: true });
+    }
+  }, [isSuccess, navigate, reset]);
+
+  const onSubmit = (data: RegisterFormValues) => {
+    registerUser({
+      full_name: data.fullName,
+      email: data.email,
+      password: data.password,
+    });
+  };
+
+  const handleLogin = () => {
+    navigate('/auth/login');
+  };
+
+  return (
+    <AuthCard>
+      <AuthHeader />
+
+      <AuthFormWrapper>
+        <div className="flex w-full flex-col gap-5">
+          <div className="flex w-full flex-col gap-3">
+            <Label className="flex-1">Введите имя и фамилию</Label>
+            <Input
+              type="text"
+              {...register('fullName')}
+              placeholder="Имя Фамилия"
+              className="text-text-secondary placeholder:text-text-secondary"
+            />
+            <FormError message={errors.fullName?.message} />
+          </div>
+
+          <div className="flex w-full flex-col gap-3">
+            <Label className="flex-1">Введите почту</Label>
+            <Input
+              type="email"
+              {...register('email')}
+              placeholder="example@mail.com"
+              className="text-text-primary"
+            />
+            <FormError message={errors.email?.message} />
+          </div>
+
+          <div className="flex w-full flex-col gap-3">
+            <Label className="flex-1">Придумайте пароль</Label>
+            <div className="relative flex w-full items-center">
+              {passwordFocused && password && <PasswordValidator password={password} />}
+              <PasswordInput
+                {...register('password')}
+                onFocus={() => setPasswordFocused(true)}
+                onBlur={() => setPasswordFocused(false)}
+                placeholder="Введите пароль"
+                className="text-text-secondary placeholder:text-text-secondary"
+              />
+            </div>
+            <FormError message={errors.password?.message} />
+          </div>
+
+          <div className="flex w-full flex-col gap-3">
+            <Label className="py-0.5 text-text-primary">Подтвердите пароль</Label>
+            <PasswordInput
+              {...register('confirmPassword')}
+              placeholder="Введите пароль"
+              className="text-text-secondary placeholder:text-text-secondary"
+            />
+            <FormError message={errors.confirmPassword?.message} />
+          </div>
+
+          <div className="flex w-full flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <Controller
+                name="acceptTerms"
+                control={registerControl}
+                render={({ field }) => (
+                  <Checkbox id={termsId} checked={field.value} onCheckedChange={field.onChange} />
+                )}
+              />
+              <label
+                htmlFor={termsId}
+                className="cursor-pointer font-inter font-normal text-sm text-text-secondary leading-tight"
+              >
+                Я принимаю условия{' '}
+                <span className="text-primary hover:underline">Пользовательского соглашения</span>
+              </label>
+            </div>
+            <FormError message={errors.acceptTerms?.message} />
+          </div>
+        </div>
+
+        <div className="flex w-full flex-col items-center gap-5">
+          <Button
+            onClick={handleSubmit(onSubmit)}
+            variant="primary"
+            size="lg"
+            className="w-full text-base"
+            disabled={isPending}
+          >
+            Зарегистрироваться
+          </Button>
+
+          <AuthNavLink text="Есть аккаунт?" linkText="Войти" onClick={handleLogin} />
+        </div>
+      </AuthFormWrapper>
+    </AuthCard>
+  );
+};

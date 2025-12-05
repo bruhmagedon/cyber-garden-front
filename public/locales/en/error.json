@@ -1,0 +1,56 @@
+{
+  "title": "Error",
+  "subtitle": "Something went wrong",
+  "types": {
+    "400": "Bad Request",
+    "401": "Unauthorized",
+    "403": "Forbidden",
+    "404": "Not Found",
+    "500": "Internal Server Error",
+    "502": "Bad Gateway",
+    "503": "Service Unavailable",
+    "network": "Network Error",
+    "timeout": "Request Timeout",
+    "unknown": "Unknown Error"
+  },
+  "messages": {
+    "400": "The request was invalid. Please check your input and try again.",
+    "401": "You need to sign in to access this page.",
+    "403": "You don't have permission to access this resource.",
+    "404": "The page you're looking for doesn't exist.",
+    "500": "An internal server error occurred. Our team has been notified.",
+    "502": "The server is temporarily unavailable. Please try again later.",
+    "503": "The service is currently unavailable. Please try again later.",
+    "network": "Unable to connect to the server. Please check your internet connection.",
+    "timeout": "The request took too long to complete. Please try again.",
+    "unknown": "An unexpected error occurred. Please try again.",
+    "generic": "Oops! Something went wrong."
+  },
+  "actions": {
+    "go_home": "Go to Home",
+    "go_back": "Go Back",
+    "try_again": "Try Again",
+    "refresh": "Refresh Page",
+    "contact_support": "Contact Support",
+    "report_issue": "Report Issue"
+  },
+  "details": {
+    "error_code": "Error Code",
+    "error_message": "Error Message",
+    "timestamp": "Timestamp",
+    "request_id": "Request ID",
+    "show_details": "Show Details",
+    "hide_details": "Hide Details"
+  },
+  "support": {
+    "title": "Need Help?",
+    "description": "If this problem persists, please contact our support team.",
+    "email": "support@example.com",
+    "contact": "Contact Support"
+  },
+  "offline": {
+    "title": "You're Offline",
+    "message": "Please check your internet connection and try again.",
+    "retry": "Retry Connection"
+  }
+}

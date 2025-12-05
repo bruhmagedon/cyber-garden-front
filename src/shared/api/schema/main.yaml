@@ -1,0 +1,5942 @@
+openapi: 3.1.0
+info:
+  title: gateway service
+  version: 0.1.0
+paths:
+  /metrics:
+    get:
+      summary: Metrics
+      description: Endpoint that serves Prometheus metrics.
+      operationId: root-routing-metrics
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/v1/utils/health/:
+    get:
+      tags:
+        - Проверка состояния
+      summary: Router Health Check
+      operationId: проверка состояния-routing-router-health-check
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: boolean
+                title: Response Проверка Состояния-Routing-Router-Health-Check
+  /api/v1/utils/health/{name}/:
+    get:
+      tags:
+        - Проверка состояния
+      summary: Get List Meetings
+      description: Проверить работу сервиса
+      operationId: проверка состояния-routing-get-list-meetings
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: service
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/Service"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Проверка Состояния-Routing-Get-List-Meetings
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/utils/health/status/:
+    get:
+      tags:
+        - Проверка состояния
+      summary: Route Health Check
+      operationId: проверка состояния-routing-route-health-check
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/v1/utils/logs/archive/:
+    get:
+      tags:
+        - Проверка состояния
+      summary: Route Get Logs Archive
+      operationId: проверка состояния-routing-route-get-logs-archive
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /api/v1/utils/logs/{name}/:
+    get:
+      tags:
+        - Проверка состояния
+      summary: Route Get Log Api
+      description: Получить файл лога с warning
+      operationId: проверка состояния-routing-route-get-log-api
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            enum:
+              - error
+              - fastapi
+              - warnings
+              - info
+              - debug
+            type: string
+            title: Name
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/files/{key}/:
+    get:
+      tags:
+        - S3
+      summary: Proxy S3 File
+      description: Проксирование файла из S3 по ключу.
+      operationId: s3-routing-proxy-s3-file
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Key
+        - name: x_user_id
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+            title: X User Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/check-api/:
+    get:
+      tags:
+        - API Check
+      summary: Check All Services
+      description: "Проверка API Gateway против микросервисов.
+
+        Игнорируем x_user_id в query."
+      operationId: api check-routing-check-all-services
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Api Check-Routing-Check-All-Services
+      security:
+        - HTTPBearer: []
+  /api/v1/cred/yandex_wiki/{company_id}/:
+    post:
+      tags:
+        - yandex_wiki
+      summary: Create Creds
+      operationId: yandex-wiki-routing-create-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/src__api__routes__creds__core__dto__OutlookCredsDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__creds__core__dto__OutlookCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    get:
+      tags:
+        - yandex_wiki
+      summary: Get Creds
+      operationId: yandex-wiki-routing-get-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__creds__core__dto__OutlookCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    patch:
+      tags:
+        - yandex_wiki
+      summary: Update Creds
+      operationId: yandex-wiki-routing-update-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/src__api__routes__creds__core__dto__OutlookCredsDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__creds__core__dto__OutlookCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - yandex_wiki
+      summary: Delete Creds
+      operationId: yandex-wiki-routing-delete-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__creds__core__dto__OutlookCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/cred/yandex_tracker/{company_id}/:
+    post:
+      tags:
+        - yandex_tracker
+      summary: Create Creds
+      operationId: yandex-tracker-routing-create-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/src__api__routes__creds__core__dto__YandexTrackerCredsDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__creds__core__dto__YandexTrackerCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    get:
+      tags:
+        - yandex_tracker
+      summary: Get Creds
+      operationId: yandex-tracker-routing-get-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__creds__core__dto__YandexTrackerCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    patch:
+      tags:
+        - yandex_tracker
+      summary: Update Creds
+      operationId: yandex-tracker-routing-update-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/src__api__routes__creds__core__dto__YandexTrackerCredsDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__creds__core__dto__YandexTrackerCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - yandex_tracker
+      summary: Delete Creds
+      operationId: yandex-tracker-routing-delete-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__creds__core__dto__YandexTrackerCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/cred/confluence/{company_id}/:
+    post:
+      tags:
+        - confluence
+      summary: Create Creds
+      operationId: confluence-routing-create-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/src__api__routes__creds__core__dto__ConfluenceCredsDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__creds__core__dto__ConfluenceCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    get:
+      tags:
+        - confluence
+      summary: Get Creds
+      operationId: confluence-routing-get-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__creds__core__dto__ConfluenceCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    patch:
+      tags:
+        - confluence
+      summary: Update Creds
+      operationId: confluence-routing-update-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/src__api__routes__creds__core__dto__ConfluenceCredsDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__creds__core__dto__ConfluenceCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - confluence
+      summary: Delete Creds
+      operationId: confluence-routing-delete-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__creds__core__dto__ConfluenceCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/cred/jira/{company_id}/:
+    post:
+      tags:
+        - jira
+      summary: Create Creds
+      operationId: jira-routing-create-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/src__api__routes__creds__core__dto__JiraCredsDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__creds__core__dto__JiraCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    get:
+      tags:
+        - jira
+      summary: Get Creds
+      operationId: jira-routing-get-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__creds__core__dto__JiraCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    patch:
+      tags:
+        - jira
+      summary: Update Creds
+      operationId: jira-routing-update-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/src__api__routes__creds__core__dto__JiraCredsDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__creds__core__dto__JiraCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - jira
+      summary: Delete Creds
+      operationId: jira-routing-delete-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__creds__core__dto__JiraCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/company/{company_id}/provider/:
+    get:
+      tags:
+        - Список провайдеров
+      summary: Router Get Providers
+      description: Получить список провайдеров встречи
+      operationId: список провайдеров-routing-router-get-providers
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Provider"
+                title: Response Список Провайдеров-Routing-Router-Get-Providers
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/auth/users/:
+    get:
+      tags:
+        - authentication
+      summary: Read Users
+      description:
+        "⚠️ Для доступа требуется передать Bearer Token в заголовке Authorization.
+
+
+        Пример: `Authorization: Bearer <token>`"
+      operationId: authentication-routing-read-users
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+            title: Q
+        - name: skip
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+            title: Skip
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            default: 100
+            title: Limit
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Authentication-Routing-Read-Users
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    post:
+      tags:
+        - authentication
+      summary: Create User
+      description:
+        "⚠️ Для доступа требуется передать Bearer Token в заголовке Authorization.
+
+
+        Пример: `Authorization: Bearer <token>`"
+      operationId: authentication-routing-create-user
+      security:
+        - HTTPBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCreateDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Authentication-Routing-Create-User
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/auth/users/me/:
+    get:
+      tags:
+        - authentication
+      summary: Read User Me
+      description:
+        "⚠️ Для доступа требуется передать Bearer Token в заголовке Authorization.
+
+
+        Пример: `Authorization: Bearer <token>`"
+      operationId: authentication-routing-read-user-me
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Authentication-Routing-Read-User-Me
+      security:
+        - HTTPBearer: []
+    delete:
+      tags:
+        - authentication
+      summary: Delete User Me
+      description:
+        "⚠️ Для доступа требуется передать Bearer Token в заголовке Authorization.
+
+
+        Пример: `Authorization: Bearer <token>`"
+      operationId: authentication-routing-delete-user-me
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Authentication-Routing-Delete-User-Me
+      security:
+        - HTTPBearer: []
+    patch:
+      tags:
+        - authentication
+      summary: Update User Me
+      description:
+        "⚠️ Для доступа требуется передать Bearer Token в заголовке Authorization.
+
+
+        Пример: `Authorization: Bearer <token>`"
+      operationId: authentication-routing-update-user-me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdateMeDTO"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Authentication-Routing-Update-User-Me
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  /api/v1/auth/users/signup/:
+    post:
+      tags:
+        - authentication
+      summary: Register User
+      description: Create new user without the need to be logged in.
+      operationId: authentication-routing-register-user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegisterDTO"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Authentication-Routing-Register-User
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/auth/users/{user_id}/:
+    get:
+      tags:
+        - authentication
+      summary: Read User By Id
+      description:
+        "⚠️ Для доступа требуется передать Bearer Token в заголовке Authorization.
+
+
+        Пример: `Authorization: Bearer <token>`"
+      operationId: authentication-routing-read-user-by-id
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: User Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Authentication-Routing-Read-User-By-Id
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    patch:
+      tags:
+        - authentication
+      summary: Update User
+      description:
+        "⚠️ Для доступа требуется передать Bearer Token в заголовке Authorization.
+
+
+        Пример: `Authorization: Bearer <token>`"
+      operationId: authentication-routing-update-user
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: User Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdateDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Authentication-Routing-Update-User
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - authentication
+      summary: Delete User
+      description:
+        "⚠️ Для доступа требуется передать Bearer Token в заголовке Authorization.
+
+
+        Пример: `Authorization: Bearer <token>`"
+      operationId: authentication-routing-delete-user
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: User Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Authentication-Routing-Delete-User
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/auth/password-recovery/{email}/:
+    post:
+      tags:
+        - authentication
+      summary: Recover Password
+      description: Password Recovery
+      operationId: authentication-routing-recover-password
+      parameters:
+        - name: email
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Email
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Authentication-Routing-Recover-Password
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/auth/reset-password/:
+    post:
+      tags:
+        - authentication
+      summary: Reset Password
+      description: Reset password
+      operationId: authentication-routing-reset-password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordResetCodeRequestDTO"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Authentication-Routing-Reset-Password
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/auth/users/me/password/:
+    patch:
+      tags:
+        - authentication
+      summary: Update Password Me
+      description:
+        "⚠️ Для доступа требуется передать Bearer Token в заголовке Authorization.
+
+
+        Пример: `Authorization: Bearer <token>`"
+      operationId: authentication-routing-update-password-me
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePasswordDTO"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Authentication-Routing-Update-Password-Me
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  /api/v1/auth/login/access-token/:
+    post:
+      tags:
+        - authentication
+      summary: Login Access Token
+      operationId: authentication-routing-login-access-token
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Body_authentication-routing-login-access-token"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Authentication-Routing-Login-Access-Token
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/auth/token/refresh/:
+    post:
+      tags:
+        - authentication
+      summary: Router Refresh Token
+      operationId: authentication-routing-router-refresh-token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RTokenDTO"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Authentication-Routing-Router-Refresh-Token
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  /api/v1/auth/login/test-token/:
+    post:
+      tags:
+        - authentication
+      summary: Test Token
+      description:
+        "⚠️ Для доступа требуется передать Bearer Token в заголовке Authorization.
+
+
+        Пример: `Authorization: Bearer <token>`"
+      operationId: authentication-routing-test-token
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Authentication-Routing-Test-Token
+      security:
+        - HTTPBearer: []
+  /api/v1/auth/users/me/avatar/:
+    post:
+      tags:
+        - authentication
+      summary: Upload Avatar Me
+      description:
+        "⚠️ Для доступа требуется передать Bearer Token в заголовке Authorization.
+
+
+        Пример: `Authorization: Bearer <token>`"
+      operationId: authentication-routing-upload-avatar-me
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Body_authentication-routing-upload-avatar-me"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Authentication-Routing-Upload-Avatar-Me
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+    delete:
+      tags:
+        - authentication
+      summary: Delete Avatar Me
+      description:
+        "⚠️ Для доступа требуется передать Bearer Token в заголовке Authorization.
+
+
+        Пример: `Authorization: Bearer <token>`"
+      operationId: authentication-routing-delete-avatar-me
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Authentication-Routing-Delete-Avatar-Me
+      security:
+        - HTTPBearer: []
+  /api/v1/auth/users/avatar/{user_id}/:
+    patch:
+      tags:
+        - authentication
+      summary: Update User Avatar
+      description: Admin only
+      operationId: authentication-routing-update-user-avatar
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: User Id
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Body_authentication-routing-update-user-avatar"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Authentication-Routing-Update-User-Avatar
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/ticket/:
+    post:
+      tags:
+        - Ticket
+      summary: Router Ticket
+      description: Проксирование запроса FAQ (с поддержкой файлов)
+      operationId: ticket-routing-router-ticket
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Body_ticket-routing-router-ticket"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TicketDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  /api/v1/project/:
+    get:
+      tags:
+        - Проект
+      summary: Get List Projects
+      description: Получить все проекты, доступные пользователю (участник или создатель)
+      operationId: проект-routing-get-list-projects
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: title
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            title: Title
+        - name: time_days
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: integer
+              - type: "null"
+            default: 0
+            title: Time Days
+        - name: filter_type
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - $ref: "#/components/schemas/ProjectStatus"
+              - type: "null"
+            title: Filter Type
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProjectDTO"
+                title: Response Проект-Routing-Get-List-Projects
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    post:
+      tags:
+        - Проект
+      summary: Create Project
+      description: Создать проект
+      operationId: проект-routing-create-project
+      security:
+        - HTTPBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectCreateDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/project/{project_id}/:
+    get:
+      tags:
+        - Проект
+      summary: Get One Project
+      description: Получить данные проекта
+      operationId: проект-routing-get-one-project
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Project Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    patch:
+      tags:
+        - Проект
+      summary: Update Project
+      description: Изменить проект
+      operationId: проект-routing-update-project
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Project Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectUpdateDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - Проект
+      summary: Delete Project
+      description: "Удалить проект: is_active = False"
+      operationId: проект-routing-delete-project
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Project Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/project-user/{project_id}/:
+    get:
+      tags:
+        - Добавление участников на проекты
+      summary: Get Project Users
+      description: Получить всех участников проекта
+      operationId: добавление участников на проекты-routing-get-project-users
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Project Id
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+            title: Q
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+                title: Response Добавление Участников На Проекты-Routing-Get-Project-Users
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/project-user/{project_id}/add-users/:
+    post:
+      tags:
+        - Добавление участников на проекты
+      summary: Add Project Users
+      description: Добавление или обновление участников проекта с ролями
+      operationId: добавление участников на проекты-routing-add-project-users
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Project Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/ProjectUserNoteDTO"
+              title: Lst Dto
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProjectUserDTO"
+                title: Response Добавление Участников На Проекты-Routing-Add-Project-Users
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/project-user/{project_id}/{user_id}/role/:
+    patch:
+      tags:
+        - Добавление участников на проекты
+      summary: Patch Project User
+      description: Изменить роль участника
+      operationId: добавление участников на проекты-routing-patch-project-user
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Project Id
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: User Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectUserRolePatchDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectUserDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/project-user/{project_id}/{user_id}/:
+    delete:
+      tags:
+        - Добавление участников на проекты
+      summary: Delete Project User
+      description: Удалить участника из проекта
+      operationId: добавление участников на проекты-routing-delete-project-user
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Project Id
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: User Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectUserDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/post/:
+    get:
+      tags:
+        - Должности
+      summary: Get List Posts
+      description: Получить все должности, доступные пользователю (участник или создатель)
+      operationId: должности-routing-get-list-posts
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  type: string
+                type: array
+                title: Response Должности-Routing-Get-List-Posts
+      security:
+        - HTTPBearer: []
+    post:
+      tags:
+        - Должности
+      summary: Create Post
+      description: Создать встречу
+      operationId: должности-routing-create-post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostDTO"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostDataDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  /api/v1/post/{title}/:
+    get:
+      tags:
+        - Должности
+      summary: Get One Post
+      description: Получить данные встречи
+      operationId: должности-routing-get-one-post
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: title
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Title
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostDataDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    patch:
+      tags:
+        - Должности
+      summary: Update Post
+      description: Изменить встречу
+      operationId: должности-routing-update-post
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: title
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Title
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostDataDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostDataDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - Должности
+      summary: Delete Post
+      description: "Удалить встречу: is_active = False"
+      operationId: должности-routing-delete-post
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: title
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Title
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostDataDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/company/{company_id}/project/:
+    get:
+      tags:
+        - Компании
+      summary: Get List Projects
+      description: Получить все проекты, доступные пользователю (участник или создатель)
+      operationId: компании-routing-get-list-projects
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProjectDTO"
+                title: Response Компании-Routing-Get-List-Projects
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - Компании
+      summary: Get List Projects
+      description: Получить все проекты, доступные пользователю (участник или создатель)
+      operationId: компании-routing-get-list-projects
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                title: Response Компании-Routing-Get-List-Projects
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/creds/yandex_wiki/{company_id}/:
+    post:
+      tags:
+        - yandex_wiki
+      summary: Create Creds
+      operationId: yandex-wiki-routing-create-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/src__api__routes__companies__core__dto__OutlookCredsDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__companies__core__dto__OutlookCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    get:
+      tags:
+        - yandex_wiki
+      summary: Get Creds
+      operationId: yandex-wiki-routing-get-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__companies__core__dto__OutlookCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    patch:
+      tags:
+        - yandex_wiki
+      summary: Update Creds
+      operationId: yandex-wiki-routing-update-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/src__api__routes__companies__core__dto__OutlookCredsDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__companies__core__dto__OutlookCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - yandex_wiki
+      summary: Delete Creds
+      operationId: yandex-wiki-routing-delete-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__companies__core__dto__OutlookCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/creds/yandex_tracker/{company_id}/:
+    post:
+      tags:
+        - yandex_tracker
+      summary: Create Creds
+      operationId: yandex-tracker-routing-create-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/src__api__routes__companies__core__dto__YandexTrackerCredsDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__companies__core__dto__YandexTrackerCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    get:
+      tags:
+        - yandex_tracker
+      summary: Get Creds
+      operationId: yandex-tracker-routing-get-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__companies__core__dto__YandexTrackerCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    patch:
+      tags:
+        - yandex_tracker
+      summary: Update Creds
+      operationId: yandex-tracker-routing-update-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/src__api__routes__companies__core__dto__YandexTrackerCredsDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__companies__core__dto__YandexTrackerCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - yandex_tracker
+      summary: Delete Creds
+      operationId: yandex-tracker-routing-delete-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__companies__core__dto__YandexTrackerCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/creds/confluence/{company_id}/:
+    post:
+      tags:
+        - confluence
+      summary: Create Creds
+      operationId: confluence-routing-create-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/src__api__routes__companies__core__dto__ConfluenceCredsDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__companies__core__dto__ConfluenceCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    get:
+      tags:
+        - confluence
+      summary: Get Creds
+      operationId: confluence-routing-get-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__companies__core__dto__ConfluenceCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    patch:
+      tags:
+        - confluence
+      summary: Update Creds
+      operationId: confluence-routing-update-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/src__api__routes__companies__core__dto__ConfluenceCredsDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__companies__core__dto__ConfluenceCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - confluence
+      summary: Delete Creds
+      operationId: confluence-routing-delete-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__companies__core__dto__ConfluenceCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/creds/jira/{company_id}/:
+    post:
+      tags:
+        - jira
+      summary: Create Creds
+      operationId: jira-routing-create-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/src__api__routes__companies__core__dto__JiraCredsDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__companies__core__dto__JiraCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    get:
+      tags:
+        - jira
+      summary: Get Creds
+      operationId: jira-routing-get-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__companies__core__dto__JiraCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    patch:
+      tags:
+        - jira
+      summary: Update Creds
+      operationId: jira-routing-update-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/src__api__routes__companies__core__dto__JiraCredsDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__companies__core__dto__JiraCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - jira
+      summary: Delete Creds
+      operationId: jira-routing-delete-creds
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/src__api__routes__companies__core__dto__JiraCredsDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/company-user/{company_id}/:
+    get:
+      tags:
+        - Добавление участников в компанию
+      summary: Get List Company User
+      description: Получить все участников встречи
+      operationId: добавление участников в компанию-routing-get-list-company-user
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+        - name: filter_type
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/TFilter"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CompanyUserDTO"
+                title: Response Добавление Участников В Компанию-Routing-Get-List-Company-User
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/company-user/{company_id}/add-users/:
+    post:
+      tags:
+        - Добавление участников в компанию
+      summary: Add Users To Company
+      description: Добавление участников на встречу
+      operationId: добавление участников в компанию-routing-add-users-to-company
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompanyUserCreateDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+                title: Response Добавление Участников В Компанию-Routing-Add-Users-To-Company
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/company-user/{company_id}/{user_id}/:
+    patch:
+      tags:
+        - Добавление участников в компанию
+      summary: Patch Company User
+      description: Изменить статус участника
+      operationId: добавление участников в компанию-routing-patch-company-user
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: User Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompanyUserStatusDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanyUserDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - Добавление участников в компанию
+      summary: Delete Company User
+      description: Удалить участника из встречи
+      operationId: добавление участников в компанию-routing-delete-company-user
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: User Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanyUserDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/company/:
+    get:
+      tags:
+        - Компании
+      summary: Get List Companies
+      description: Получить все встречи, доступные пользователю (участник или создатель)
+      operationId: компании-routing-get-list-companies
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: title
+          in: query
+          required: false
+          schema:
+            type: string
+            title: Title
+        - name: filter_type
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - $ref: "#/components/schemas/CompanyStatus"
+              - type: "null"
+            title: Filter Type
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CompanyDTO"
+                title: Response Компании-Routing-Get-List-Companies
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    post:
+      tags:
+        - Компании
+      summary: Create Company
+      description: Создать встречу
+      operationId: компании-routing-create-company
+      security:
+        - HTTPBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompanyCreateDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanyDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/company/{company_id}/:
+    get:
+      tags:
+        - Компании
+      summary: Get One Company
+      description: Получить данные встречи
+      operationId: компании-routing-get-one-company
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanyDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    patch:
+      tags:
+        - Компании
+      summary: Update Company
+      description: Изменить встречу
+      operationId: компании-routing-update-company
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompanyUpdateDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanyDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - Компании
+      summary: Delete Company
+      description: "Удалить встречу: is_active = False"
+      operationId: компании-routing-delete-company
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: company_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Company Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanyDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/meeting/{meeting_id}/task/:
+    get:
+      tags:
+        - Задачи
+      summary: Router Get Tasks
+      description: Получение всех задач встречи
+      operationId: задачи-routing-router-get-tasks
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+            title: Q
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Задачи-Routing-Router-Get-Tasks
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    post:
+      tags:
+        - Задачи
+      summary: Router Create Task
+      description: Создать задачу встречи
+      operationId: задачи-routing-router-create-task
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskCreateDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    patch:
+      tags:
+        - Задачи
+      summary: Router Update Task
+      description: Изменить задачу встречи
+      operationId: задачи-routing-router-update-task
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListTaskPatchUpdateDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Задачи-Routing-Router-Update-Task
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/meeting/{meeting_id}/task/{task_id}/:
+    get:
+      tags:
+        - Задачи
+      summary: Router Get Task
+      description: Получить задачу встречи
+      operationId: задачи-routing-router-get-task
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Task Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Задачи-Routing-Router-Get-Task
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - Задачи
+      summary: Router Delete Task
+      description: Удалить задачу встречи
+      operationId: задачи-routing-router-delete-task
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Task Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Задачи-Routing-Router-Delete-Task
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    post:
+      tags:
+        - Задачи
+      summary: Router Approve Task
+      description: Подтвердить задачу встречи
+      operationId: задачи-routing-router-approve-task
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Task Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Задачи-Routing-Router-Approve-Task
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/meeting-user/{meeting_id}/:
+    get:
+      tags:
+        - Добавление участников на встречи
+      summary: Get List Meeting User
+      description: Получить все участников встречи
+      operationId: добавление участников на встречи-routing-get-list-meeting-user
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+            title: Q
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+                title: Response Добавление Участников На Встречи-Routing-Get-List-Meeting-User
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/meeting-user/{meeting_id}/add-users/:
+    post:
+      tags:
+        - Добавление участников на встречи
+      summary: Add Users To Meeting
+      description: Добавление участников на встречу
+      operationId: добавление участников на встречи-routing-add-users-to-meeting
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MeetingUserCreateDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+                title: Response Добавление Участников На Встречи-Routing-Add-Users-To-Meeting
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/meeting-user/{meeting_id}/{user_id}/:
+    patch:
+      tags:
+        - Добавление участников на встречи
+      summary: Patch Meeting User
+      description: Изменить статус участника
+      operationId: добавление участников на встречи-routing-patch-meeting-user
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: User Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MeetingUserStatusDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeetingUserDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - Добавление участников на встречи
+      summary: Delete Meeting User
+      description: Удалить участника из встречи
+      operationId: добавление участников на встречи-routing-delete-meeting-user
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: User Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeetingUserDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/meeting/:
+    get:
+      tags:
+        - Встреча
+      summary: Get List Meetings
+      description: Получить все встречи, доступные пользователю (участник или создатель)
+      operationId: встреча-routing-get-list-meetings
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: title
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            title: Title
+        - name: time_days
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: integer
+              - type: "null"
+            default: 0
+            title: Time Days
+        - name: tags
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            default: ""
+            title: Tags
+        - name: sep
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            default: "|"
+            title: Sep
+        - name: filter_type
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - $ref: "#/components/schemas/MeetingStatus"
+              - type: "null"
+            title: Filter Type
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MeetingDTO"
+                title: Response Встреча-Routing-Get-List-Meetings
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    post:
+      tags:
+        - Встреча
+      summary: Create Meeting
+      description: Создать встречу
+      operationId: встреча-routing-create-meeting
+      security:
+        - HTTPBearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MeetingCreateDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeetingDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/meeting/{meeting_id}/:
+    get:
+      tags:
+        - Встреча
+      summary: Get One Meeting
+      description: Получить данные встречи
+      operationId: встреча-routing-get-one-meeting
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeetingDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    patch:
+      tags:
+        - Встреча
+      summary: Update Meeting
+      description: Изменить встречу
+      operationId: встреча-routing-update-meeting
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MeetingUpdateDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeetingDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - Встреча
+      summary: Delete Meeting
+      description: "Удалить встречу: is_active = False"
+      operationId: встреча-routing-delete-meeting
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeetingDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/meeting/webrtc/candidate/:
+    post:
+      tags:
+        - webrtc
+      summary: Webrtc Candidate
+      description: Принимаем ICE-кандидата от клиента (trickle ICE).
+      operationId: webrtc-routing-webrtc-candidate
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: conn_id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+            description: ID ранее созданного peer соединения
+            title: Conn Id
+          description: ID ранее созданного peer соединения
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IceCandidateDTO"
+              description: 'ICE candidate: {"candidate":"...", "sdpMid":"audio", "sdpMLineIndex":0}'
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OkDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/meeting/webrtc/{conn_id}/:
+    delete:
+      tags:
+        - webrtc
+      summary: Webrtc Hangup
+      description: Ручной разрыв соединения (или при завершении на клиенте).
+      operationId: webrtc-routing-webrtc-hangup
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: conn_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Conn Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OkDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/meeting/webrtc/health/:
+    get:
+      tags:
+        - webrtc
+      summary: Webrtc Health
+      description: Простой health
+      operationId: webrtc-routing-webrtc-health
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckLifeDTO"
+      security:
+        - HTTPBearer: []
+  /api/v1/meeting/webrtc/offer/:
+    post:
+      tags:
+        - webrtc
+      summary: Webrtc Offer
+      description: "Роут для подключения и запуска стрима, самый главный
+
+        :param offer:
+
+        :param meeting_id:
+
+        :param file_type:
+
+        :param file_id:
+
+        :param title:
+
+        :return:"
+      operationId: webrtc-routing-webrtc-offer
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+            description: ID встречи
+            default: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            title: Meeting Id
+          description: ID встречи
+        - name: file_type
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/FileType"
+            description: Тип потока
+            default: audio
+          description: Тип потока
+        - name: file_id
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+            description: ID файла для исключения дублирования
+            default: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+            title: File Id
+          description: ID файла для исключения дублирования
+        - name: title
+          in: query
+          required: false
+          schema:
+            type: string
+            description: Название файла
+            default: file.mp3
+            title: Title
+          description: Название файла
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SDPMessageDTO"
+              description: 'SDP offer: {"type":"offer","sdp":"..."}'
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnswerWebRTCDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/meetings/{meeting_id}/summary/:
+    post:
+      tags:
+        - Summary
+      summary: Create Summary
+      description: Добавить summary для встречи
+      operationId: summary-routing-create-summary
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SummaryDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeetingSummaryDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    patch:
+      tags:
+        - Summary
+      summary: Update Summary
+      description: Обновить summary для встречи
+      operationId: summary-routing-update-summary
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SummaryDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeetingSummaryDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - Summary
+      summary: Delete Summary
+      description: Удалить summary для встречи
+      operationId: summary-routing-delete-summary
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SummaryDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    get:
+      tags:
+        - Summary
+      summary: Get Summary
+      description: Получить summary для встречи
+      operationId: summary-routing-get-summary
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeetingSummaryDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/meeting/{meeting_id}/file/:
+    get:
+      tags:
+        - Загрузка файлов
+      summary: Get Files
+      description: Получить все файлы со встречи
+      operationId: загрузка файлов-routing-get-files
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+        - name: file_type
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/FileType"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MeetingFileDTO"
+                title: Response Загрузка Файлов-Routing-Get-Files
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    post:
+      tags:
+        - Загрузка файлов
+      summary: Post File
+      description: Добавить файл для встречи
+      operationId: загрузка файлов-routing-post-file
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+        - name: file_id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: File Id
+        - name: do_transcribe
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+            title: Do Transcribe
+        - name: media_format
+          in: query
+          required: false
+          schema:
+            enum:
+              - mp3
+              - wav
+              - ogg
+              - flac
+              - aac
+              - m4a
+              - wma
+              - mp4
+              - mov
+              - mkv
+              - avi
+              - webm
+              - flv
+            type: string
+            default: .mp3
+            title: Media Format
+        - name: file_type
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/FileType"
+            default: document
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Body________________-routing-post-file"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeetingFileDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - Загрузка файлов
+      summary: Delete File
+      description: Удалить файл встречи
+      operationId: загрузка файлов-routing-delete-file
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Body________________-routing-delete-file"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MeetingFileDTO"
+                title: Response Загрузка Файлов-Routing-Delete-File
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/meeting/{meeting_id}/file/{file_id}/:
+    patch:
+      tags:
+        - Загрузка файлов
+      summary: Patch File
+      description: Изменить файл встречи
+      operationId: загрузка файлов-routing-patch-file
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+        - name: file_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: File Id
+        - name: media_format
+          in: query
+          required: false
+          schema:
+            enum:
+              - mp3
+              - wav
+              - ogg
+              - flac
+              - aac
+              - m4a
+              - wma
+              - mp4
+              - mov
+              - mkv
+              - avi
+              - webm
+              - flv
+            type: string
+            default: .mp3
+            title: Media Format
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Body________________-routing-patch-file"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeetingFileDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/project/{project_id}/meeting/:
+    get:
+      tags:
+        - Встречи по проекту
+      summary: Get List Meetings
+      description: Получить все встречи, доступные пользователю (участник или создатель)
+      operationId: встречи по проекту-routing-get-list-meetings
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Project Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MeetingDTO"
+                title: Response Встречи По Проекту-Routing-Get-List-Meetings
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+        - Встречи по проекту
+      summary: Get List Meetings
+      description: Получить все встречи, доступные пользователю (участник или создатель)
+      operationId: встречи по проекту-routing-get-list-meetings
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Project Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                title: Response Встречи По Проекту-Routing-Get-List-Meetings
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/meetings/{meeting_id}/summary/chunk/all/:
+    get:
+      tags:
+        - Чанки
+      summary: Router Get Chunk All
+      description: Получить summary для встречи
+      operationId: чанки-routing-router-get-chunk-all
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChunkDTO"
+                title: Response Чанки-Routing-Router-Get-Chunk-All
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/meetings/{meeting_id}/summary/chunk/last/:
+    get:
+      tags:
+        - Чанки
+      summary: Router Get Chunk Last
+      description: Получить summary для встречи
+      operationId: чанки-routing-router-get-chunk-last
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChunkDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/meetings/{meeting_id}/summary/chunk/{number}/:
+    get:
+      tags:
+        - Чанки
+      summary: Router Get Chunk Number
+      description: Получить summary для встречи
+      operationId: чанки-routing-router-get-chunk-number
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+        - name: number
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Number
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChunkDTO"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/meetings/{meeting_id}/summary/chunk/:
+    patch:
+      tags:
+        - Чанки
+      summary: Router Patch Chunk Number
+      description: Редактировать чанки
+      operationId: чанки-routing-router-patch-chunk-number
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListChunkPatchDTO"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChunkPatchDTO"
+                title: Response Чанки-Routing-Router-Patch-Chunk-Number
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/tag/:
+    get:
+      tags:
+        - Тэги
+      summary: Router Get Tags
+      description: Получить все теги
+      operationId: тэги-routing-router-get-tags
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            title: Q
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                title: Response Тэги-Routing-Router-Get-Tags
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/meeting/{meeting_id}/share/{file_name}/{file_format}/email/:
+    get:
+      tags:
+        - Скачать файл встречи
+      summary: Router Get Chunk All
+      description: Получить все встречи, доступные пользователю (участник или создатель)
+      operationId: скачать файл встречи-routing-router-get-chunk-all
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+        - name: file_name
+          in: path
+          required: true
+          schema:
+            type: string
+            title: File Name
+        - name: file_format
+          in: path
+          required: true
+          schema:
+            type: string
+            title: File Format
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Body_____________________-routing-router-get-chunk-all"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Скачать Файл Встречи-Routing-Router-Get-Chunk-All
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /api/v1/meeting/{meeting_id}/share/{file_name}/{file_format}/download/:
+    get:
+      tags:
+        - Скачать файл встречи
+      summary: Router Get Chunk All
+      description: Создать встречу
+      operationId: скачать файл встречи-routing-router-get-chunk-all
+      security:
+        - HTTPBearer: []
+      parameters:
+        - name: meeting_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Meeting Id
+        - name: file_name
+          in: path
+          required: true
+          schema:
+            type: string
+            title: File Name
+        - name: file_format
+          in: path
+          required: true
+          schema:
+            type: string
+            title: File Format
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Скачать Файл Встречи-Routing-Router-Get-Chunk-All
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /:
+    get:
+      tags:
+        - root
+      summary: Root
+      operationId: root-routing-root
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  schemas:
+    AllPermissions:
+      type: string
+      enum:
+        - edit
+        - view
+        - delete
+        - role/edit
+        - perm/edit
+        - post/add
+        - post/edit
+        - post/view
+        - post/delete
+        - note/post
+        - note/edit
+        - note/view
+        - note/delete
+        - note/perm/edit
+        - note/role/edit
+      title: AllPermissions
+    AllRoles:
+      type: string
+      enum:
+        - super_admin
+        - admin
+        - user
+      title: AllRoles
+    AnswerWebRTCDTO:
+      properties:
+        conn_id:
+          type: string
+          format: uuid
+          title: Conn Id
+        answer:
+          $ref: "#/components/schemas/SDPMessageDTO"
+      type: object
+      required:
+        - conn_id
+        - answer
+      title: AnswerWebRTCDTO
+    Body________________-routing-delete-file:
+      properties:
+        url:
+          type: string
+          title: Url
+      type: object
+      required:
+        - url
+      title: Body_загрузка файлов-routing-delete-file
+    Body________________-routing-patch-file:
+      properties:
+        file_type:
+          $ref: "#/components/schemas/FileType"
+          default: document
+        file:
+          type: string
+          format: binary
+          title: File
+        for_user_id:
+          type: string
+          format: uuid
+          title: For User Id
+      type: object
+      required:
+        - file
+        - for_user_id
+      title: Body_загрузка файлов-routing-patch-file
+    Body________________-routing-post-file:
+      properties:
+        file:
+          type: string
+          format: binary
+          title: File
+          description: Загружаемый файл
+        for_user_id:
+          type: string
+          format: uuid
+          title: For User Id
+          description: ID участника, для которого загружен файл
+      type: object
+      required:
+        - file
+        - for_user_id
+      title: Body_загрузка файлов-routing-post-file
+    Body_____________________-routing-router-get-chunk-all:
+      properties:
+        emails:
+          items:
+            type: string
+            format: email
+          type: array
+          title: Emails
+        user_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          title: User Ids
+      type: object
+      required:
+        - emails
+        - user_ids
+      title: Body_скачать файл встречи-routing-router-get-chunk-all
+    Body_authentication-routing-login-access-token:
+      properties:
+        email:
+          type: string
+          format: email
+          title: Email
+          default: user145@example.com
+        password:
+          type: string
+          title: Password
+          default: stringstA1_
+        grant_type:
+          type: string
+          pattern: password
+          title: Grant Type
+          default: password
+        scope:
+          type: string
+          title: Scope
+          default: ""
+        client_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Client Id
+        client_secret:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Client Secret
+      type: object
+      title: Body_authentication-routing-login-access-token
+    Body_authentication-routing-update-user-avatar:
+      properties:
+        file:
+          type: string
+          format: binary
+          title: File
+        file_type:
+          $ref: "#/components/schemas/ImageType"
+          default: png
+      type: object
+      required:
+        - file
+      title: Body_authentication-routing-update-user-avatar
+    Body_authentication-routing-upload-avatar-me:
+      properties:
+        file:
+          type: string
+          format: binary
+          title: File
+        file_type:
+          $ref: "#/components/schemas/ImageType"
+          default: png
+      type: object
+      required:
+        - file
+      title: Body_authentication-routing-upload-avatar-me
+    Body_ticket-routing-router-ticket:
+      properties:
+        ticket_id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Ticket Id
+        tema:
+          type: string
+          title: Tema
+        work_email:
+          type: string
+          title: Work Email
+        company:
+          type: string
+          title: Company
+        position:
+          type: string
+          title: Position
+        content:
+          type: string
+          title: Content
+        files:
+          anyOf:
+            - items:
+                type: string
+                format: binary
+              type: array
+            - type: "null"
+          title: Files
+      type: object
+      required:
+        - tema
+        - work_email
+        - company
+        - position
+        - content
+      title: Body_ticket-routing-router-ticket
+    CheckLifeDTO:
+      properties:
+        ok:
+          type: boolean
+          title: Ok
+        active_peers:
+          type: integer
+          title: Active Peers
+      type: object
+      required:
+        - ok
+        - active_peers
+      title: CheckLifeDTO
+    ChunkDTO:
+      properties:
+        texts:
+          anyOf:
+            - items:
+                additionalProperties: true
+                type: object
+              type: array
+            - type: "null"
+          title: Texts
+        chunk_number:
+          type: integer
+          title: Chunk Number
+          default: 0
+        start_time_ms:
+          type: integer
+          title: Start Time Ms
+          default: 0
+        duration_ms:
+          type: integer
+          title: Duration Ms
+          default: 0
+      type: object
+      title: ChunkDTO
+    ChunkPatchDTO:
+      properties:
+        chunk_number:
+          type: integer
+          title: Chunk Number
+        texts:
+          anyOf:
+            - items:
+                additionalProperties: true
+                type: object
+              type: array
+            - type: "null"
+          title: Texts
+      type: object
+      required:
+        - chunk_number
+      title: ChunkPatchDTO
+    CompanyCreateDTO:
+      properties:
+        id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Id
+        title:
+          type: string
+          title: Title
+          description: Название
+        desc:
+          type: string
+          title: Desc
+          description: Описание
+          default: ""
+        status:
+          $ref: "#/components/schemas/CompanyStatus"
+          default: active
+      type: object
+      required:
+        - id
+        - title
+      title: CompanyCreateDTO
+    CompanyDTO:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        title:
+          type: string
+          title: Title
+          description: Название
+        desc:
+          type: string
+          title: Desc
+          description: Описание
+        is_delete:
+          type: boolean
+          title: Is Delete
+          description: Статус (удалено или нет)
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Дата создания
+        status:
+          $ref: "#/components/schemas/CompanyStatus"
+        creator_id:
+          type: string
+          format: uuid
+          title: Creator Id
+        members:
+          anyOf:
+            - items:
+                additionalProperties: true
+                type: object
+              type: array
+            - type: "null"
+          title: Members
+          description: Список участников
+      type: object
+      required:
+        - id
+        - title
+        - desc
+        - is_delete
+        - created_at
+        - status
+        - creator_id
+      title: CompanyDTO
+    CompanyStatus:
+      type: string
+      enum:
+        - active
+        - frozen
+      title: CompanyStatus
+      description: Статусы встреч
+    CompanyUpdateDTO:
+      properties:
+        title:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Title
+          description: Название
+        desc:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Desc
+          description: Описание
+        status:
+          anyOf:
+            - $ref: "#/components/schemas/CompanyStatus"
+            - type: "null"
+          default: active
+      type: object
+      title: CompanyUpdateDTO
+    CompanyUserCreateDTO:
+      properties:
+        user_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          title: User Ids
+        role:
+          $ref: "#/components/schemas/AllRoles"
+      type: object
+      required:
+        - user_ids
+        - role
+      title: CompanyUserCreateDTO
+    CompanyUserDTO:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+          description: ID
+        company_id:
+          type: string
+          format: uuid
+          title: Company Id
+          description: Компания
+        user_id:
+          type: string
+          format: uuid
+          title: User Id
+          description: Клиент компании
+        creator_id:
+          type: string
+          format: uuid
+          title: Creator Id
+          description: Админ, который добавил пользователя в компанию
+        created_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Created At
+        updated_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Updated At
+        role:
+          $ref: "#/components/schemas/AllRoles"
+      type: object
+      required:
+        - id
+        - company_id
+        - user_id
+        - creator_id
+        - role
+      title: CompanyUserDTO
+    CompanyUserStatus:
+      type: string
+      enum:
+        - active
+        - frozen
+      title: CompanyUserStatus
+    CompanyUserStatusDTO:
+      properties:
+        id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Id
+        status:
+          $ref: "#/components/schemas/CompanyUserStatus"
+      type: object
+      required:
+        - id
+        - status
+      title: CompanyUserStatusDTO
+    FileType:
+      type: string
+      enum:
+        - audio
+        - video
+        - pdf
+        - document
+      title: FileType
+      description: Типы файлов
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: "#/components/schemas/ValidationError"
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    IceCandidateDTO:
+      properties:
+        candidate:
+          type: string
+          title: Candidate
+          description: Строка ICE-кандидата
+        sdpMid:
+          type: string
+          title: Sdpmid
+          description: SDP MID для кандидата
+        sdpMLineIndex:
+          type: integer
+          title: Sdpmlineindex
+          description: SDP MLineIndex для кандидата
+      type: object
+      required:
+        - candidate
+        - sdpMid
+        - sdpMLineIndex
+      title: IceCandidateDTO
+      description: Кандидат ICE для WebRTC
+    ImageType:
+      type: string
+      enum:
+        - png
+        - jpg
+        - jpeg
+        - gif
+      title: ImageType
+    ListChunkPatchDTO:
+      properties:
+        chunks:
+          items:
+            $ref: "#/components/schemas/ChunkPatchDTO"
+          type: array
+          title: Chunks
+      type: object
+      required:
+        - chunks
+      title: ListChunkPatchDTO
+    ListTaskPatchUpdateDTO:
+      properties:
+        tasks:
+          items:
+            $ref: "#/components/schemas/TaskPatchUpdateDTO"
+          type: array
+          title: Tasks
+      type: object
+      required:
+        - tasks
+      title: ListTaskPatchUpdateDTO
+    MeetingCreateDTO:
+      properties:
+        title:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Title
+          description: Название встречи
+        url:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Url
+          description: Ссылка на встречу
+        start_datetime:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Start Datetime
+          description: Дата встречи
+        project_id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Project Id
+          description: Дата встречи
+        project_title:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Project Title
+          description: Название проекта
+        status:
+          anyOf:
+            - $ref: "#/components/schemas/MeetingStatus"
+            - type: "null"
+          description: Дата встречи
+        tags:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Tags
+          description: Список тегов
+        id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Id
+        members:
+          anyOf:
+            - items:
+                type: string
+                format: uuid
+              type: array
+            - type: "null"
+          title: Members
+      type: object
+      title: MeetingCreateDTO
+    MeetingDTO:
+      properties:
+        title:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Title
+          description: Название встречи
+        url:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Url
+          description: Ссылка на встречу
+        start_datetime:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Start Datetime
+          description: Дата встречи
+        project_id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Project Id
+          description: Дата встречи
+        project_title:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Project Title
+          description: Название проекта
+        status:
+          $ref: "#/components/schemas/MeetingStatus"
+        tags:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Tags
+          description: Список тегов
+        id:
+          type: string
+          format: uuid
+          title: Id
+        creator_id:
+          type: string
+          format: uuid
+          title: Creator Id
+        is_delete:
+          type: boolean
+          title: Is Delete
+        members:
+          anyOf:
+            - items:
+                additionalProperties: true
+                type: object
+              type: array
+            - items:
+                type: string
+                format: uuid
+              type: array
+            - type: "null"
+          title: Members
+      type: object
+      required:
+        - status
+        - id
+        - creator_id
+        - is_delete
+      title: MeetingDTO
+    MeetingFileDTO:
+      properties:
+        url:
+          type: string
+          title: Url
+        file_type:
+          anyOf:
+            - $ref: "#/components/schemas/FileType"
+            - type: "null"
+      type: object
+      required:
+        - url
+      title: MeetingFileDTO
+    MeetingStatus:
+      type: string
+      enum:
+        - active
+        - archive
+      title: MeetingStatus
+      description: Статусы встреч
+    MeetingSummaryDTO:
+      properties:
+        summary:
+          type: string
+          title: Summary
+        meeting_id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Meeting Id
+        created_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Created At
+        updated_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Updated At
+      type: object
+      required:
+        - summary
+      title: MeetingSummaryDTO
+    MeetingUpdateDTO:
+      properties:
+        title:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Title
+          description: Название встречи
+        url:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Url
+          description: Ссылка на встречу
+        start_datetime:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Start Datetime
+          description: Дата встречи
+        project_id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Project Id
+          description: Дата встречи
+        project_title:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Project Title
+          description: Название проекта
+        status:
+          anyOf:
+            - $ref: "#/components/schemas/MeetingStatus"
+            - type: "null"
+          description: Дата встречи
+        tags:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Tags
+          description: Список тегов
+      type: object
+      title: MeetingUpdateDTO
+    MeetingUserCreateDTO:
+      properties:
+        user_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          title: User Ids
+        role:
+          $ref: "#/components/schemas/AllRoles"
+          default: user
+      type: object
+      required:
+        - user_ids
+      title: MeetingUserCreateDTO
+    MeetingUserDTO:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        meeting_id:
+          type: string
+          format: uuid
+          title: Meeting Id
+        user_id:
+          type: string
+          format: uuid
+          title: User Id
+        created_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Created At
+        role:
+          $ref: "#/components/schemas/AllRoles"
+        permissions:
+          anyOf:
+            - items:
+                $ref: "#/components/schemas/AllPermissions"
+              type: array
+            - type: "null"
+          title: Permissions
+      type: object
+      required:
+        - id
+        - meeting_id
+        - user_id
+        - role
+      title: MeetingUserDTO
+    MeetingUserStatusDTO:
+      properties:
+        id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Id
+        role:
+          $ref: "#/components/schemas/AllRoles"
+        permissions:
+          anyOf:
+            - items:
+                $ref: "#/components/schemas/AllPermissions"
+              type: array
+            - type: "null"
+          title: Permissions
+      type: object
+      required:
+        - role
+      title: MeetingUserStatusDTO
+    OkDTO:
+      properties:
+        ok:
+          type: boolean
+          title: Ok
+      type: object
+      required:
+        - ok
+      title: OkDTO
+    PasswordResetCodeRequestDTO:
+      properties:
+        email:
+          type: string
+          format: email
+          title: Email
+        new_password:
+          type: string
+          maxLength: 40
+          minLength: 8
+          title: New Password
+      type: object
+      required:
+        - email
+        - new_password
+      title: PasswordResetCodeRequestDTO
+    PostDTO:
+      properties:
+        project_id:
+          type: string
+          format: uuid
+          title: Project Id
+          description: ID Проекта (надо для проверки прав
+        title:
+          type: string
+          title: Title
+          description: Название должности
+      type: object
+      title: PostDTO
+    PostDataDTO:
+      properties:
+        title:
+          type: string
+          title: Title
+          description: Название должности
+      type: object
+      title: PostDataDTO
+    ProjectCreateDTO:
+      properties:
+        title:
+          type: string
+          title: Title
+          description: Название проекта
+        desc:
+          type: string
+          title: Desc
+          description: Описание проекта
+        company_id:
+          type: string
+          format: uuid
+          title: Company Id
+          description: ID компании
+        id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Id
+          description: ID проекта
+        status:
+          $ref: "#/components/schemas/ProjectStatus"
+          description: Статус проекта
+        members:
+          anyOf:
+            - items:
+                type: string
+                format: uuid
+              type: array
+            - type: "null"
+          title: Members
+          description: Статус проекта
+      type: object
+      title: ProjectCreateDTO
+    ProjectDTO:
+      properties:
+        title:
+          type: string
+          title: Title
+          description: Название проекта
+        desc:
+          type: string
+          title: Desc
+          description: Описание проекта
+        company_id:
+          type: string
+          format: uuid
+          title: Company Id
+          description: ID компании
+        id:
+          type: string
+          format: uuid
+          title: Id
+          description: ID проекта
+        status:
+          $ref: "#/components/schemas/ProjectStatus"
+          description: Статус проекта
+        creator_id:
+          type: string
+          format: uuid
+          title: Creator Id
+          description: ID создателя
+        is_delete:
+          type: boolean
+          title: Is Delete
+          description: Удален ли объект в БД
+        members:
+          anyOf:
+            - items:
+                additionalProperties: true
+                type: object
+              type: array
+            - type: "null"
+          title: Members
+          description: Список участников
+      type: object
+      title: ProjectDTO
+    ProjectStatus:
+      type: string
+      enum:
+        - active
+        - frozen
+      title: ProjectStatus
+      description: Статусы встреч
+    ProjectUpdateDTO:
+      properties:
+        title:
+          type: string
+          title: Title
+          description: Название проекта
+        desc:
+          type: string
+          title: Desc
+          description: Описание проекта
+        company_id:
+          type: string
+          format: uuid
+          title: Company Id
+          description: ID компании
+        status:
+          $ref: "#/components/schemas/ProjectStatus"
+          default: active
+      type: object
+      title: ProjectUpdateDTO
+    ProjectUserDTO:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+          description: ID Проект-пользователь
+        project_id:
+          type: string
+          format: uuid
+          title: Project Id
+          description: ID Проекта
+        user_id:
+          type: string
+          format: uuid
+          title: User Id
+          description: ID пользователя
+        post:
+          type: string
+          title: Post
+          description: Название должности
+        role:
+          $ref: "#/components/schemas/AllRoles"
+          description: Название роли
+      type: object
+      title: ProjectUserDTO
+      description: Ответ на post, patch, delete
+    ProjectUserNoteDTO:
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          title: User Id
+          description: ID пользователя
+        post:
+          type: string
+          title: Post
+          description: Название должности
+        role:
+          $ref: "#/components/schemas/AllRoles"
+          description: Название роли в проекте
+          default: user
+      type: object
+      title: ProjectUserNoteDTO
+      description: post project-user
+    ProjectUserRolePatchDTO:
+      properties:
+        post:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Post
+          description: Название должности
+        role:
+          anyOf:
+            - $ref: "#/components/schemas/AllRoles"
+            - type: "null"
+          description: Название роли
+      type: object
+      title: ProjectUserRolePatchDTO
+    Provider:
+      type: string
+      enum:
+        - yandex_tracker
+        - yandex_wiki
+        - outlook
+        - jira
+        - confluence
+      title: Provider
+    RTokenDTO:
+      properties:
+        refresh_token:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Refresh Token
+          description: Токен для фронта
+      type: object
+      title: RTokenDTO
+    SDPMessageDTO:
+      properties:
+        type:
+          type: string
+          enum:
+            - offer
+            - answer
+          title: Type
+        sdp:
+          type: string
+          title: Sdp
+          description:
+            "Пример: 'v=0\r\no=- 1234567890 2 IN IP4 127.0.0.1\r\ns=-\r\
+            \nt=0 0\r\nm=audio 9 UDP/TLS/RTP/SAVPF 111\r\nc=IN IP4 0.0.0.0\r\na=sendonly\r\
+            \na=mid:0\r\na=rtpmap:111 opus/48000/2'"
+      type: object
+      required:
+        - type
+        - sdp
+      title: SDPMessageDTO
+    Service:
+      type: string
+      enum:
+        - auth
+        - gateway
+        - cred
+        - registry
+        - company
+        - project
+        - meeting
+        - task
+      title: Service
+    SummaryDTO:
+      properties:
+        summary:
+          type: string
+          title: Summary
+      type: object
+      required:
+        - summary
+      title: SummaryDTO
+    TFilter:
+      type: string
+      enum:
+        - all
+        - new
+        - archive
+      title: TFilter
+      description: Фильтры для выборки
+    TaskBodyDTO:
+      properties:
+        title:
+          type: string
+          title: Title
+          description: Заголовок/summary задачи
+        description:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Description
+          description: Полное описание
+        assignee:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Assignee
+          description: Исполнитель (имя или ID)
+        due_date:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Due Date
+          description: Срок (ISO)
+        priority:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Priority
+          description: "Приоритет: low/medium/high"
+        labels:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Labels
+          description: Метки/теги
+        parent_id:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Parent Id
+          description: ID родительской задачи, если subtask
+        estimate:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Estimate
+          description: Оценка задачи
+        attachments:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Attachments
+          description: Дополнительные файлы для прикрепления
+        extra:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Extra
+          description: Прочие поля
+      type: object
+      required:
+        - title
+      title: TaskBodyDTO
+    TaskCreateDTO:
+      properties:
+        id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Id
+        task:
+          additionalProperties: true
+          type: object
+          title: Task
+        status:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Status
+          default: ""
+        dead_line:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Dead Line
+      type: object
+      required:
+        - task
+      title: TaskCreateDTO
+    TaskDTO:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        task:
+          $ref: "#/components/schemas/TaskBodyDTO"
+        status:
+          type: string
+          title: Status
+        is_delete:
+          type: boolean
+          title: Is Delete
+        created_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Created At
+        updated_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Updated At
+      type: object
+      required:
+        - id
+        - task
+        - status
+        - is_delete
+      title: TaskDTO
+    TaskPatchUpdateDTO:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        task:
+          $ref: "#/components/schemas/TaskBodyDTO"
+      type: object
+      required:
+        - id
+        - task
+      title: TaskPatchUpdateDTO
+    TicketDTO:
+      properties:
+        id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Id
+        tema:
+          type: string
+          title: Tema
+          description: Тема вопроса или обращения
+        work_email:
+          type: string
+          title: Work Email
+          description: Рабочая почта пользователя
+        company:
+          type: string
+          title: Company
+          description: Компания, от имени которой задаётся вопрос
+        position:
+          type: string
+          title: Position
+          description: Должность пользователя в компании
+        content:
+          type: string
+          title: Content
+          description: Содержание вопроса или сообщения
+      type: object
+      required:
+        - tema
+        - work_email
+        - company
+        - position
+        - content
+      title: TicketDTO
+    UpdatePasswordDTO:
+      properties:
+        current_password:
+          type: string
+          maxLength: 40
+          minLength: 8
+          title: Current Password
+        new_password:
+          type: string
+          maxLength: 40
+          minLength: 8
+          title: New Password
+      type: object
+      required:
+        - current_password
+        - new_password
+      title: UpdatePasswordDTO
+    UserCreateDTO:
+      properties:
+        email:
+          anyOf:
+            - type: string
+              maxLength: 255
+              format: email
+            - type: "null"
+          title: Email
+          default: ""
+        is_delete:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          title: Is Delete
+          default: false
+        is_superuser:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          title: Is Superuser
+          default: false
+        full_name:
+          anyOf:
+            - type: string
+              maxLength: 255
+            - type: "null"
+          title: Full Name
+        company_id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Company Id
+        image_url:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Image Url
+        lang:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Lang
+          default: ru
+        is_meeting_notif:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          title: Is Meeting Notif
+        is_summary_notif:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          title: Is Summary Notif
+        role:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Role
+        permissions:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Permissions
+        password:
+          type: string
+          maxLength: 40
+          minLength: 8
+          title: Password
+      type: object
+      required:
+        - password
+      title: UserCreateDTO
+    UserRegisterDTO:
+      properties:
+        email:
+          anyOf:
+            - type: string
+              maxLength: 255
+              format: email
+            - type: "null"
+          title: Email
+        password:
+          anyOf:
+            - type: string
+              maxLength: 40
+              minLength: 8
+            - type: "null"
+          title: Password
+          default: stringstA1_
+        full_name:
+          anyOf:
+            - type: string
+              maxLength: 255
+            - type: "null"
+          title: Full Name
+      type: object
+      title: UserRegisterDTO
+    UserUpdateDTO:
+      properties:
+        email:
+          anyOf:
+            - type: string
+              maxLength: 255
+              format: email
+            - type: "null"
+          title: Email
+        is_delete:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          title: Is Delete
+          default: false
+        is_superuser:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          title: Is Superuser
+          default: false
+        full_name:
+          anyOf:
+            - type: string
+              maxLength: 255
+            - type: "null"
+          title: Full Name
+        company_id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Company Id
+        image_url:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Image Url
+        lang:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Lang
+          default: ru
+        is_meeting_notif:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          title: Is Meeting Notif
+        is_summary_notif:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          title: Is Summary Notif
+        role:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Role
+        permissions:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Permissions
+        password:
+          anyOf:
+            - type: string
+              maxLength: 40
+              minLength: 8
+            - type: "null"
+          title: Password
+      type: object
+      title: UserUpdateDTO
+    UserUpdateMeDTO:
+      properties:
+        full_name:
+          anyOf:
+            - type: string
+              maxLength: 255
+            - type: "null"
+          title: Full Name
+        email:
+          anyOf:
+            - type: string
+              maxLength: 255
+              format: email
+            - type: "null"
+          title: Email
+        company_id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Company Id
+        lang:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Lang
+          default: ru
+        is_meeting_notif:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          title: Is Meeting Notif
+        is_summary_notif:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          title: Is Summary Notif
+      type: object
+      title: UserUpdateMeDTO
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+        - loc
+        - msg
+        - type
+      title: ValidationError
+    src__api__routes__companies__core__dto__ConfluenceCredsDTO:
+      properties:
+        company_id:
+          type: string
+          format: uuid
+          title: Company Id
+        created_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Created At
+          description: Дата создания
+        updated_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Updated At
+          description: Дата обновления
+        domain:
+          type: string
+          title: Domain
+          description: Confluence domain, например company.atlassian.net/wiki
+        email:
+          type: string
+          title: Email
+          description: Email пользователя
+        api_token:
+          type: string
+          title: Api Token
+          description: API токен
+      type: object
+      required:
+        - company_id
+        - domain
+        - email
+        - api_token
+      title: ConfluenceCredsDTO
+    src__api__routes__companies__core__dto__JiraCredsDTO:
+      properties:
+        company_id:
+          type: string
+          format: uuid
+          title: Company Id
+        created_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Created At
+          description: Дата создания
+        updated_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Updated At
+          description: Дата обновления
+        domain:
+          type: string
+          title: Domain
+          description: Jira domain, например company.atlassian.net
+        email:
+          type: string
+          title: Email
+          description: Email пользователя
+        api_token:
+          type: string
+          title: Api Token
+          description: API токен
+      type: object
+      required:
+        - company_id
+        - domain
+        - email
+        - api_token
+      title: JiraCredsDTO
+    src__api__routes__companies__core__dto__OutlookCredsDTO:
+      properties:
+        company_id:
+          type: string
+          format: uuid
+          title: Company Id
+        created_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Created At
+          description: Дата создания
+        updated_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Updated At
+          description: Дата обновления
+        client_id:
+          type: string
+          title: Client Id
+          description: Outlook App Client ID
+        client_secret:
+          type: string
+          title: Client Secret
+          description: Outlook App Client Secret
+        tenant_id:
+          type: string
+          title: Tenant Id
+          description: Tenant ID
+      type: object
+      required:
+        - company_id
+        - client_id
+        - client_secret
+        - tenant_id
+      title: OutlookCredsDTO
+    src__api__routes__companies__core__dto__YandexTrackerCredsDTO:
+      properties:
+        company_id:
+          type: string
+          format: uuid
+          title: Company Id
+        created_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Created At
+          description: Дата создания
+        updated_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Updated At
+          description: Дата обновления
+        org_id:
+          type: string
+          title: Org Id
+          description: ID организации
+        oauth_token:
+          type: string
+          title: Oauth Token
+          description: OAuth токен
+        user_login:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: User Login
+          description: Логин пользователя
+      type: object
+      required:
+        - company_id
+        - org_id
+        - oauth_token
+      title: YandexTrackerCredsDTO
+    src__api__routes__companies__core__dto__YandexWikiCredsDTO:
+      properties:
+        company_id:
+          type: string
+          format: uuid
+          title: Company Id
+        created_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Created At
+          description: Дата создания
+        updated_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Updated At
+          description: Дата обновления
+        org_id:
+          type: string
+          title: Org Id
+          description: ID организации
+        oauth_token:
+          type: string
+          title: Oauth Token
+          description: OAuth токен
+        user_login:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: User Login
+          description: Логин пользователя
+      type: object
+      required:
+        - company_id
+        - org_id
+        - oauth_token
+      title: YandexWikiCredsDTO
+    src__api__routes__creds__core__dto__ConfluenceCredsDTO:
+      properties:
+        company_id:
+          type: string
+          format: uuid
+          title: Company Id
+          foreign_key: company.id
+          nullable: false
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Дата создания
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+          description: Дата обновления
+        domain:
+          type: string
+          title: Domain
+          description: Confluence domain, например company.atlassian.net/wiki
+        email:
+          type: string
+          title: Email
+          description: Email пользователя
+        api_token:
+          type: string
+          title: Api Token
+          description: API токен
+      type: object
+      required:
+        - company_id
+        - domain
+        - email
+        - api_token
+      title: ConfluenceCredsDTO
+    src__api__routes__creds__core__dto__JiraCredsDTO:
+      properties:
+        company_id:
+          type: string
+          format: uuid
+          title: Company Id
+          foreign_key: company.id
+          nullable: false
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Дата создания
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+          description: Дата обновления
+        domain:
+          type: string
+          title: Domain
+          description: Jira domain, например company.atlassian.net
+        email:
+          type: string
+          title: Email
+          description: Email пользователя
+        api_token:
+          type: string
+          title: Api Token
+          description: API токен
+      type: object
+      required:
+        - company_id
+        - domain
+        - email
+        - api_token
+      title: JiraCredsDTO
+    src__api__routes__creds__core__dto__OutlookCredsDTO:
+      properties:
+        company_id:
+          type: string
+          format: uuid
+          title: Company Id
+          foreign_key: company.id
+          nullable: false
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Дата создания
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+          description: Дата обновления
+        client_id:
+          type: string
+          title: Client Id
+          description: Outlook App Client ID
+        client_secret:
+          type: string
+          title: Client Secret
+          description: Outlook App Client Secret
+        tenant_id:
+          type: string
+          title: Tenant Id
+          description: Tenant ID
+      type: object
+      required:
+        - company_id
+        - client_id
+        - client_secret
+        - tenant_id
+      title: OutlookCredsDTO
+    src__api__routes__creds__core__dto__YandexTrackerCredsDTO:
+      properties:
+        company_id:
+          type: string
+          format: uuid
+          title: Company Id
+          foreign_key: company.id
+          nullable: false
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Дата создания
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+          description: Дата обновления
+        org_id:
+          type: string
+          title: Org Id
+          description: ID организации
+        oauth_token:
+          type: string
+          title: Oauth Token
+          description: OAuth токен
+        user_login:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: User Login
+          description: Логин пользователя
+      type: object
+      required:
+        - company_id
+        - org_id
+        - oauth_token
+      title: YandexTrackerCredsDTO
+    src__api__routes__creds__core__dto__YandexWikiCredsDTO:
+      properties:
+        company_id:
+          type: string
+          format: uuid
+          title: Company Id
+          foreign_key: company.id
+          nullable: false
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Дата создания
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+          description: Дата обновления
+        org_id:
+          type: string
+          title: Org Id
+          description: ID организации
+        oauth_token:
+          type: string
+          title: Oauth Token
+          description: OAuth токен
+        user_login:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: User Login
+          description: Логин пользователя
+      type: object
+      required:
+        - company_id
+        - org_id
+        - oauth_token
+      title: YandexWikiCredsDTO
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer

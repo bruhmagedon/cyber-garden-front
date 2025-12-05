@@ -1,0 +1,48 @@
+{
+  "title": "Dashboard",
+  "welcome": "Welcome",
+  "overview": "Overview",
+  "sections": {
+    "recent_meetings": {
+      "title": "Recent Meetings",
+      "view_all": "View All",
+      "no_meetings": "No meetings yet",
+      "scheduled": "Scheduled",
+      "completed": "Completed"
+    },
+    "active_projects": {
+      "title": "Active Projects",
+      "view_all": "View All",
+      "no_projects": "No projects yet",
+      "in_progress": "In Progress",
+      "pending": "Pending"
+    },
+    "statistics": {
+      "title": "Statistics",
+      "total_meetings": "Total Meetings",
+      "total_projects": "Total Projects",
+      "completed_tasks": "Completed Tasks",
+      "pending_tasks": "Pending Tasks"
+    },
+    "quick_actions": {
+      "title": "Quick Actions",
+      "new_meeting": "New Meeting",
+      "new_project": "New Project",
+      "view_calendar": "View Calendar",
+      "export_data": "Export Data"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "view_all": "View All",
+      "no_notifications": "No new notifications",
+      "mark_as_read": "Mark as Read",
+      "clear_all": "Clear All"
+    }
+  },
+  "filters": {
+    "today": "Today",
+    "this_week": "This Week",
+    "this_month": "This Month",
+    "all_time": "All Time"
+  }
+}

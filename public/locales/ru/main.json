@@ -1,0 +1,44 @@
+{
+  "title": "Главная",
+  "welcome": {
+    "greeting": "Добро пожаловать",
+    "greeting_time_morning": "Доброе утро",
+    "greeting_time_afternoon": "Добрый день",
+    "greeting_time_evening": "Добрый вечер",
+    "subtitle": "Вот что происходит сегодня"
+  },
+  "stats": {
+    "total_meetings": "Всего встреч",
+    "upcoming_meetings": "Предстоящие встречи",
+    "completed_meetings": "Завершённые встречи",
+    "active_projects": "Активные проекты",
+    "pending_tasks": "Задачи в ожидании",
+    "completed_tasks": "Выполненные задачи"
+  },
+  "sections": {
+    "recent_meetings": "Недавние встречи",
+    "upcoming_meetings": "Предстоящие встречи",
+    "recent_projects": "Недавние проекты",
+    "quick_actions": "Быстрые действия",
+    "activity": "Активность",
+    "notifications": "Уведомления"
+  },
+  "quick_actions": {
+    "create_meeting": "Создать встречу",
+    "create_project": "Создать проект",
+    "view_all_meetings": "Все встречи",
+    "view_all_projects": "Все проекты"
+  },
+  "empty_states": {
+    "no_meetings": "Нет встреч",
+    "no_projects": "Нет проектов",
+    "no_activity": "Нет активности",
+    "no_notifications": "Нет уведомлений"
+  },
+  "actions": {
+    "view_details": "Посмотреть детали",
+    "view_all": "Посмотреть всё",
+    "create_new": "Создать новый",
+    "refresh": "Обновить"
+  }
+}

@@ -1,0 +1,82 @@
+@layer theme, base, components, utilities;
+
+html {
+  font-size: 100%; /* Учитываем базовый размер шрифта пользователя */
+}
+
+/* @media (min-width: 1024px) {
+    html {
+        font-size: clamp(1rem, calc(1rem + 0.1vw), 2rem);
+    }
+} */
+
+@layer theme {
+  /* ==================== LIGHT THEME ==================== */
+  :root {
+    --background: #ffffff;
+    --foreground: #111315;
+    --background-secondary: #f6f6f6;
+    --border: #dbdbdb;
+
+    /* Buttons */
+    --primary: #2463eb;
+    --primary-hover: #1453db;
+    --button-secondary: #ffffff;
+    --button-secondary-hover: #c4c6ca;
+    --on-primary: #ffffff;
+    --on-surface: #5f6368;
+    --on-background: #202124;
+
+    /* Text */
+    --text-primary: #202124;
+    --text-secondary: #5f6368;
+    --text-tertiary: #80868b;
+    --text-quaternary: #111315;
+
+    /* Fills */
+    --fill-primary: #ffffff;
+    --fill-secondary: #f8f9fa;
+    --fill-tertiary: #e8eaed;
+    --fill-quaternary: #dadce0;
+  }
+
+  /* ==================== DARK THEME ==================== */
+  .dark {
+    --background: #1b1d1f;
+    --foreground: #e9e9e9;
+    --background-secondary: #111315;
+    --border: #3b4048;
+
+    /* Buttons */
+    --primary: #2463eb;
+    --primary-hover: #1453db;
+    --button-secondary: #33383f;
+    --button-secondary-hover: #424851;
+    --on-primary: #e9ecf3;
+    --on-surface: #e9e9e9;
+    --on-background: #e9e9e9;
+
+    /* Text */
+    --text-primary: #9a9fa5;
+    --text-secondary: #6f767e;
+    --text-tertiary: #e9e9e9;
+    --text-quaternary: #ffffff;
+
+    /* Fills */
+    --fill-primary: #111315;
+    --fill-secondary: #272b30;
+    --fill-tertiary: #33383f;
+    --fill-quaternary: #3b4048;
+
+    /* Hover states */
+    --hover-primary: #1f2326;
+    --hover-secondary: #2f353d;
+    --hover-tertiary: #3d444d;
+  }
+}
+
+@layer base {
+  body {
+    @apply min-h-screen bg-background text-foreground font-inter;
+  }
+}

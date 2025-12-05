@@ -1,0 +1,94 @@
+@import "tailwindcss";
+/*@import "./fonts.css";*/
+@import "./globals.css";
+@import "tw-animate-css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --spacing: 0.25rem; /* 4px */
+
+  /* Размеры */
+  --header-height: 3rem;
+  --sidebar-width: 10rem;
+  --sidebar-width-mobile: 14rem;
+  --main-height: calc(100vh - var(--header-height));
+
+  --font-inter: "Inter", sans-serif;
+  --font-prosto: "Prosto One", sans-serif;
+
+  /* ==================== ЦВЕТА (используют переменные из globals.css) ==================== */
+
+  /* Buttons */
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-button-secondary: var(--button-secondary);
+  --color-button-secondary-hover: var(--button-secondary-hover);
+  --color-on-primary: var(--on-primary);
+  --color-on-surface: var(--on-surface);
+  --color-on-background: var(--on-background);
+
+  /* Text */
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-text-quaternary: var(--text-quaternary);
+
+  /* Fills */
+  --color-fill-primary: var(--fill-primary);
+  --color-fill-secondary: var(--fill-secondary);
+  --color-fill-tertiary: var(--fill-tertiary);
+  --color-fill-quaternary: var(--fill-quaternary);
+
+  /* Hover states */
+  --color-hover-primary: var(--hover-primary);
+  --color-hover-secondary: var(--hover-secondary);
+  --color-hover-tertiary: var(--hover-tertiary);
+
+  /* Legacy / Compatibility */
+  --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+  --color-foreground: var(--foreground);
+  --color-border: var(--border);
+
+  --color-danger: #ff6a55;
+
+  /* CUSTOM BREAKPOINT  */
+  --breakpoint-xs: 450px;
+}
+
+/* Ключевые кадры для прокрутки лоадера */
+@keyframes loader-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+/* Анимация мигания каретки для OTP */
+@keyframes caret-blink {
+  0%,
+  70%,
+  100% {
+    opacity: 1;
+  }
+  20%,
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Анимация мигания каретки для OTP */
+@keyframes caret-blink {
+  0%,
+  70%,
+  100% {
+    opacity: 1;
+  }
+  20%,
+  50% {
+    opacity: 0;
+  }
+}
