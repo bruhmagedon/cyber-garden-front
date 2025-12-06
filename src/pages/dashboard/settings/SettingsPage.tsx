@@ -38,7 +38,7 @@ const SettingsPageAsync = () => {
         {t('title')}
       </h1>
       <div className="flex flex-col gap-10 lg:flex-row">
-        <SettingsSidebar />
+        {/* <SettingsSidebar /> */}
         <main className="flex flex-1 flex-col gap-12">
           <SettingsSection id="profile" title={t('sections.profile.title')}>
             <div className="flex flex-col gap-4 lg:gap-4">

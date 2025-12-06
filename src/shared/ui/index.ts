@@ -16,3 +16,4 @@ export * from './Switch/Switch';
 export * from './Tabs/Tabs';
 export * from './Textarea/Textarea';
 export * from './Tooltip/Tooltip';
+export * from './backgrounds/stars';

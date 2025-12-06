@@ -9,15 +9,19 @@ import Settings from '@/assets/icons/Settings.svg?react';
 // Навигационные элементы
 export const navigationItems = [
   { titleKey: 'navigation.main', url: '/', icon: Home, active: true },
-  { titleKey: 'navigation.projects', url: '/projects', icon: Folder },
-  { titleKey: 'navigation.meetings', url: '/meetings', icon: History },
+  // { titleKey: 'navigation.projects', url: '/projects', icon: Folder },
+  // { titleKey: 'navigation.meetings', url: '/meetings', icon: History },
 ];
 
-export const desktopOnly = [{ titleKey: 'navigation.company', url: '/company', icon: Company }];
+export const desktopOnly = [
+  // { titleKey: 'navigation.company', url: '/company', icon: Company }
+];
 
-export const settingsItem = [{ titleKey: 'navigation.settings', url: '/settings', icon: Settings }];
+export const settingsItem = [
+  { titleKey: 'navigation.settings', url: '/settings', icon: Settings }
+];
 
 export const footerItems = [
-  { titleKey: 'navigation.help_center', action: 'help', icon: FAQ },
+  // { titleKey: 'navigation.help_center', action: 'help', icon: FAQ },
   { titleKey: 'navigation.logout', action: 'logout', icon: Logout },
 ];

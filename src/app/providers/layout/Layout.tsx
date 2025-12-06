@@ -10,8 +10,8 @@ export const HomeLayout = () => {
       <SidebarProvider defaultOpen={true}>
         <LayoutSidebar />
         <SidebarInset className="flex flex-col bg-background">
-          <LayoutHeader className="sticky top-0 z-40" />
-          <main className="flex-1 overflow-y-auto px-20 py-10">
+          {/* <LayoutHeader className="sticky top-0 z-40" /> */}
+          <main className="flex-1 overflow-y-auto">
             <Outlet />
           </main>
         </SidebarInset>

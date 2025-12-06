@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/shared/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { StarsBackground } from "@/shared/ui/backgrounds/stars";
 
 // UI Components
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/Tabs/Tabs";
@@ -42,6 +43,7 @@ import {
     FileUploadItemPreview,
     FileUploadItemMetadata,
     FileUploadItemDelete,
+    useFileUpload,
   } from "@/shared/ui/file-upload";
 
 import { MetricCircle } from "./components/MetricCircle";
@@ -52,6 +54,7 @@ import BlurFade from "@/shared/ui/magic/blur-fade";
 import ShineBorder from "@/shared/ui/magic/shine-border";
 import DotPattern from "@/shared/ui/magic/dot-pattern";
 import { SparklesCore } from "@/shared/ui/magic/sparkles";
+import { useTheme } from "@/shared/hooks";
 
 // API
 import { api, HealthResponse, UploadResponse, TransactionRow } from "@/shared/api/api";
@@ -120,6 +123,36 @@ const formatCurrency = (amount: number) => {
 const formatDate = (dateStr: string) => {
    return new Date(dateStr).toLocaleDateString("ru-RU", { day: 'numeric', month: 'long', year: 'numeric' });
 }
+
+const UploadListContent = ({ isUploading }: { isUploading: boolean }) => {
+    const files = useFileUpload((state) => Array.from(state.files.keys()));
+
+    if (!files.length) {
+        return null;
+    }
+
+    return (
+        <FileUploadList>
+            {files.map((file) => (
+                <FileUploadItem key={file.name} value={file} className="mt-4 p-3 border rounded-lg flex items-center gap-3">
+                    <div className="p-2 bg-fill-tertiary rounded-lg">
+                        <FileText size={18} />
+                    </div>
+                    <FileUploadItemMetadata className="flex-1 min-w-0" />
+                    {isUploading ? (
+                        <Loader2 className="animate-spin text-primary" size={20} />
+                    ) : (
+                        <FileUploadItemDelete asChild>
+                            <button className="text-red-500 hover:bg-red-50 p-1 rounded">
+                                <XCircle size={18} />
+                            </button>
+                        </FileUploadItemDelete>
+                    )}
+                </FileUploadItem>
+            ))}
+        </FileUploadList>
+    );
+};
 
 // --- Components with Infinite Scroll ---
 
@@ -359,6 +392,8 @@ const MainPageAsync = () => {
   // State
   const [activeTab, setActiveTab] = useState("overview");
   const [activeSegmentLabel, setActiveSegmentLabel] = useState<string | null>(null);
+  const { theme } = useTheme();
+  const [resolvedTheme, setResolvedTheme] = useState<"dark" | "light">("dark");
   
   // Filters
   const [txFilterCategory, setTxFilterCategory] = useState<string>("all");
@@ -374,9 +409,23 @@ const MainPageAsync = () => {
       api.checkHealth().then(setHealth);
   }, []);
 
+  useEffect(() => {
+      if (theme === "system") {
+          const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+          const handleChange = (event: MediaQueryListEvent) => {
+              setResolvedTheme(event.matches ? "dark" : "light");
+          };
+          setResolvedTheme(mediaQuery.matches ? "dark" : "light");
+          mediaQuery.addEventListener("change", handleChange);
+          return () => mediaQuery.removeEventListener("change", handleChange);
+      }
+      setResolvedTheme(theme === "dark" ? "dark" : "light");
+  }, [theme]);
+
   // Data Selectors (Mock vs Real)
   const isRealData = !!apiData;
   const user = MOCK_DATA.users[0]; // Still use mock user profile
+  const starColor = resolvedTheme === "dark" ? "#FFF" : "#000";
   
   const currentTransactions = useMemo(() => {
       if (apiData) {
@@ -428,6 +477,9 @@ const MainPageAsync = () => {
      }
      return null;
   }, [activeSegmentLabel, chartData]);
+  const centerDisplayValue = activeChartItem ? activeChartItem.value : totalBudget;
+  const centerDisplayLabel = activeChartItem ? activeChartItem.label : "Всего";
+  const centerDisplayCurrency = formatCurrency(centerDisplayValue);
 
   // Filtered Transactions
   const filteredTransactions = useMemo(() => {
@@ -454,9 +506,22 @@ const MainPageAsync = () => {
       }
   };
 
+  const renderUploadPlaceholder = () => (
+    <div className="p-6 border border-dashed border-border rounded-xl bg-fill-secondary/30 text-center text-text-secondary">
+      <p className="font-medium">Загрузите CSV файл</p>
+      <p className="text-sm text-text-tertiary mt-1">После загрузки появятся аналитика и детализация.</p>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-background pb-20 overflow-x-hidden relative">
-      
+    <StarsBackground 
+      starColor={starColor}
+      className={cn(
+        "min-h-screen bg-background overflow-x-hidden relative px-20 py-10",
+        "dark:bg-[radial-gradient(ellipse_at_bottom,#262626_0%,#000_100%)]",
+        "bg-[radial-gradient(ellipse_at_bottom,#f5f5f5_0%,#fff_100%)]"
+      )}
+    >
       {/* Background Pattern */}
       <DotPattern 
         className={cn(
@@ -475,12 +540,7 @@ const MainPageAsync = () => {
                     <h1 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600 animate-in fade-in zoom-in duration-500">
                     С возвращением, {user.name} 👋
                     </h1>
-                    {health && (
-                        <div className={cn("flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium border", health.model_loaded ? "bg-green-500/10 text-green-600 border-green-500/20" : "bg-red-500/10 text-red-600 border-red-500/20")}>
-                            <div className={cn("w-1.5 h-1.5 rounded-full animate-pulse", health.model_loaded ? "bg-green-500" : "bg-red-500")} />
-                            {health.model_loaded ? `Модель: ${health.model_type}` : "Модель не готова"}
-                        </div>
-                    )}
+                   
                 </div>
                 <p className="text-text-secondary">
                    {isRealData ? "Анализ загруженных данных" : "Демонстрационный режим"}
@@ -518,25 +578,7 @@ const MainPageAsync = () => {
                                         <p className="text-xs text-text-tertiary">Поддерживается только CSV</p>
                                     </div>
                                 </FileUploadDropzone>
-                                <FileUploadList showContainer={true}>
-                                    {(files) => files.map(file => (
-                                        <FileUploadItem key={file.name} file={file} className="mt-4 p-3 border rounded-lg flex items-center gap-3">
-                                            <div className="p-2 bg-fill-tertiary rounded-lg">
-                                                <FileText size={18} />
-                                            </div>
-                                            <FileUploadItemMetadata className="flex-1 min-w-0" />
-                                            {isUploading ? (
-                                                <Loader2 className="animate-spin text-primary" size={20} />
-                                            ) : (
-                                                <FileUploadItemDelete asChild>
-                                                    <button className="text-red-500 hover:bg-red-50 p-1 rounded">
-                                                        <XCircle size={18} />
-                                                    </button>
-                                                </FileUploadItemDelete>
-                                            )}
-                                        </FileUploadItem>
-                                    ))}
-                                </FileUploadList>
+                                <UploadListContent isUploading={isUploading} />
                             </FileUpload>
                         </div>
                     </DialogContent>
@@ -584,6 +626,7 @@ const MainPageAsync = () => {
         </BlurFade>
 
         {/* Main Content Tabs */}
+        {isRealData ? (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-6">
            <BlurFade delay={0.2}>
              <TabsList className="w-full md:w-auto bg-fill-secondary/50 p-1 border border-fill-quaternary/50 backdrop-blur-sm overflow-x-auto">
@@ -621,147 +664,123 @@ const MainPageAsync = () => {
 
            {/* TAB: OVERVIEW */}
            <TabsContent value="overview" className="space-y-6 focus-visible:outline-none">
-              
-              {/* Main Visuals Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  
-                  {/* Interactive Chart Section */}
+              {isRealData ? (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <BlurFade delay={0.6} className="lg:col-span-2">
-                    <ShineBorder 
-                        className="bg-card border shadow-sm h-full" 
-                        color={["#3b82f6", "#8b5cf6", "#ec4899"]} // blue, violet, pink
-                        borderRadius={16}
-                    >
-                       <CardHeader>
-                          <CardTitle className="flex items-center gap-2">
-                             <div className="p-1.5 bg-primary/10 rounded-lg text-primary">
-                                <Target className="w-4 h-4" />
-                             </div>
-                             {isRealData ? "Анализ Расходов" : "Планируемые Расходы"}
-                          </CardTitle>
-                          <CardDescription>
-                            {isRealData ? "Распределение фактических трат по категориям" : "Ваш примерный бюджет"}
-                          </CardDescription>
-                       </CardHeader>
-                       <CardContent>
-                          <div className="flex flex-col xl:flex-row items-center justify-around gap-8 py-4 px-2">
-                             {/* Chart */}
-                             <div className="relative shrink-0 group filter transition-all duration-300">
-                                <DonutChart 
-                                   data={chartData} 
-                                   size={260} 
-                                   strokeWidth={24}
-                                   activeSegmentLabel={activeSegmentLabel}
-                                   onSegmentHover={(seg) => setActiveSegmentLabel(seg ? seg.label : null)}
-                                   centerContent={
-                                      <motion.div 
-                                        key={activeChartItem ? activeChartItem.label : 'total'}
-                                        initial={{ opacity: 0, scale: 0.9, y: 5 }}
-                                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                                        className="text-center flex flex-col items-center"
-                                      >
-                                         <span className="text-sm text-text-secondary font-medium dark:text-text-tertiary">
-                                            {activeChartItem ? "Категория" : "Всего"}
-                                         </span>
-                                         <span className={cn("text-2xl font-bold tracking-tight tabular-nums", activeChartItem ? "text-primary" : "text-foreground")}>
-                                            <NumberTicker 
-                                                value={activeChartItem ? activeChartItem.value : totalBudget} 
-                                                delay={0}
-                                            />
-                                         </span>
-                                         <span className="text-[10px] font-bold text-text-tertiary uppercase truncate max-w-[120px] mt-1 tracking-widest">
-                                            {activeChartItem ? activeChartItem.label : "RUB"}
-                                         </span>
-                                      </motion.div>
-                                   }
-                                />
-                             </div>
-
-                             {/* Interactive Legend */}
-                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full xl:w-auto overflow-y-auto max-h-[300px] pr-2 custom-scrollbar">
-                                {chartData.map((item) => {
-                                   const isActive = activeSegmentLabel === item.label;
-                                   return (
-                                      <motion.button
-                                         key={item.categoryId + item.label}
-                                         whileHover={{ scale: 1.02, x: 2 }}
-                                         whileTap={{ scale: 0.98 }}
-                                         onMouseEnter={() => setActiveSegmentLabel(item.label)}
-                                         onMouseLeave={() => setActiveSegmentLabel(null)}
-                                         className={cn(
-                                            "flex items-center justify-between gap-4 p-3 rounded-xl border transition-all text-left min-w-[170px]",
-                                            isActive 
-                                               ? "bg-primary/5 border-primary/50 shadow-md shadow-primary/10" 
-                                               : "bg-background/50 border-border/40 hover:bg-fill-secondary"
-                                         )}
-                                      >
-                                         <div className="flex items-center gap-3">
-                                            <div 
-                                              className={cn("w-2.5 h-2.5 rounded-full shadow-sm ring-2 transition-all", isActive ? "ring-offset-2 ring-primary scale-110" : "ring-transparent")}
-                                              style={{ backgroundColor: item.color }} 
-                                            />
-                                            <span className={cn("text-sm font-medium transition-colors truncate max-w-[100px]", isActive ? "text-primary" : "text-foreground")}>
-                                               {item.label}
-                                            </span>
-                                         </div>
-                                         <span className="text-xs font-semibold text-text-secondary bg-fill-tertiary px-1.5 py-0.5 rounded">
-                                            {totalBudget > 0 ? Math.round((item.value / totalBudget) * 100) : 0}%
-                                         </span>
-                                      </motion.button>
-                                   );
-                                })}
-                             </div>
+                    <Card className="bg-card border shadow-sm h-full">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <div className="p-1.5 bg-primary/10 rounded-lg text-primary">
+                            <Target className="w-4 h-4" />
                           </div>
-                       </CardContent>
-                    </ShineBorder>
+                          Анализ Расходов
+                        </CardTitle>
+                        <CardDescription>Распределение фактических трат по категориям</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex flex-col xl:flex-row items-center justify-around gap-8 py-4 px-2">
+                          <div className="relative shrink-0 group filter transition-all duration-300">
+                            <DonutChart
+                              data={chartData}
+                              size={260}
+                              strokeWidth={24}
+                              activeSegmentLabel={activeSegmentLabel}
+                              onSegmentHover={(seg) => setActiveSegmentLabel(seg ? seg.label : null)}
+                              centerContent={
+                                <motion.div
+                                  key={activeChartItem ? activeChartItem.label : "total"}
+                                  initial={{ opacity: 0, scale: 0.9, y: 5 }}
+                                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                                  className="text-center flex flex-col items-center"
+                                >
+                                  <span className="text-sm text-text-secondary font-medium dark:text-text-tertiary">
+                                    {centerDisplayLabel}
+                                  </span>
+                                  <span
+                                    className={cn(
+                                      "text-2xl font-bold tracking-tight tabular-nums",
+                                      activeChartItem ? "text-primary" : "text-foreground"
+                                    )}
+                                  >
+                                    <NumberTicker value={centerDisplayValue} delay={0} />
+                                  </span>
+                                  <span className="text-[11px] font-semibold text-text-tertiary truncate max-w-[140px] mt-1">
+                                    {centerDisplayCurrency}
+                                  </span>
+                                </motion.div>
+                              }
+                            />
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full xl:w-auto overflow-y-auto max-h-[300px] pr-2 custom-scrollbar">
+                            {chartData.map((item) => {
+                              const isActive = activeSegmentLabel === item.label;
+                              return (
+                                <motion.button
+                                  key={item.categoryId + item.label}
+                                  whileHover={{ scale: 1.02, x: 2 }}
+                                  whileTap={{ scale: 0.98 }}
+                                  onMouseEnter={() => setActiveSegmentLabel(item.label)}
+                                  onMouseLeave={() => setActiveSegmentLabel(null)}
+                                  className={cn(
+                                    "flex items-center justify-between gap-4 p-3 rounded-xl border transition-all text-left min-w-[170px]",
+                                    isActive
+                                      ? "bg-primary/5 border-primary/50 shadow-md shadow-primary/10"
+                                      : "bg-background/50 border-border/40 hover:bg-fill-secondary"
+                                  )}
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <div
+                                      className={cn(
+                                        "w-2.5 h-2.5 rounded-full shadow-sm ring-2 transition-all",
+                                        isActive ? "ring-offset-2 ring-primary scale-110" : "ring-transparent"
+                                      )}
+                                      style={{ backgroundColor: item.color }}
+                                    />
+                                    <span
+                                      className={cn(
+                                        "text-sm font-medium transition-colors truncate max-w-[100px]",
+                                        isActive ? "text-primary" : "text-foreground"
+                                      )}
+                                    >
+                                      {item.label}
+                                    </span>
+                                  </div>
+                                  <span className="text-xs font-semibold text-text-secondary bg-fill-tertiary px-1.5 py-0.5 rounded">
+                                    {totalBudget > 0 ? Math.round((item.value / totalBudget) * 100) : 0}%
+                                  </span>
+                                </motion.button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </BlurFade>
-
-                  {/* Sidebar Items */}
-                  <div className="space-y-6">
-                     
-                     {/* Tip Card */}
-                     <BlurFade delay={0.7} className="h-full text-foreground max-h-[220px]">
-                        <ShineBorder 
-                          className="bg-gradient-to-br from-indigo-500/5 via-violet-500/5 to-fuchsia-500/5 border-indigo-500/20 overflow-hidden relative text-foreground h-full"
-                          color={["#6366f1", "#8b5cf6"]}
-                        >
-                           <div className="absolute top-0 right-0 p-3 opacity-5 pointer-events-none">
-                              <Zap size={120} />
-                           </div>
-                           <CardHeader>
-                              <CardTitle className="flex items-center gap-2 text-indigo-500">
-                                 <Zap size={18} className="fill-current" />
-                                 Совет дня
-                              </CardTitle>
-                           </CardHeader>
-                           <CardContent className="relative z-10">
-                              <p className="font-semibold text-md mb-2">{MOCK_DATA.tips[0].title}</p>
-                              <p className="text-sm text-text-secondary leading-relaxed line-clamp-3">
-                                 {MOCK_DATA.tips[0].body}
-                              </p>
-                              <button className="mt-4 text-xs font-bold text-indigo-500 hover:text-indigo-600 hover:underline uppercase tracking-wide flex items-center gap-1 group">
-                                 Больше советов 
-                                 <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
-                              </button>
-                           </CardContent>
-                        </ShineBorder>
-                     </BlurFade>
-                  </div>
-              </div>
+                </div>
+              ) : (
+                renderUploadPlaceholder()
+              )}
            </TabsContent>
 
            {/* TAB: TRANSACTIONS */}
            <TabsContent value="transactions" className="space-y-6 focus-visible:outline-none relative z-10">
-              <TransactionList filterTitle={txSearch} transactions={filteredTransactions} />
+              {isRealData ? (
+                <TransactionList filterTitle={txSearch} transactions={filteredTransactions} />
+              ) : (
+                renderUploadPlaceholder()
+              )}
            </TabsContent>
             
            {/* TAB: GOALS */}
            <TabsContent value="goals" className="space-y-6 focus-visible:outline-none">
-               <div className="p-4 rounded-xl border border-dashed border-border text-center text-text-tertiary">
+               {isRealData ? (
+                 <div className="p-4 rounded-xl border border-dashed border-border text-center text-text-tertiary">
                    Функционал целей доступен в расширенной версии.
-               </div>
+                 </div>
+               ) : (
+                 renderUploadPlaceholder()
+               )}
            </TabsContent>
-           
            {/* TAB: ML DETAILS (NEW) */}
            {isRealData && (
                 <TabsContent value="ml_details" className="space-y-6 focus-visible:outline-none">
@@ -800,8 +819,13 @@ const MainPageAsync = () => {
            )}
 
         </Tabs>
+        ) : (
+          <BlurFade delay={0.2} className="w-full">
+            {renderUploadPlaceholder()}
+          </BlurFade>
+        )}
       </div>
-    </div>
+    </StarsBackground>
   );
 };
 
