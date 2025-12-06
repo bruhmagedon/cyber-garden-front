@@ -1,21 +1,19 @@
 import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Loader, SidebarInset, SidebarProvider } from '@/shared/ui';
+import { DashboardProvider } from '@/pages/dashboard/main/model/DashboardProvider';
 import { LayoutHeader } from './LayoutHeader/LayoutHeader';
 import { LayoutSidebar } from './LayoutSidebar/LayoutSidebar';
 
 export const HomeLayout = () => {
   return (
     <Suspense fallback={<Loader type="page" />}>
-      <SidebarProvider defaultOpen={true}>
-        <LayoutSidebar />
-        <SidebarInset className="flex flex-col bg-background">
-          {/* <LayoutHeader className="sticky top-0 z-40" /> */}
-          <main className="flex-1 overflow-y-auto">
-            <Outlet />
-          </main>
-        </SidebarInset>
-      </SidebarProvider>
+      <DashboardProvider>
+        <LayoutHeader className="sticky top-0 z-40" />
+        <main className="flex-1 overflow-y-auto">
+          <Outlet />
+        </main>
+      </DashboardProvider>
     </Suspense>
   );
 };

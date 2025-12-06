@@ -108,9 +108,6 @@ importers:
         specifier: ^5.0.8
         version: 5.0.8(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
-      '@biomejs/biome':
-        specifier: ^2.2.6
-        version: 2.2.6
       '@tailwindcss/vite':
         specifier: ^4.1.15
         version: 4.1.15(vite@7.1.11(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.30.2))
@@ -126,6 +123,9 @@ importers:
       '@vitejs/plugin-react-swc':
         specifier: ^4.1.0
         version: 4.1.0(vite@7.1.11(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.30.2))
+      prettier:
+        specifier: ^3.7.4
+        version: 3.7.4
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
@@ -1793,6 +1793,11 @@ packages:
     resolution: {integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==}
     engines: {node: ^10 || ^12 || >=14}
 
+  prettier@3.7.4:
+    resolution: {integrity: sha512-v6UNi1+3hSlVvv8fSaoUbggEM5VErKmmpGA7Pl3HF8V6uKY7rvClBOJlH6yNwQtfTueNkGVpOv/mtWL9L4bgRA==}
+    engines: {node: '>=14'}
+    hasBin: true
+
   punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
@@ -2383,6 +2388,7 @@ snapshots:
       '@biomejs/cli-linux-x64-musl': 2.2.6
       '@biomejs/cli-win32-arm64': 2.2.6
       '@biomejs/cli-win32-x64': 2.2.6
+    optional: true
 
   '@biomejs/cli-darwin-arm64@2.2.6':
     optional: true
@@ -3728,6 +3734,8 @@ snapshots:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
+
+  prettier@3.7.4: {}
 
   punycode@2.3.1:
     optional: true

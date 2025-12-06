@@ -10,7 +10,6 @@ import {
   ArrowRight,
   Target,
   Zap,
-  Bell,
   Search,
   ShoppingBag,
   Coffee,
@@ -19,11 +18,7 @@ import {
   Music,
   MoreHorizontal,
   CreditCard,
-  UploadCloud,
-  FileText,
   CheckCircle,
-  XCircle,
-  Loader2,
   ChevronDown
 } from "lucide-react";
 import { cn } from "@/shared/utils";
@@ -35,16 +30,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/Tabs/Tabs"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/ui/Card/Card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/shared/ui/Dialog/Dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/Select/Select";
-import {
-    FileUpload,
-    FileUploadDropzone,
-    FileUploadList,
-    FileUploadItem,
-    FileUploadItemPreview,
-    FileUploadItemMetadata,
-    FileUploadItemDelete,
-    useFileUpload,
-  } from "@/shared/ui/file-upload";
 
 import { MetricCircle } from "./components/MetricCircle";
 
@@ -57,7 +42,8 @@ import { SparklesCore } from "@/shared/ui/magic/sparkles";
 import { useTheme } from "@/shared/hooks";
 
 // API
-import { api, HealthResponse, UploadResponse, TransactionRow } from "@/shared/api/api";
+import { api, HealthResponse } from "@/shared/api/api";
+import { useDashboardContext } from "@/pages/dashboard/main/model/DashboardProvider";
 
 // --- Data Configuration ---
 
@@ -123,36 +109,6 @@ const formatCurrency = (amount: number) => {
 const formatDate = (dateStr: string) => {
    return new Date(dateStr).toLocaleDateString("ru-RU", { day: 'numeric', month: 'long', year: 'numeric' });
 }
-
-const UploadListContent = ({ isUploading }: { isUploading: boolean }) => {
-    const files = useFileUpload((state) => Array.from(state.files.keys()));
-
-    if (!files.length) {
-        return null;
-    }
-
-    return (
-        <FileUploadList>
-            {files.map((file) => (
-                <FileUploadItem key={file.name} value={file} className="mt-4 p-3 border rounded-lg flex items-center gap-3">
-                    <div className="p-2 bg-fill-tertiary rounded-lg">
-                        <FileText size={18} />
-                    </div>
-                    <FileUploadItemMetadata className="flex-1 min-w-0" />
-                    {isUploading ? (
-                        <Loader2 className="animate-spin text-primary" size={20} />
-                    ) : (
-                        <FileUploadItemDelete asChild>
-                            <button className="text-red-500 hover:bg-red-50 p-1 rounded">
-                                <XCircle size={18} />
-                            </button>
-                        </FileUploadItemDelete>
-                    )}
-                </FileUploadItem>
-            ))}
-        </FileUploadList>
-    );
-};
 
 // --- Components with Infinite Scroll ---
 
@@ -401,9 +357,7 @@ const MainPageAsync = () => {
 
   // API State
   const [health, setHealth] = useState<HealthResponse | null>(null);
-  const [apiData, setApiData] = useState<UploadResponse | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+  const { apiData, user } = useDashboardContext();
 
   useEffect(() => {
       api.checkHealth().then(setHealth);
@@ -424,8 +378,13 @@ const MainPageAsync = () => {
 
   // Data Selectors (Mock vs Real)
   const isRealData = !!apiData;
-  const user = MOCK_DATA.users[0]; // Still use mock user profile
   const starColor = resolvedTheme === "dark" ? "#FFF" : "#000";
+  
+  useEffect(() => {
+      if (apiData) {
+          setActiveTab("overview");
+      }
+  }, [apiData]);
   
   const currentTransactions = useMemo(() => {
       if (apiData) {
@@ -490,22 +449,6 @@ const MainPageAsync = () => {
      });
   }, [txFilterCategory, txSearch, currentTransactions]);
 
-  const handleUpload = async (files: File[]) => {
-      if (files.length === 0) return;
-      setIsUploading(true);
-      try {
-          const data = await api.uploadTransactions(files[0]);
-          setApiData(data);
-          setIsUploadDialogOpen(false);
-          setActiveTab("overview"); // Switch to overview to show new data
-      } catch (e) {
-          console.error("Upload failed", e);
-          // Ideally show toast error here
-      } finally {
-          setIsUploading(false);
-      }
-  };
-
   const renderUploadPlaceholder = () => (
     <div className="p-6 border border-dashed border-border rounded-xl bg-fill-secondary/30 text-center text-text-secondary">
       <p className="font-medium">Загрузите CSV файл</p>
@@ -533,97 +476,7 @@ const MainPageAsync = () => {
       <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-8 relative z-10">
         
         {/* Header / Hero */}
-        <BlurFade delay={0.1} yOffset={20}>
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-             <div>
-                <div className="flex items-center gap-2 mb-1">
-                    <h1 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600 animate-in fade-in zoom-in duration-500">
-                    С возвращением, {user.name} 👋
-                    </h1>
-                   
-                </div>
-                <p className="text-text-secondary">
-                   {isRealData ? "Анализ загруженных данных" : "Демонстрационный режим"}
-                </p>
-             </div>
-             
-             <div className="flex items-center gap-3">
-                {/* Upload Button */}
-                <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
-                    <DialogTrigger asChild>
-                        <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white font-medium hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20 text-sm">
-                            <UploadCloud size={18} />
-                            <span>Загрузить CSV</span>
-                        </button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-md">
-                        <DialogHeader>
-                            <DialogTitle>Загрузка выписки</DialogTitle>
-                            <DialogDescription>
-                                Загрузите CSV файл с транзакциями для анализа категорий.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="mt-4">
-                            <FileUpload 
-                                accept="text/csv" 
-                                maxFiles={1} 
-                                onUpload={handleUpload}
-                            >
-                                <FileUploadDropzone className="border-2 border-dashed border-border rounded-xl p-8 hover:bg-fill-secondary/50 transition-colors cursor-pointer text-center group">
-                                    <div className="flex flex-col items-center gap-2">
-                                        <div className="p-3 bg-primary/10 text-primary rounded-full group-hover:scale-110 transition-transform">
-                                            <UploadCloud size={24} />
-                                        </div>
-                                        <p className="text-sm font-medium">Перетащите файл сюда или кликните</p>
-                                        <p className="text-xs text-text-tertiary">Поддерживается только CSV</p>
-                                    </div>
-                                </FileUploadDropzone>
-                                <UploadListContent isUploading={isUploading} />
-                            </FileUpload>
-                        </div>
-                    </DialogContent>
-                </Dialog>
 
-                <Dialog>
-                   <DialogTrigger asChild>
-                      <button className="relative p-2.5 rounded-full hover:bg-fill-secondary transition-colors border border-border/50 group bg-background/50 backdrop-blur-sm">
-                         <Bell size={20} className="text-text-secondary group-hover:text-foreground transition-colors" />
-                         {MOCK_DATA.notificationsLog.some(n => !n.read) && (
-                            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full ring-2 ring-background animate-pulse" />
-                         )}
-                      </button>
-                   </DialogTrigger>
-                   <DialogContent>
-                      <DialogHeader>
-                         <DialogTitle>Уведомления</DialogTitle>
-                         <DialogDescription>История важных событый</DialogDescription>
-                      </DialogHeader>
-                      <div className="space-y-4 mt-4 max-h-[60vh] overflow-y-auto pr-2">
-                         {MOCK_DATA.notificationsLog.map(note => (
-                              <div key={note.id} className={cn("p-3 rounded-lg border", note.read ? "bg-background border-border" : "bg-fill-secondary border-primary/20")}>
-                                 <div className="flex justify-between items-start mb-1">
-                                    <span className="font-semibold text-sm">
-                                       {note.type === 'budget_limit' ? 'Лимит бюджета' : 'Системное сообщение'}
-                                    </span>
-                                    <span className="text-[10px] text-text-tertiary">{new Date(note.createdAt).toLocaleDateString()}</span>
-                                 </div>
-                                 <p className="text-sm text-text-secondary">
-                                    {note.type === 'budget_limit' 
-                                      ? `Внимание! Лимит бюджета.` 
-                                      : JSON.stringify(note.payload)}
-                                 </p>
-                              </div>
-                         ))}
-                      </div>
-                   </DialogContent>
-                </Dialog>
-
-                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-blue-600 flex items-center justify-center text-white font-bold shadow-lg shadow-primary/20 ring-2 ring-background">
-                   {user.name[0]}
-                </div>
-             </div>
-          </div>
-        </BlurFade>
 
         {/* Main Content Tabs */}
         {isRealData ? (
