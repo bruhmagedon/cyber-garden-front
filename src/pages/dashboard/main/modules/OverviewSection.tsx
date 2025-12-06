@@ -44,11 +44,40 @@ export const OverviewSection = ({
   years,
   months
 }: OverviewSectionProps) => {
-    const formatMonth = (m: string) => new Date(2000, parseInt(m) - 1).toLocaleString('ru-RU', { month: 'long' });
+    const formatMonth = (m: string) => {
+        if (m === 'all') return 'Весь год';
+        return new Date(2000, parseInt(m) - 1).toLocaleString('ru-RU', { month: 'long' });
+    };
+
+    // --- Spending Suggestions Logic ---
+    const topCategory = chartData.length > 0 ? chartData[0] : null;
+    const suggestions = [
+        topCategory ? {
+            title: 'Анализ топ-категории',
+            text: `Больше всего вы тратите на "${topCategory.label}". Попробуйте установить лимит.`,
+            icon: Target,
+            color: 'text-primary'
+        } : null,
+        {
+            title: 'Накопления',
+            text: 'Рекомендуем откладывать 10% от дохода в "Подушку безопасности".',
+            icon: Target, // Or PiggyBank if available
+            color: 'text-emerald-500' // green
+        },
+        /*
+        {
+           title: 'Подписки',
+           text: 'Проверьте регулярные списания, возможно есть неиспользуемые сервисы.',
+           icon: Target,
+           color: 'text-orange-500'
+        }
+        */
+    ].filter(Boolean);
+
 
     return (
-  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <BlurFade delay={0.6} className="lg:col-span-2">
+  <div className="grid grid-cols-1 gap-6">
+    <BlurFade delay={0.6}>
       <Card className="bg-background/60 backdrop-blur border border-border/60 shadow-sm h-full">
         <CardHeader>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -86,81 +115,120 @@ export const OverviewSection = ({
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col xl:flex-row items-center justify-around gap-8 py-4 px-2">
-            <div className="relative shrink-0 group filter transition-all duration-300">
-              <DonutChart
-                data={chartData}
-                size={260}
-                strokeWidth={24}
-                activeSegmentLabel={hoveredLegendLabel || activeSegmentLabel}
-                onSegmentHover={(segment) => onSegmentHover(segment ? segment.label : null)}
-                centerContent={
-                  <motion.div
-                    key={activeChartItem ? activeChartItem.label : 'total'}
-                    initial={{ opacity: 0, scale: 0.9, y: 5 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    className="text-center flex flex-col items-center"
-                  >
-                    <span className="text-sm text-text-secondary font-medium dark:text-text-tertiary">
-                      {centerDisplayLabel}
-                    </span>
-                    <div
-                      className={cn(
-                        'text-2xl font-bold tracking-tight tabular-nums',
-                        activeChartItem ? 'text-primary' : 'text-foreground',
-                      )}
-                    >
-                      <div className="flex items-baseline gap-1">
-                        <NumberTicker value={centerDisplayValue} delay={0} />
-                        <span className="text-sm font-semibold text-text-tertiary">₽</span>
-                      </div>
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                {/* Left Column: Chart & Legend */}
+                <div className="lg:col-span-3 flex flex-col gap-6">
+                     <div className="flex items-center justify-center py-4">
+                        <DonutChart
+                          data={chartData}
+                          onSegmentHover={(segment) => onSegmentHover(segment ? segment.label : null)}
+                          activeSegmentLabel={activeSegmentLabel}
+                          centerContent={
+                            <motion.div
+                                key={activeSegmentLabel || 'total'}
+                                initial={{ opacity: 0, scale: 0.9, y: 5 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                className="text-center flex flex-col items-center"
+                            >
+                                <span className="text-xs text-text-secondary font-medium dark:text-text-tertiary">
+                                {centerDisplayLabel}
+                                </span>
+                                <div
+                                className={cn(
+                                    'text-xl font-bold tracking-tight tabular-nums',
+                                    activeSegmentLabel ? 'text-primary' : 'text-foreground',
+                                )}
+                                >
+                                <div className="flex items-baseline gap-1">
+                                    <NumberTicker value={centerDisplayValue} delay={0} />
+                                    <span className="text-xs font-semibold text-text-tertiary">₽</span>
+                                </div>
+                                </div>
+                            </motion.div>
+                          }
+                        />
+                     </div>
+                     
+                     {/* Legend Below */}
+                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {chartData.map((item, index) => {
+                           const isActive = activeSegmentLabel === item.label;
+                           return (
+                           <motion.div
+                             key={item.label}
+                             initial={{ opacity: 0, y: 10 }}
+                             animate={{ opacity: 1, y: 0 }}
+                             transition={{ delay: 0.1 * index }}
+                             className={cn(
+                               "flex items-center gap-3 p-2.5 rounded-xl border transition-all cursor-pointer",
+                               isActive 
+                                 ? "bg-primary/5 border-primary/50 shadow-md shadow-primary/10 scale-[1.02]" 
+                                 : "bg-background/50 border-border/40 hover:bg-muted/50"
+                             )}
+                             onMouseEnter={() => {
+                                 onLegendHover(item.label);
+                                 onSegmentHover(item.label);
+                             }}
+                             onMouseLeave={() => {
+                                 onLegendHover(null);
+                                 onSegmentHover(null);
+                             }}
+                           >
+                             <div 
+                                className={cn(
+                                  "w-2.5 h-2.5 rounded-full shrink-0 transition-all",
+                                  isActive ? "ring-2 ring-offset-2 ring-primary scale-110" : "ring-0"
+                                )}
+                                style={{ backgroundColor: item.color }}
+                             />
+                             <div className="flex flex-col min-w-0">
+                                <span className={cn(
+                                    "text-[11px] font-medium truncate transition-colors",
+                                    isActive ? "text-primary" : "text-foreground"
+                                )}>{item.label}</span>
+                                <span className="text-[10px] text-muted-foreground">
+                                    {Math.round((item.value / totalBudget) * 100)}%
+                                </span>
+                             </div>
+                           </motion.div>
+                           );
+                        })}
+                     </div>
+                </div>
+
+                {/* Right Column: Suggestions */}
+                <div className="lg:col-span-2 border-t lg:border-l lg:border-t-0 border-border/60 pl-0 lg:pl-8 pt-6 lg:pt-0">
+                    <h3 className="text-base font-semibold mb-6 flex items-center gap-2">
+                         <div className="p-1.5 bg-emerald-500/10 rounded-lg">
+                             <Target className="w-4 h-4 text-emerald-500" />
+                         </div>
+                         Рекомендации
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-4">
+                        {suggestions.map((s, i) => s && (
+                            <div key={i} className="p-4 bg-muted/30 rounded-xl border border-border/40 hover:border-border/80 transition-colors">
+                                <div className="flex flex-col gap-3">
+                                    <div className={cn("w-8 h-8 flex items-center justify-center rounded-lg bg-background shadow-sm", s.color)}>
+                                        <s.icon className="w-4 h-4" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium mb-1.5">{s.title}</p>
+                                        <p className="text-xs text-muted-foreground leading-relaxed">
+                                            {s.text}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                  </motion.div>
-                }
-              />
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full xl:w-auto overflow-y-auto max-h-[300px] pr-2 custom-scrollbar">
-              {chartData.map((item) => {
-                const isActive = (hoveredLegendLabel || activeSegmentLabel) === item.label;
-                return (
-                  <motion.button
-                    key={item.categoryId + item.label}
-                    whileHover={{ scale: 1.02, x: 2 }}
-                    whileTap={{ scale: 0.98 }}
-                    onMouseEnter={() => onLegendHover(item.label)}
-                    onMouseLeave={() => onLegendHover(null)}
-                    className={cn(
-                      'flex items-center justify-between gap-4 p-3 rounded-xl border transition-all text-left min-w-[170px]',
-                      isActive
-                        ? 'bg-primary/5 border-primary/50 shadow-md shadow-primary/10'
-                        : 'bg-background/50 border-border/40 hover:bg-fill-secondary',
+                        
+                    {!topCategory && (
+                        <div className="p-4 text-center text-xs text-muted-foreground">
+                            Нет данных о расходах за выбранный период для формирования советов.
+                        </div>
                     )}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={cn(
-                          'w-2.5 h-2.5 rounded-full shadow-sm ring-2 transition-all',
-                          isActive ? 'ring-offset-2 ring-primary scale-110' : 'ring-transparent',
-                        )}
-                        style={{ backgroundColor: item.color }}
-                      />
-                      <span
-                        className={cn(
-                          'text-sm font-medium transition-colors truncate max-w-[100px]',
-                          isActive ? 'text-primary' : 'text-foreground',
-                        )}
-                      >
-                        {item.label}
-                      </span>
-                    </div>
-                    <span className="text-xs font-semibold text-text-secondary bg-fill-tertiary px-1.5 py-0.5 rounded">
-                      {totalBudget > 0 ? Math.round((item.value / totalBudget) * 100) : 0}%
-                    </span>
-                  </motion.button>
-                );
-              })}
+                </div>
             </div>
-          </div>
         </CardContent>
       </Card>
     </BlurFade>

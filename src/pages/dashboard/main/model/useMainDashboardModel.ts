@@ -143,11 +143,11 @@ export const useMainDashboardModel = () => {
       if (dates.length > 0) {
         const maxDate = new Date(Math.max(...dates.map(d => d.getTime())));
         setOverviewYear(maxDate.getFullYear().toString());
-        setOverviewMonth((maxDate.getMonth() + 1).toString());
+        setOverviewMonth('all'); // Default to All Year as requested: "изначально селект месяца был за год"
       } else {
         const now = new Date();
         setOverviewYear(now.getFullYear().toString());
-        setOverviewMonth((now.getMonth() + 1).toString());
+        setOverviewMonth('all');
       }
     }
   }, [apiData]);
@@ -168,13 +168,15 @@ export const useMainDashboardModel = () => {
 
   // Extract available months for the selected year
   const availableMonths = useMemo(() => {
-      if (!apiData || !overviewYear) return [];
+      if (!apiData || !overviewYear) return ['all'];
       const months = new Set(
           apiData.rows
             .filter(r => new Date(r.date).getFullYear().toString() === overviewYear)
             .map(r => new Date(r.date).getMonth() + 1)
       );
-      return Array.from(months).sort((a, b) => b - a).map(String);
+      // Add 'all' option
+      const sorted = Array.from(months).sort((a, b) => b - a).map(String);
+      return ['all', ...sorted];
   }, [apiData, overviewYear]);
 
 
@@ -187,17 +189,16 @@ export const useMainDashboardModel = () => {
       // Filter rows
       const filteredRows = apiData.rows.filter(row => {
           const d = new Date(row.date);
-          return d.getFullYear().toString() === overviewYear && (d.getMonth() + 1).toString() === overviewMonth;
+          const yearMatch = d.getFullYear().toString() === overviewYear;
+          const monthMatch = overviewMonth === 'all' 
+             ? true 
+             : (d.getMonth() + 1).toString() === overviewMonth;
+          return yearMatch && monthMatch;
       });
 
       // Aggregate expenses by category
       const categoryMap = new Map<string, number>();
       filteredRows.forEach(row => {
-          // Check if it's an expense (using withdrawal > 0 from api logic or type logic)
-          // Based on mapApiTransactions: amount = withdrawal > 0 ? withdrawal : deposit. type = deposit > 0 ? income : expense.
-          // We only want expenses for the donut chart usually?
-          // Looking at mapChartData original, it used Summary which usually implies expenses for budget charts.
-          // Let's assume we sum withdrawals.
           if (row.withdrawal > 0) {
              const cat = row.actual_category || row.predicted_category || 'Uncategorized';
              categoryMap.set(cat, (categoryMap.get(cat) || 0) + row.withdrawal);
@@ -210,7 +211,7 @@ export const useMainDashboardModel = () => {
           return {
               value: value,
               color: config.color,
-              label: cat, // Use category name directly or mapped label if exists in config
+              label: cat, 
               categoryId: cat,
           };
       });

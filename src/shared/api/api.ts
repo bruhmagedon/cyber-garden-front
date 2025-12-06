@@ -1,4 +1,4 @@
-export const API_BASE_URL = "http://138.124.14.177:8080/api";
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export interface HealthResponse {
     status: string;

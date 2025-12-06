@@ -71,17 +71,7 @@ export const TrendsSection = ({ transactions }: TrendsSectionProps) => {
       return new Date().getFullYear().toString();
   });
 
-  const [selectedMonth, setSelectedMonth] = useState<string>(() => {
-       const expenseTrans = transactions.filter(t => t.withdrawal > 0);
-       const transToUse = expenseTrans.length > 0 ? expenseTrans : transactions;
-
-       if (transToUse.length > 0) {
-          const dates = transToUse.map(t => new Date(t.date));
-          const maxDate = new Date(Math.max(...dates.map(d => d.getTime())));
-          return (maxDate.getMonth() + 1).toString(); // 1-12
-      }
-      return (new Date().getMonth() + 1).toString();
-  });
+  const [selectedMonth, setSelectedMonth] = useState<string>('all');
 
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
@@ -103,87 +93,157 @@ export const TrendsSection = ({ transactions }: TrendsSectionProps) => {
             .filter(t => new Date(t.date).getFullYear().toString() === selectedYear)
             .map(t => new Date(t.date).getMonth() + 1)
       );
-      return Array.from(ms).sort((a, b) => b - a).map(String);
+      const sorted = Array.from(ms).sort((a, b) => b - a).map(String);
+      return ['all', ...sorted];
   }, [transactions, selectedYear]);
 
 
   // Ensure selected month is valid when year changes
   useMemo(() => {
       if (!months.includes(selectedMonth) && months.length > 0) {
-          setSelectedMonth(months[0]);
+          // If 'all' is available (it always is), maybe default to 'all' or latest month?
+          // User asked for "initially select month was for year" -> implies default to 'all'
+          setSelectedMonth('all'); 
       }
   }, [months, selectedMonth]);
 
+  // Handle Month Label
+  const formatMonthLabel = (m: string) => {
+      if (m === 'all') return 'Весь год';
+      return formatMonthName(parseInt(m) - 1);
+  };
 
-  // --- Data Processing 1: Income vs Expense (Filtered Month) ---
+
+  // --- Data Processing 1: Income vs Expense (Filtered Month OR All Year) ---
   const chart1Data = useMemo(() => {
     const year = parseInt(selectedYear);
-    const month = parseInt(selectedMonth); // 1-12
-    const daysCount = getDaysInMonth(year, month - 1);
-    const days = Array.from({ length: daysCount }, (_, i) => i + 1);
     
-    // Filter transactions by month and category
-    const filtered = transactions.filter(t => {
-      const d = parseDate(t.date);
-      const isMonthMatch = d.getFullYear() === year && d.getMonth() === (month - 1);
-      const category = t.actual_category || t.predicted_category;
-      const isCategoryMatch = selectedCategory === 'all' || category === selectedCategory;
-      return isMonthMatch && isCategoryMatch;
-    });
+    if (selectedMonth === 'all') {
+        // --- Annual View (Monthly Aggregation) ---
+        const monthsInYear = Array.from({ length: 12 }, (_, i) => i); // 0-11
+        const filtered = transactions.filter(t => {
+             const d = parseDate(t.date);
+             const yearMatch = d.getFullYear() === year;
+             const category = t.actual_category || t.predicted_category;
+             const isCategoryMatch = selectedCategory === 'all' || category === selectedCategory;
+             return yearMatch && isCategoryMatch;
+        });
 
-    // Group by day
-    return days.map(day => {
-      const dayTrans = filtered.filter(t => parseDate(t.date).getDate() === day);
-      const income = dayTrans.reduce((sum, t) => sum + (t.deposit || 0), 0);
-      const expense = dayTrans.reduce((sum, t) => sum + (t.withdrawal || 0), 0);
-      return { day, income, expense };
-    });
+        return monthsInYear.map(monthIdx => {
+             // Short month name for X-Axis
+             const monthName = new Date(2000, monthIdx).toLocaleString('ru-RU', { month: 'short' });
+             
+             const monthTrans = filtered.filter(t => parseDate(t.date).getMonth() === monthIdx);
+             const income = monthTrans.reduce((sum, t) => sum + (t.deposit || 0), 0);
+             const expense = monthTrans.reduce((sum, t) => sum + (t.withdrawal || 0), 0);
+             
+             return { day: monthName, income, expense }; // reusing 'day' key for x-axis label
+        });
+
+    } else {
+        // --- Monthly View (Daily Aggregation) ---
+        const month = parseInt(selectedMonth); // 1-12
+        const daysCount = getDaysInMonth(year, month - 1);
+        const days = Array.from({ length: daysCount }, (_, i) => i + 1);
+        
+        const filtered = transactions.filter(t => {
+          const d = parseDate(t.date);
+          const isMonthMatch = d.getFullYear() === year && d.getMonth() === (month - 1);
+          const category = t.actual_category || t.predicted_category;
+          const isCategoryMatch = selectedCategory === 'all' || category === selectedCategory;
+          return isMonthMatch && isCategoryMatch;
+        });
+
+        return days.map(day => {
+          const dayTrans = filtered.filter(t => parseDate(t.date).getDate() === day);
+          const income = dayTrans.reduce((sum, t) => sum + (t.deposit || 0), 0);
+          const expense = dayTrans.reduce((sum, t) => sum + (t.withdrawal || 0), 0);
+          return { day, income, expense };
+        });
+    }
   }, [transactions, selectedYear, selectedMonth, selectedCategory]);
 
-  // --- Data Processing 2 & 3: Comparison (Selected Month vs Previous Month) ---
+  // --- Data Processing 2 & 3: Comparison ---
   const { incomeComparisonData, expenseComparisonData } = useMemo(() => {
     const year = parseInt(selectedYear);
-    const monthIdx = parseInt(selectedMonth) - 1; // 0-11
     
-    const prevDate = new Date(year, monthIdx - 1);
-    const prevYear = prevDate.getFullYear();
-    const prevMonthIdx = prevDate.getMonth();
+    if (selectedMonth === 'all') {
+        // --- Annual Comparison (Current Year vs Previous Year, Monthly) ---
+        const prevYear = year - 1;
+        const monthsInYear = Array.from({ length: 12 }, (_, i) => i); 
 
-    // Max days to show
-    const daysCount = Math.max(getDaysInMonth(year, monthIdx), getDaysInMonth(prevYear, prevMonthIdx));
-    const days = Array.from({ length: daysCount }, (_, i) => i + 1);
+        const data = monthsInYear.map(monthIdx => {
+            const monthName = new Date(2000, monthIdx).toLocaleString('ru-RU', { month: 'short' });
+            
+            const currentTrans = transactions.filter(t => {
+                const d = parseDate(t.date);
+                return d.getFullYear() === year && d.getMonth() === monthIdx;
+            });
+            const prevTrans = transactions.filter(t => {
+                const d = parseDate(t.date);
+                return d.getFullYear() === prevYear && d.getMonth() === monthIdx;
+            });
 
-    const data = days.map(day => {
-        // Current Month Data
-        const currentTrans = transactions.filter(t => {
-            const d = parseDate(t.date);
-            return d.getFullYear() === year && d.getMonth() === monthIdx && d.getDate() === day;
+            const currentIncome = currentTrans.reduce((acc, t) => acc + (t.deposit || 0), 0);
+            const currentExpense = currentTrans.reduce((acc, t) => acc + (t.withdrawal || 0), 0);
+            const prevIncome = prevTrans.reduce((acc, t) => acc + (t.deposit || 0), 0);
+            const prevExpense = prevTrans.reduce((acc, t) => acc + (t.withdrawal || 0), 0);
+
+             return {
+                day: monthName,
+                currentIncome,
+                currentExpense,
+                prevIncome,
+                prevExpense
+            };
         });
         
-        // Previous Month Data
-        const prevTrans = transactions.filter(t => {
-            const d = parseDate(t.date);
-            return d.getFullYear() === prevYear && d.getMonth() === prevMonthIdx && d.getDate() === day;
+         return {
+            incomeComparisonData: data.map(d => ({ day: d.day, current: d.currentIncome, previous: d.prevIncome })),
+            expenseComparisonData: data.map(d => ({ day: d.day, current: d.currentExpense, previous: d.prevExpense }))
+        };
+
+    } else {
+        // --- Monthly Comparison (Daily) ---
+        const monthIdx = parseInt(selectedMonth) - 1; // 0-11
+        
+        const prevDate = new Date(year, monthIdx - 1);
+        const prevYear = prevDate.getFullYear();
+        const prevMonthIdx = prevDate.getMonth();
+
+        const daysCount = Math.max(getDaysInMonth(year, monthIdx), getDaysInMonth(prevYear, prevMonthIdx));
+        const days = Array.from({ length: daysCount }, (_, i) => i + 1);
+
+        const data = days.map(day => {
+            const currentTrans = transactions.filter(t => {
+                const d = parseDate(t.date);
+                return d.getFullYear() === year && d.getMonth() === monthIdx && d.getDate() === day;
+            });
+            
+            const prevTrans = transactions.filter(t => {
+                const d = parseDate(t.date);
+                return d.getFullYear() === prevYear && d.getMonth() === prevMonthIdx && d.getDate() === day;
+            });
+
+            const currentIncome = currentTrans.reduce((acc, t) => acc + (t.deposit || 0), 0);
+            const currentExpense = currentTrans.reduce((acc, t) => acc + (t.withdrawal || 0), 0);
+            const prevIncome = prevTrans.reduce((acc, t) => acc + (t.deposit || 0), 0);
+            const prevExpense = prevTrans.reduce((acc, t) => acc + (t.withdrawal || 0), 0);
+
+            return {
+                day,
+                currentIncome,
+                currentExpense,
+                prevIncome,
+                prevExpense
+            };
         });
 
-        const currentIncome = currentTrans.reduce((acc, t) => acc + (t.deposit || 0), 0);
-        const currentExpense = currentTrans.reduce((acc, t) => acc + (t.withdrawal || 0), 0);
-        const prevIncome = prevTrans.reduce((acc, t) => acc + (t.deposit || 0), 0);
-        const prevExpense = prevTrans.reduce((acc, t) => acc + (t.withdrawal || 0), 0);
-
         return {
-            day,
-            currentIncome,
-            currentExpense,
-            prevIncome,
-            prevExpense
+            incomeComparisonData: data.map(d => ({ day: d.day, current: d.currentIncome, previous: d.prevIncome })),
+            expenseComparisonData: data.map(d => ({ day: d.day, current: d.currentExpense, previous: d.prevExpense }))
         };
-    });
-
-    return {
-        incomeComparisonData: data.map(d => ({ day: d.day, current: d.currentIncome, previous: d.prevIncome })),
-        expenseComparisonData: data.map(d => ({ day: d.day, current: d.currentExpense, previous: d.prevExpense }))
-    };
+    }
   }, [transactions, selectedYear, selectedMonth]);
 
   // Extract unique categories
@@ -230,7 +290,7 @@ export const TrendsSection = ({ transactions }: TrendsSectionProps) => {
                             <SelectContent>
                                 {months.map(m => (
                                     <SelectItem key={m} value={m}>
-                                        {formatMonthName(parseInt(m) - 1)}
+                                        {formatMonthLabel(m)}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
