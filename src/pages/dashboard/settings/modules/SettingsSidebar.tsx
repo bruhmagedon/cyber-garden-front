@@ -15,8 +15,8 @@ type NavItem = {
 const navItems: NavItem[] = [
   { id: 'profile', labelKey: 'sidebar.profile', isActive: true },
   { id: 'interface', labelKey: 'sidebar.interface' },
+  { id: 'language', labelKey: 'sidebar.language' },
   { id: 'notifications', labelKey: 'sidebar.notifications' },
-  { id: 'storage', labelKey: 'sidebar.storage' },
 ];
 
 // Функция для плавного скролла к секции

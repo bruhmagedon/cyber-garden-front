@@ -2,10 +2,12 @@ import { publicRqClient } from '@/shared/api/instance';
 import type { ApiSchemas } from '@/shared/api/schema';
 import { useAuthStore } from '../../store';
 import type { AuthTokenResponse } from '../../types';
+import { normalizeAuthUser } from '../../types';
 import { formatErrorMessage } from '../utils/format-error';
 
 export function useRegister() {
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
+  const setUser = useAuthStore((state) => state.setUser);
 
   const registerMutation = publicRqClient.useMutation('post', '/register' as any, {
     onSuccess(data) {
@@ -16,6 +18,16 @@ export function useRegister() {
       const token = authData.access_token ?? authData.token;
       if (token) {
         setAccessToken(token);
+        try {
+          localStorage.setItem('auth_token', token);
+        } catch (error) {
+          console.warn('Не удалось сохранить токен в localStorage', error);
+        }
+      }
+
+      const user = normalizeAuthUser(authData);
+      if (user) {
+        setUser(user);
       }
     },
     onError(error) {

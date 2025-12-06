@@ -1,5 +1,6 @@
 import { useAuthStore } from '@/features/auth/model/store/authStore';
 import type { AuthTokenResponse } from '@/features/auth/model/types';
+import { normalizeAuthUser } from '@/features/auth/model/types';
 import { publicFetchClient } from '@/shared/api/instance';
 import { Loader } from '@/shared/ui';
 import { useEffect, useState } from 'react';
@@ -14,7 +15,7 @@ interface AuthInitializerProps {
  */
 export const AuthInitializer = ({ children }: AuthInitializerProps) => {
   const [isInitialized, setIsInitialized] = useState(false);
-  const { isAuthenticated, setAccessToken, clearTokens } = useAuthStore();
+  const { isAuthenticated, setAccessToken, clearTokens, setUser } = useAuthStore();
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -35,7 +36,17 @@ export const AuthInitializer = ({ children }: AuthInitializerProps) => {
           const authData = response.data as unknown as AuthTokenResponse;
           if (authData.access_token) {
             setAccessToken(authData.access_token);
+            try {
+              localStorage.setItem('auth_token', authData.access_token);
+            } catch (error) {
+              console.warn('Не удалось сохранить токен в localStorage', error);
+            }
             console.log('Access token refreshed successfully');
+          }
+
+          const user = normalizeAuthUser(authData);
+          if (user) {
+            setUser(user);
           }
         }
       } catch (_error) {

@@ -1,37 +1,28 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@/app/providers';
+import { useAuthMe } from '@/features/auth/model/api';
+import { useAuthStore } from '@/features/auth/model/store';
 import { Language } from '@/shared/constants/language';
 import { useLanguage } from '@/shared/hooks/useLanguage/useLanguage';
 import { useTheme } from '@/shared/hooks/useTheme/useTheme';
-import { Button } from '@/shared/ui/Button/Button';
 import { RadioGroup } from '@/shared/ui/RadioGroup/RadioGroup';
-import { AvatarUpload } from './modules/AvatarUpload';
 import { LanguageRadioGroup } from './modules/LanguageRadioGroup';
 import { NotificationToggle } from './modules/NotificationToggle';
 import { SettingsSidebar } from './modules/SettingsSidebar';
-import { SettingsInput } from './ui/SettingsInput';
 import { SettingsSection } from './ui/SettingsSection';
-import { SpecializationSelect } from './ui/SpecializationSelect';
 import { ThemeCard } from './ui/ThemeCard';
 
 const SettingsPageAsync = () => {
   const { t } = useTranslation('settings');
   const { language, changeLanguage } = useLanguage();
+  const storedUser = useAuthStore((state) => state.user);
+  const { user: fetchedUser, isLoading: isProfileLoading } = useAuthMe();
 
-  // ⚠️ Временное состояние для интерактивности (будет заменено на state management)
-  const [userName, setUserName] = useState('Георгий Кобзев');
-  const [userEmail, setUserEmail] = useState('m2312261@edu.misis.ru');
-  const [specialization, setSpecialization] = useState('project-manager');
   const { setTheme, theme } = useTheme();
   const [notifyMeetings, setNotifyMeetings] = useState(true);
   const [notifyResults, setNotifyResults] = useState(false);
-  const [exportPath, setExportPath] = useState('');
-
-  const handleSelectFolder = () => {
-    console.log(t('sections.storage.select_folder'));
-    // Здесь будет логика выбора папки
-  };
+  const userProfile = fetchedUser ?? storedUser;
 
   // Установка плавного скролла
   useEffect(() => {
@@ -50,28 +41,18 @@ const SettingsPageAsync = () => {
         <SettingsSidebar />
         <main className="flex flex-1 flex-col gap-12">
           <SettingsSection id="profile" title={t('sections.profile.title')}>
-            <div className="flex flex-col gap-8 lg:gap-8">
-              <AvatarUpload />
-
-              {/* Поле имени */}
-              <SettingsInput
-                label={t('sections.profile.name_label')}
-                helpText={t('sections.profile.help_text')}
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-              />
-
-              {/* Поле email */}
-              <SettingsInput
-                label={t('sections.profile.email_label')}
-                helpText={t('sections.profile.help_text')}
-                value={userEmail}
-                type="email"
-                onChange={(e) => setUserEmail(e.target.value)}
-              />
-
-              {/* Выбор специализации */}
-              <SpecializationSelect value={specialization} onChange={setSpecialization} />
+            <div className="flex flex-col gap-4 lg:gap-4">
+              <div className="rounded-2xl border border-border bg-surface px-4 py-3">
+                <p className="text-text-tertiary text-sm">{t('sections.profile.name_label')}</p>
+                <p className="font-medium text-text-primary">{userProfile?.fullName || '—'}</p>
+              </div>
+              <div className="rounded-2xl border border-border bg-surface px-4 py-3">
+                <p className="text-text-tertiary text-sm">{t('sections.profile.email_label')}</p>
+                <p className="font-medium text-text-primary break-all">{userProfile?.email || '—'}</p>
+              </div>
+              {isProfileLoading && (
+                <p className="text-text-tertiary text-sm">Обновляем данные профиля...</p>
+              )}
             </div>
           </SettingsSection>
 
@@ -122,21 +103,6 @@ const SettingsPageAsync = () => {
                 onChange={setNotifyResults}
               />
             </div>
-          </SettingsSection>
-
-          {/* Секция: Хранение и экспорт */}
-          <SettingsSection id="storage" title={t('sections.storage.title')}>
-            <SettingsInput
-              label={t('sections.storage.export_path_label')}
-              helpText={t('sections.storage.help_text')}
-              placeholder={t('sections.storage.export_path_placeholder')}
-              value={exportPath}
-              onChange={(e) => setExportPath(e.target.value)}
-            />
-
-            <Button variant="primary" size="md" className="w-full" onClick={handleSelectFolder}>
-              {t('sections.storage.select_folder')}
-            </Button>
           </SettingsSection>
         </main>
       </div>

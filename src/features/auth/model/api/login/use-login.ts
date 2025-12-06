@@ -1,10 +1,12 @@
 import { publicRqClient } from '@/shared/api/instance';
 import { useAuthStore } from '../../store';
 import type { AuthTokenResponse } from '../../types';
+import { normalizeAuthUser } from '../../types';
 import { formatErrorMessage } from '../utils/format-error';
 
 export function useLogin() {
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
+  const setUser = useAuthStore((state) => state.setUser);
 
   const loginMutation = publicRqClient.useMutation('post', '/auth' as any, {
     onSuccess(data) {
@@ -17,9 +19,19 @@ export function useLogin() {
 
       if (token) {
         setAccessToken(token);
+        try {
+          localStorage.setItem('auth_token', token);
+        } catch (error) {
+          console.warn('Не удалось сохранить токен в localStorage', error);
+        }
         console.log('✅ Token saved to store');
       } else {
         console.warn('⚠️ No access_token in response!');
+      }
+
+      const user = normalizeAuthUser(authData);
+      if (user) {
+        setUser(user);
       }
     },
     onError(error) {
