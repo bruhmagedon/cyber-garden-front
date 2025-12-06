@@ -110,6 +110,7 @@ export const MLDetailsSection = ({ transactions }: MLDetailsSectionProps) => {
         getRowId={(tx) => tx.id}
         lastRowRef={lastElementRef}
         emptyMessage="Нет данных"
+        cardClassName="bg-background/60 backdrop-blur border-border/60 shadow-sm"
       />
     </BlurFade>
   );

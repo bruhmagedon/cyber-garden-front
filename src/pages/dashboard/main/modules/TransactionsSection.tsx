@@ -121,6 +121,7 @@ export const TransactionsSection = ({ transactions, filterTitle }: TransactionsS
         getRowId={(tx) => tx.id}
         lastRowRef={lastElementRef}
         emptyMessage="Ничего не найдено"
+        cardClassName="bg-background/60 backdrop-blur border-border/60 shadow-sm"
       />
     </BlurFade>
   );

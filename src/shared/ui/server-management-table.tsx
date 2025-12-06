@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion, type Variants } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { X, Power, Pause, Play, RotateCcw } from 'lucide-react';
+import { cn } from '@/shared/utils';
 
 export interface Server {
   id: string;
@@ -42,6 +43,7 @@ export interface DashboardTableProps<RowType> {
   className?: string;
   getRowId?: (row: RowType, index: number) => string;
   lastRowRef?: (node: HTMLDivElement | null) => void;
+  cardClassName?: string;
 }
 
 export function DashboardTable<RowType>({
@@ -53,6 +55,7 @@ export function DashboardTable<RowType>({
   className = '',
   getRowId,
   lastRowRef,
+  cardClassName,
 }: DashboardTableProps<RowType>) {
   const shouldReduceMotion = useReducedMotion();
 
@@ -79,7 +82,12 @@ export function DashboardTable<RowType>({
 
   return (
     <div className={`w-full max-w-7xl mx-auto ${className}`}>
-      <div className="relative border border-border/30 rounded-2xl p-4 bg-card/80 backdrop-blur-md">
+      <div
+        className={cn(
+          'relative border border-border/30 rounded-2xl p-4 bg-card/80 backdrop-blur-md',
+          cardClassName,
+        )}
+      >
         {(title || subtitle) && (
           <div className="flex items-center justify-between mb-4">
             <div className="flex flex-col gap-1">
