@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { MOCK_DATA } from './mockData';
 import { DonutChart } from '@/shared/ui/donut-chart';
 import {
@@ -48,7 +49,7 @@ import { SparklesCore } from '@/shared/ui/magic/sparkles';
 import { useTheme } from '@/shared/hooks';
 
 // API
-import { api, HealthResponse } from '@/shared/api/api';
+import { api, HealthResponse, UploadResponse } from '@/shared/api/api';
 import { useDashboardContext } from '@/pages/dashboard/main/model/DashboardProvider';
 
 // --- Data Configuration ---
@@ -203,7 +204,7 @@ const TransactionList = ({
   // Reset page when search changes
   useEffect(() => {
     setPage(1);
-  }, [filterTitle, transactions]);
+  }, []);
 
   const observer = useRef<IntersectionObserver | null>(null);
   const lastElementRef = useCallback(
@@ -434,6 +435,7 @@ const MainPageAsync = () => {
   const [activeSegmentLabel, setActiveSegmentLabel] = useState<string | null>(null);
   const { theme } = useTheme();
   const [resolvedTheme, setResolvedTheme] = useState<'dark' | 'light'>('dark');
+  const [hoveredLegendLabel, setHoveredLegendLabel] = useState<string | null>(null);
 
   // Filters
   const [txFilterCategory, setTxFilterCategory] = useState<string>('all');
@@ -524,7 +526,6 @@ const MainPageAsync = () => {
   }, [activeSegmentLabel, chartData]);
   const centerDisplayValue = activeChartItem ? activeChartItem.value : totalBudget;
   const centerDisplayLabel = activeChartItem ? activeChartItem.label : 'Всего';
-  const centerDisplayCurrency = formatCurrency(centerDisplayValue);
 
   // Filtered Transactions
   const filteredTransactions = useMemo(() => {
@@ -668,31 +669,34 @@ const MainPageAsync = () => {
                                   <span className="text-sm text-text-secondary font-medium dark:text-text-tertiary">
                                     {centerDisplayLabel}
                                   </span>
-                                  <span
+                                  <div
                                     className={cn(
                                       'text-2xl font-bold tracking-tight tabular-nums',
                                       activeChartItem ? 'text-primary' : 'text-foreground',
                                     )}
                                   >
-                                    <NumberTicker value={centerDisplayValue} delay={0} />
-                                  </span>
-                                  <span className="text-[11px] font-semibold text-text-tertiary truncate max-w-[140px] mt-1">
-                                    {centerDisplayCurrency}
-                                  </span>
+                                    <div className="flex items-baseline gap-1">
+                                      <NumberTicker value={centerDisplayValue} delay={0} />
+                                      <span className="text-sm font-semibold text-text-tertiary">
+                                        ₽
+                                      </span>
+                                    </div>
+                                  </div>
                                 </motion.div>
                               }
                             />
                           </div>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full xl:w-auto overflow-y-auto max-h-[300px] pr-2 custom-scrollbar">
                             {chartData.map((item) => {
-                              const isActive = activeSegmentLabel === item.label;
+                              const isActive =
+                                (hoveredLegendLabel || activeSegmentLabel) === item.label;
                               return (
                                 <motion.button
                                   key={item.categoryId + item.label}
                                   whileHover={{ scale: 1.02, x: 2 }}
                                   whileTap={{ scale: 0.98 }}
-                                  onMouseEnter={() => setActiveSegmentLabel(item.label)}
-                                  onMouseLeave={() => setActiveSegmentLabel(null)}
+                                  onMouseEnter={() => setHoveredLegendLabel(item.label)}
+                                  onMouseLeave={() => setHoveredLegendLabel(null)}
                                   className={cn(
                                     'flex items-center justify-between gap-4 p-3 rounded-xl border transition-all text-left min-w-[170px]',
                                     isActive
