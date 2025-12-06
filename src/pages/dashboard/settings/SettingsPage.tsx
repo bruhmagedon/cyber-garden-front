@@ -12,6 +12,9 @@ import { NotificationToggle } from './modules/NotificationToggle';
 import { SettingsSidebar } from './modules/SettingsSidebar';
 import { SettingsSection } from './ui/SettingsSection';
 import { ThemeCard } from './ui/ThemeCard';
+import { cn } from '@/shared/utils';
+import { StarsBackground } from '@/shared/ui/backgrounds/stars';
+import DotPattern from '@/shared/ui/magic/dot-pattern';
 
 const SettingsPageAsync = () => {
   const { t } = useTranslation('settings');
@@ -20,6 +23,7 @@ const SettingsPageAsync = () => {
   const { user: fetchedUser, isLoading: isProfileLoading } = useAuthMe();
 
   const { setTheme, theme } = useTheme();
+  const [resolvedTheme, setResolvedTheme] = useState<'dark' | 'light'>('dark');
   const [notifyMeetings, setNotifyMeetings] = useState(true);
   const [notifyResults, setNotifyResults] = useState(false);
   const userProfile = fetchedUser ?? storedUser;
@@ -32,81 +36,113 @@ const SettingsPageAsync = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (theme === 'system') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleChange = (event: MediaQueryListEvent) => {
+        setResolvedTheme(event.matches ? 'dark' : 'light');
+      };
+      setResolvedTheme(mediaQuery.matches ? 'dark' : 'light');
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    }
+    setResolvedTheme(theme === 'dark' ? 'dark' : 'light');
+  }, [theme]);
+
+  const starColor = resolvedTheme === 'dark' ? '#FFF' : '#000';
+
   return (
-    <div className="mx-auto flex w-full max-w-300 flex-col gap-10 bg-background lg:gap-10">
-      <h1 className="font-semibold text-2xl text-text-quaternary leading-7 lg:text-4xl lg:leading-10">
-        {t('title')}
-      </h1>
-      <div className="flex flex-col gap-10 lg:flex-row">
-        {/* <SettingsSidebar /> */}
-        <main className="flex flex-1 flex-col gap-12">
-          <SettingsSection id="profile" title={t('sections.profile.title')}>
-            <div className="flex flex-col gap-4 lg:gap-4">
-              <div className="rounded-2xl border border-border bg-surface px-4 py-3">
-                <p className="text-text-tertiary text-sm">{t('sections.profile.name_label')}</p>
-                <p className="font-medium text-text-primary">{userProfile?.fullName || '—'}</p>
+    <StarsBackground
+      starColor={starColor}
+      className={cn(
+        'min-h-(--main-height) bg-background overflow-x-hidden relative px-4 py-10 md:px-20',
+        'dark:bg-[radial-gradient(ellipse_at_bottom,#262626_0%,#000_100%)]',
+        'bg-[radial-gradient(ellipse_at_bottom,#f5f5f5_0%,#fff_100%)]',
+      )}
+    >
+      {/* Background Pattern */}
+      <DotPattern
+        className={cn(
+          '[mask-image:radial-gradient(800px_circle_at_center,white,transparent)]',
+          'opacity-30 dark:opacity-20 fixed inset-0 z-0 text-primary/50',
+        )}
+      />
+
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-10 relative z-10 items-center">
+        <h1 className="font-bold text-3xl text-foreground md:text-4xl self-start px-4 md:px-0">
+          {t('title')}
+        </h1>
+        <div className="flex w-full flex-col gap-10 lg:flex-row justify-center">
+          {/* <SettingsSidebar /> */}
+          <main className="flex w-full flex-1 flex-col gap-8 items-center">
+            <SettingsSection id="profile" title={t('sections.profile.title')}>
+              <div className="flex flex-col gap-4 lg:gap-4">
+                <div className="rounded-2xl border border-border bg-surface px-4 py-3">
+                  <p className="text-text-tertiary text-sm">{t('sections.profile.name_label')}</p>
+                  <p className="font-medium text-text-primary">{userProfile?.fullName || '—'}</p>
+                </div>
+                <div className="rounded-2xl border border-border bg-surface px-4 py-3">
+                  <p className="text-text-tertiary text-sm">{t('sections.profile.email_label')}</p>
+                  <p className="font-medium text-text-primary break-all">{userProfile?.email || '—'}</p>
+                </div>
+                {isProfileLoading && (
+                  <p className="text-text-tertiary text-sm">Обновляем данные профиля...</p>
+                )}
               </div>
-              <div className="rounded-2xl border border-border bg-surface px-4 py-3">
-                <p className="text-text-tertiary text-sm">{t('sections.profile.email_label')}</p>
-                <p className="font-medium text-text-primary break-all">{userProfile?.email || '—'}</p>
+            </SettingsSection>
+
+            {/* Секция: Тема */}
+            <SettingsSection id="interface" title={t('sections.interface.title')}>
+              <RadioGroup
+                value={theme}
+                onValueChange={(value) => setTheme(value as Theme)}
+                className="flex w-full min-w-0 gap-7 overflow-x-auto pb-2"
+              >
+                <ThemeCard
+                  theme="dark"
+                  label={t('sections.interface.themes.dark')}
+                  isSelected={theme === 'dark'}
+                  onSelect={() => setTheme('dark')}
+                />
+                <ThemeCard
+                  theme="light"
+                  label={t('sections.interface.themes.light')}
+                  isSelected={theme === 'light'}
+                  onSelect={() => setTheme('light')}
+                />
+                <ThemeCard
+                  theme="system"
+                  label={t('sections.interface.themes.system')}
+                  isSelected={theme === 'system'}
+                  onSelect={() => setTheme('system')}
+                />
+              </RadioGroup>
+            </SettingsSection>
+
+            {/* Секция: Язык */}
+            <SettingsSection id="language" title={t('sections.language.title')}>
+              <LanguageRadioGroup value={language} onChange={(value) => changeLanguage(value as Language)} />
+            </SettingsSection>
+
+            {/* Секция: Уведомления */}
+            <SettingsSection id="notifications" title={t('sections.notifications.title')}>
+              <div className="flex flex-col gap-8">
+                <NotificationToggle
+                  label={t('sections.notifications.meeting_reminders')}
+                  checked={notifyMeetings}
+                  onChange={setNotifyMeetings}
+                />
+                <NotificationToggle
+                  label={t('sections.notifications.result_notifications')}
+                  checked={notifyResults}
+                  onChange={setNotifyResults}
+                />
               </div>
-              {isProfileLoading && (
-                <p className="text-text-tertiary text-sm">Обновляем данные профиля...</p>
-              )}
-            </div>
-          </SettingsSection>
-
-          {/* Секция: Тема */}
-          <SettingsSection id="interface" title={t('sections.interface.title')} maxWidth="full">
-            <RadioGroup
-              value={theme}
-              onValueChange={(value) => setTheme(value as Theme)}
-              className="flex w-full min-w-0 gap-7 overflow-x-auto pb-2"
-            >
-              <ThemeCard
-                theme="dark"
-                label={t('sections.interface.themes.dark')}
-                isSelected={theme === 'dark'}
-                onSelect={() => setTheme('dark')}
-              />
-              <ThemeCard
-                theme="light"
-                label={t('sections.interface.themes.light')}
-                isSelected={theme === 'light'}
-                onSelect={() => setTheme('light')}
-              />
-              <ThemeCard
-                theme="system"
-                label={t('sections.interface.themes.system')}
-                isSelected={theme === 'system'}
-                onSelect={() => setTheme('system')}
-              />
-            </RadioGroup>
-          </SettingsSection>
-
-          {/* Секция: Язык */}
-          <SettingsSection id="language" title={t('sections.language.title')}>
-            <LanguageRadioGroup value={language} onChange={(value) => changeLanguage(value as Language)} />
-          </SettingsSection>
-
-          {/* Секция: Уведомления */}
-          <SettingsSection id="notifications" title={t('sections.notifications.title')}>
-            <div className="flex flex-col gap-8">
-              <NotificationToggle
-                label={t('sections.notifications.meeting_reminders')}
-                checked={notifyMeetings}
-                onChange={setNotifyMeetings}
-              />
-              <NotificationToggle
-                label={t('sections.notifications.result_notifications')}
-                checked={notifyResults}
-                onChange={setNotifyResults}
-              />
-            </div>
-          </SettingsSection>
-        </main>
+            </SettingsSection>
+          </main>
+        </div>
       </div>
-    </div>
+    </StarsBackground>
   );
 };
 

@@ -1,109 +1,142 @@
-import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { XIcon } from 'lucide-react';
 import * as React from 'react';
+import { motion } from 'motion/react';
 
+import {
+  Dialog as DialogPrimitive,
+  DialogPanel as DialogPanelPrimitive,
+  DialogDescription as DialogDescriptionPrimitive,
+  DialogFooter as DialogFooterPrimitive,
+  DialogHeader as DialogHeaderPrimitive,
+  DialogTitle as DialogTitlePrimitive,
+  DialogBackdrop as DialogBackdropPrimitive,
+  DialogClose as DialogClosePrimitive,
+  type DialogProps as DialogPrimitiveProps,
+  type DialogPanelProps as DialogPanelPrimitiveProps,
+  type DialogDescriptionProps as DialogDescriptionPrimitiveProps,
+  type DialogFooterProps as DialogFooterPrimitiveProps,
+  type DialogHeaderProps as DialogHeaderPrimitiveProps,
+  type DialogTitleProps as DialogTitlePrimitiveProps,
+  type DialogBackdropProps as DialogBackdropPrimitiveProps,
+  type DialogCloseProps as DialogClosePrimitiveProps,
+} from 'src/components/animate-ui/primitives/headless/dialog';
+import { XIcon } from 'lucide-react';
 import { cn } from '@/shared/utils';
 
-function Dialog({ ...props }: React.ComponentProps<typeof DialogPrimitive.Root>) {
-  return <DialogPrimitive.Root data-slot="dialog" {...props} />;
+type DialogProps<TTag extends React.ElementType = 'div'> = DialogPrimitiveProps<TTag>;
+
+function Dialog<TTag extends React.ElementType = 'div'>(props: DialogProps<TTag>) {
+  return <DialogPrimitive {...props} />;
 }
 
-function DialogTrigger({ ...props }: React.ComponentProps<typeof DialogPrimitive.Trigger>) {
-  return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />;
+type DialogCloseProps<TTag extends React.ElementType = 'button'> = DialogClosePrimitiveProps<TTag>;
+
+function DialogClose<TTag extends React.ElementType = 'button'>(props: DialogCloseProps<TTag>) {
+  return <DialogClosePrimitive {...props} />;
 }
 
-function DialogPortal({ ...props }: React.ComponentProps<typeof DialogPrimitive.Portal>) {
-  return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />;
-}
+type DialogBackdropProps<TTag extends React.ElementType = typeof motion.div> =
+  DialogBackdropPrimitiveProps<TTag>;
 
-function DialogClose({ ...props }: React.ComponentProps<typeof DialogPrimitive.Close>) {
-  return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
-}
-
-function DialogOverlay({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
+function DialogBackdrop<TTag extends React.ElementType = typeof motion.div>({
+  className,
+  ...props
+}: DialogBackdropProps<TTag>) {
   return (
-    <DialogPrimitive.Overlay
-      data-slot="dialog-overlay"
-      className={cn(
-        'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50 data-[state=closed]:animate-out data-[state=open]:animate-in',
-        className,
-      )}
+    <DialogBackdropPrimitive
+      className={cn('fixed inset-0 z-50 bg-black/50', className)}
       {...props}
     />
   );
 }
 
-function DialogContent({
+type DialogPanelProps<TTag extends React.ElementType = typeof motion.div> =
+  DialogPanelPrimitiveProps<TTag> & {
+    showCloseButton?: boolean;
+  };
+
+function DialogPanel<TTag extends React.ElementType = typeof motion.div>({
   className,
   children,
   showCloseButton = true,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Content> & {
-  showCloseButton?: boolean;
-}) {
+}: DialogPanelProps<TTag>) {
   return (
-    <DialogPortal data-slot="dialog-portal">
-      <DialogOverlay />
-      <DialogPrimitive.Content
-        data-slot="dialog-content"
+    <>
+      <DialogBackdrop />
+      <DialogPanelPrimitive
         className={cn(
-          'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border bg-background p-6 shadow-lg duration-200 data-[state=closed]:animate-out data-[state=open]:animate-in sm:max-w-lg',
+          'bg-background fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg sm:max-w-lg',
           className,
         )}
         {...props}
       >
-        {children}
-        {showCloseButton && (
-          <DialogPrimitive.Close
-            data-slot="dialog-close"
-            className="absolute top-4 right-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0"
-          >
-            <XIcon />
-            <span className="sr-only">Close</span>
-          </DialogPrimitive.Close>
+        {(bag) => (
+          <>
+            {typeof children === 'function' ? children(bag) : children}
+            {showCloseButton && (
+              <DialogClosePrimitive className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4">
+                <XIcon />
+                <span className="sr-only">Close</span>
+              </DialogClosePrimitive>
+            )}
+          </>
         )}
-      </DialogPrimitive.Content>
-    </DialogPortal>
+      </DialogPanelPrimitive>
+    </>
   );
 }
 
-function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
+type DialogHeaderProps<TTag extends React.ElementType = 'div'> = DialogHeaderPrimitiveProps<TTag>;
+
+function DialogHeader<TTag extends React.ElementType = 'div'>(props: DialogHeaderProps<TTag>) {
+  const { as = 'div', className, ...rest } = props;
+
   return (
-    <div
-      data-slot="dialog-header"
+    <DialogHeaderPrimitive
+      as={as}
       className={cn('flex flex-col gap-2 text-center sm:text-left', className)}
-      {...props}
+      {...rest}
     />
   );
 }
 
-function DialogFooter({ className, ...props }: React.ComponentProps<'div'>) {
+type DialogFooterProps<TTag extends React.ElementType = 'div'> = DialogFooterPrimitiveProps<TTag>;
+
+function DialogFooter<TTag extends React.ElementType = 'div'>({
+  className,
+  ...props
+}: DialogFooterProps<TTag>) {
   return (
-    <div
-      data-slot="dialog-footer"
+    <DialogFooterPrimitive
       className={cn('flex flex-col-reverse gap-2 sm:flex-row sm:justify-end', className)}
       {...props}
     />
   );
 }
 
-function DialogTitle({ className, ...props }: React.ComponentProps<typeof DialogPrimitive.Title>) {
+type DialogTitleProps<TTag extends React.ElementType = 'h2'> = DialogTitlePrimitiveProps<TTag>;
+
+function DialogTitle<TTag extends React.ElementType = 'h2'>({
+  className,
+  ...props
+}: DialogTitleProps<TTag>) {
   return (
-    <DialogPrimitive.Title
-      data-slot="dialog-title"
-      className={cn('font-semibold text-lg leading-none', className)}
+    <DialogTitlePrimitive
+      className={cn('text-lg leading-none font-semibold', className)}
       {...props}
     />
   );
 }
 
-function DialogDescription({
+type DialogDescriptionProps<TTag extends React.ElementType = 'div'> =
+  DialogDescriptionPrimitiveProps<TTag>;
+
+function DialogDescription<TTag extends React.ElementType = 'div'>({
   className,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Description>) {
+}: DialogDescriptionProps<TTag>) {
   return (
-    <DialogPrimitive.Description
-      data-slot="dialog-description"
+    <DialogDescriptionPrimitive
       className={cn('text-muted-foreground text-sm', className)}
       {...props}
     />
@@ -113,12 +146,16 @@ function DialogDescription({
 export {
   Dialog,
   DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
+  DialogPanel,
   DialogHeader,
-  DialogOverlay,
-  DialogPortal,
+  DialogFooter,
   DialogTitle,
-  DialogTrigger,
+  DialogDescription,
+  type DialogProps,
+  type DialogCloseProps,
+  type DialogPanelProps,
+  type DialogHeaderProps,
+  type DialogFooterProps,
+  type DialogTitleProps,
+  type DialogDescriptionProps,
 };
