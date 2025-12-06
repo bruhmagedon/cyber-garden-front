@@ -1,11 +1,9 @@
-import { useEffect, useId, useState } from 'react';
-import { Controller } from 'react-hook-form';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRegister } from '@/features/auth/model/api';
 import { PasswordValidator } from '@/features/auth/ui/PasswordValidator';
-import { Button, Checkbox, Input, Label } from '@/shared/ui';
+import { Button, Input, Label } from '@/shared/ui';
 import type { RegisterFormValues } from '../../model/form/register-form.control';
-import { registerControl } from '../../model/form/register-form.control';
 import { useRegisterForm } from '../../model/hooks';
 import { AuthCard } from '../../ui/AuthCard';
 import { AuthFormWrapper } from '../../ui/AuthFormWrapper';
@@ -15,7 +13,6 @@ import { FormError } from '../../ui/FormError';
 import { PasswordInput } from '../../ui/PasswordInput';
 
 export const RegisterForm = () => {
-  const termsId = useId();
   const [passwordFocused, setPasswordFocused] = useState(false);
   const { register, handleSubmit, watch, errors, reset } = useRegisterForm();
   const { register: registerUser, isPending, isSuccess } = useRegister();
@@ -95,25 +92,7 @@ export const RegisterForm = () => {
             <FormError message={errors.confirmPassword?.message} />
           </div>
 
-          <div className="flex w-full flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <Controller
-                name="acceptTerms"
-                control={registerControl}
-                render={({ field }) => (
-                  <Checkbox id={termsId} checked={field.value} onCheckedChange={field.onChange} />
-                )}
-              />
-              <label
-                htmlFor={termsId}
-                className="cursor-pointer font-inter font-normal text-sm text-text-secondary leading-tight"
-              >
-                Я принимаю условия{' '}
-                <span className="text-primary hover:underline">Пользовательского соглашения</span>
-              </label>
-            </div>
-            <FormError message={errors.acceptTerms?.message} />
-          </div>
+
         </div>
 
         <div className="flex w-full flex-col items-center gap-5">

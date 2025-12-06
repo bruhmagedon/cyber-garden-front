@@ -1,10 +1,11 @@
 import { LoginForm } from '@/features/auth';
+import { AuthScene } from './components/AuthScene';
 
 const LoginPage = () => {
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-background sm:p-4">
+    <AuthScene title="Вход в Cyber Garden" subtitle="Продолжите работу в космической экосистеме">
       <LoginForm />
-    </div>
+    </AuthScene>
   );
 };
 

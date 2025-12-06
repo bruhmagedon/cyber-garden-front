@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Theme } from '@/app/providers';
 import { useAuthMe } from '@/features/auth/model/api';
@@ -17,7 +19,9 @@ import { Skeleton } from '@/shared/ui/Skeleton/Skeleton';
 const SettingsPageAsync = () => {
   const { t } = useTranslation('settings');
   const { language, changeLanguage } = useLanguage();
+  const navigate = useNavigate();
   const storedUser = useAuthStore((state) => state.user);
+  const clearTokens = useAuthStore((state) => state.clearTokens);
   const { user: fetchedUser, isLoading: isProfileLoading } = useAuthMe();
 
   const { setTheme, theme } = useTheme();
@@ -67,6 +71,18 @@ const SettingsPageAsync = () => {
                     </div>
                   </Skeleton>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    clearTokens();
+                    navigate('/auth/login');
+                  }}
+                  className="group flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-surface px-4 py-3 text-foreground transition-all hover:bg-hover-primary hover:border-border-hover active:scale-[0.99]"
+                >
+                  <LogOut className="h-5 w-5 transition-transform group-hover:-translate-x-1" />
+                  <span className="font-medium">Выйти из аккаунта</span>
+                </button>
               </div>
             </SettingsSection>
 

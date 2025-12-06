@@ -18,9 +18,9 @@ const maxWidthClasses = {
 export const AuthCard = ({ children, maxWidth = 'sm' }: AuthCardProps) => {
   return (
     <div
-      className={`flex h-screen w-screen flex-col items-center justify-center gap-7 rounded-xl border border-border bg-fill-primary px-8 py-10 sm:h-auto ${maxWidthClasses[maxWidth]} md:px-16 md:py-14`}
+      className={`relative w-full rounded-[32px] border border-white/10 bg-background/60 px-8 py-10 text-white shadow-[0_25px_90px_rgba(21,1,31,0.85)] backdrop-blur-xl ${maxWidthClasses[maxWidth]} md:px-14 md:py-14`}
     >
-      {children}
+      <div className="relative z-10 flex w-full flex-col gap-8">{children}</div>
     </div>
   );
 };

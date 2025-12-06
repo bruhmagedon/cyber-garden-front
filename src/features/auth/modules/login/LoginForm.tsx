@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AlertTriangle } from 'lucide-react';
 import { useLogin } from '@/features/auth/model/api';
 import { Button, Input, Label } from '@/shared/ui';
 import type { LoginFormValues } from '../../model/form/login-form.control';
@@ -27,10 +28,6 @@ export const LoginForm = () => {
     login(data.email, data.password);
   };
 
-  const handleForgotPassword = () => {
-    navigate('/auth/forgot-password');
-  };
-
   const handleRegister = () => {
     navigate('/auth/register');
   };
@@ -38,7 +35,6 @@ export const LoginForm = () => {
   return (
     <AuthCard>
       <AuthHeader />
-
       <AuthFormWrapper>
         <div className="flex w-full flex-col gap-6">
           <div className="flex w-full flex-col gap-3">
@@ -50,13 +46,6 @@ export const LoginForm = () => {
           <div className="flex w-full flex-col gap-3">
             <div className="flex items-center justify-between">
               <Label className="flex-1">Введите пароль</Label>
-              <button
-                type="button"
-                onClick={handleForgotPassword}
-                className="cursor-pointer text-primary text-sm leading-tight hover:underline"
-              >
-                Забыли пароль?
-              </button>
             </div>
             <PasswordInput {...register('password')} placeholder="Введите пароль" />
             <FormError message={errors.password?.message} />
@@ -64,7 +53,12 @@ export const LoginForm = () => {
         </div>
 
         {isError && errorMessage && (
-          <p className="text-center font-inter text-danger text-sm">{errorMessage}</p>
+          <div className="flex w-full items-center gap-2 rounded-2xl border border-red-500/40 bg-red-500/5 px-3 py-2 text-sm text-red-200 shadow-[0_15px_35px_rgba(239,68,68,0.15)]">
+            <AlertTriangle className="h-4 w-4 flex-shrink-0 text-red-300" />
+            <span className="text-left font-medium">
+              {errorMessage || 'Авторизация не удалась'}
+            </span>
+          </div>
         )}
 
         <div className="flex w-full flex-col items-center gap-5">
@@ -78,7 +72,11 @@ export const LoginForm = () => {
             Войти
           </Button>
 
-          <AuthNavLink text="Нет аккаунта?" linkText="Зарегистрироваться" onClick={handleRegister} />
+          <AuthNavLink
+            text="Нет аккаунта?"
+            linkText="Зарегистрироваться"
+            onClick={handleRegister}
+          />
         </div>
       </AuthFormWrapper>
     </AuthCard>

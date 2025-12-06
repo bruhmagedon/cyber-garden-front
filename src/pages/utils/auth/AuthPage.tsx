@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LoginForm } from '@/features/auth';
 import { useAuthStore } from '@/features/auth/model/store/authStore';
+import { AuthScene } from './components/AuthScene';
 
 //todo отдельные роуты ✓, редирект ✓ и добавить токен при регистрации, доделать код сброса пароля, убрать прокси ✓, почистить код, сделать слоты ✓
 
@@ -27,9 +28,9 @@ const AuthPageAsync = () => {
   }, [isAuthenticated, navigate]);
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-background sm:p-4">
+    <AuthScene title="С возвращением" subtitle="Войдите, чтобы продолжить путешествие по Cyber Garden">
       <LoginForm />
-    </div>
+    </AuthScene>
   );
 };
 

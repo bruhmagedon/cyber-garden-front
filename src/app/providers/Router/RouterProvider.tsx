@@ -2,12 +2,9 @@ import { Suspense } from 'react';
 import { createBrowserRouter, RouterProvider as ReactRouterProvider, RouteObject } from 'react-router-dom';
 import {
   ErrorPage,
-  ForgotPasswordPage,
   LoginPage,
   NotFoundPage,
   RegisterPage,
-  ResetPasswordPage,
-  VerifyCodePage,
 } from '@/pages/utils';
 import { Loader } from '@/shared/ui';
 import { HomeLayout } from '../layout/Layout';
@@ -37,18 +34,7 @@ const appRouter = createBrowserRouter([
             path: 'register',
             element: <RegisterPage />,
           },
-          {
-            path: 'forgot-password',
-            element: <ForgotPasswordPage />,
-          },
-          {
-            path: 'verify-code',
-            element: <VerifyCodePage />,
-          },
-          {
-            path: 'reset-password',
-            element: <ResetPasswordPage />,
-          },
+
           {
             index: true,
             element: <LoginPage />,

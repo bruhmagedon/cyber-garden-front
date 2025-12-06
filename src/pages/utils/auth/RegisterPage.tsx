@@ -1,10 +1,11 @@
 import { RegisterForm } from '@/features/auth';
+import { AuthScene } from './components/AuthScene';
 
 const RegisterPage = () => {
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-background sm:p-4">
+    <AuthScene title="Регистрация пилота" subtitle="Создайте аккаунт и присоединитесь к экспедиции">
       <RegisterForm />
-    </div>
+    </AuthScene>
   );
 };
 
