@@ -1,9 +1,9 @@
 'use client';
 
 import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 import { MOCK_DATA } from './mockData';
 import { DonutChart } from '@/shared/ui/donut-chart';
+import { DashboardTable } from '@/shared/ui/server-management-table';
 import {
   Wallet,
   TrendingUp,
@@ -23,7 +23,7 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { cn } from '@/shared/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { StarsBackground } from '@/shared/ui/backgrounds/stars';
 
 // UI Components
@@ -129,70 +129,6 @@ const formatDate = (dateStr: string) => {
   });
 };
 
-// --- Components with Infinite Scroll ---
-
-const InfiniteScrollTable = ({
-  items,
-  renderItem,
-  emptyMessage,
-}: {
-  items: any[];
-  renderItem: (item: any, index: number) => React.ReactNode;
-  emptyMessage: string;
-}) => {
-  const [page, setPage] = useState(1);
-  const observer = useRef<IntersectionObserver | null>(null);
-  const lastElementRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      if (observer.current) observer.current.disconnect();
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && items.length > page * 20) {
-          setPage((prev) => prev + 1);
-        }
-      });
-      if (node) observer.current.observe(node);
-    },
-    [items.length, page],
-  );
-
-  const visibleItems = items.slice(0, page * 20);
-
-  return (
-    <div className="rounded-xl border border-border overflow-hidden bg-card">
-      <div className="max-h-[600px] overflow-auto custom-scrollbar">
-        <table className="w-full text-sm">
-          <thead className="bg-fill-secondary/50 text-text-secondary font-medium sticky top-0 z-10 backdrop-blur">
-            {/* Header is handled by parent context usually, but here we can't genericize easily without prop. 
-                             Assuming standard Layout for simplicity or passing header prop. 
-                             Let's just render body here and let parent handle table structure? 
-                             No, let's keep it simple. */}
-          </thead>
-          <tbody className="divide-y divide-border/50">
-            {visibleItems.length > 0 ? (
-              visibleItems.map((item, idx) => {
-                if (idx === visibleItems.length - 1) {
-                  return (
-                    <tr key={item.id + idx} ref={lastElementRef as any}>
-                      {renderItem(item, idx)}
-                    </tr>
-                  );
-                }
-                return <tr key={item.id + idx}>{renderItem(item, idx)}</tr>;
-              })
-            ) : (
-              <tr>
-                <td colSpan={10} className="px-4 py-8 text-center text-text-tertiary">
-                  {emptyMessage}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-};
-
 const TransactionList = ({
   transactions,
   filterTitle,
@@ -204,11 +140,11 @@ const TransactionList = ({
   // Reset page when search changes
   useEffect(() => {
     setPage(1);
-  }, []);
+  }, [filterTitle, transactions]);
 
   const observer = useRef<IntersectionObserver | null>(null);
   const lastElementRef = useCallback(
-    (node: HTMLTableRowElement | null) => {
+    (node: HTMLDivElement | null) => {
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && transactions.length > page * 20) {
@@ -224,104 +160,80 @@ const TransactionList = ({
 
   return (
     <BlurFade>
-      <Card>
-        <CardHeader>
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <CardTitle>История операций</CardTitle>
-              <CardDescription>Всего: {transactions.length}</CardDescription>
-            </div>
-            {/* Search is handled in parent and passed via filtered transactions */}
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-xl border border-border overflow-hidden">
-            <div className="max-h-[600px] overflow-auto custom-scrollbar relative">
-              <table className="w-full text-sm">
-                <thead className="bg-fill-secondary/50 text-text-secondary font-medium sticky top-0 z-10 backdrop-blur">
-                  <tr>
-                    <th className="px-4 py-3 text-left">Описание</th>
-                    <th className="px-4 py-3 text-left">Категория (ML)</th>
-                    <th className="px-4 py-3 text-left hidden sm:table-cell">Дата</th>
-                    <th className="px-4 py-3 text-right">Сумма</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/50">
-                  {visibleItems.length > 0 ? (
-                    visibleItems.map((tx, idx) => {
-                      const catConfig = getCategoryConfig(tx.categoryId);
-                      const confidence = tx.probabilities
-                        ? (tx.probabilities[tx.categoryId] * 100).toFixed(0)
-                        : null;
-                      const isLast = idx === visibleItems.length - 1;
-
-                      return (
-                        <tr
-                          key={tx.id + idx}
-                          ref={isLast ? lastElementRef : undefined}
-                          className="group hover:bg-fill-secondary/30 transition-colors"
-                        >
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-full bg-fill-tertiary flex items-center justify-center text-text-secondary group-hover:scale-110 transition-transform">
-                                {tx.type === 'income' ? (
-                                  <ArrowRight className="rotate-[-45deg] text-green-500 w-4 h-4" />
-                                ) : (
-                                  <CreditCard className="w-4 h-4" />
-                                )}
-                              </div>
-                              <span
-                                className="font-medium group-hover:text-foreground transition-colors truncate max-w-[200px] block"
-                                title={tx.title}
-                              >
-                                {tx.title}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-2">
-                              <div
-                                className="w-2 h-2 rounded-full"
-                                style={{ background: catConfig.color }}
-                              />
-                              <span className="text-text-secondary">{catConfig.label}</span>
-                              {confidence && (
-                                <span
-                                  className="text-[10px] bg-fill-secondary px-1.5 rounded text-text-tertiary"
-                                  title="ML Confidence"
-                                >
-                                  {confidence}%
-                                </span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-4 py-3 text-text-tertiary hidden sm:table-cell">
-                            {formatDate(tx.date)}
-                          </td>
-                          <td
-                            className={cn(
-                              'px-4 py-3 text-right font-semibold',
-                              tx.type === 'income' ? 'text-green-600' : 'text-foreground',
-                            )}
-                          >
-                            {formatCurrency(tx.amount)}
-                          </td>
-                        </tr>
-                      );
-                    })
+      <DashboardTable
+        title="История операций"
+        subtitle={`Всего: ${transactions.length}`}
+        columns={[
+          {
+            key: 'title',
+            header: 'Описание',
+            className: 'col-span-4',
+            render: (tx: any) => (
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-fill-tertiary flex items-center justify-center text-text-secondary">
+                  {tx.type === 'income' ? (
+                    <ArrowRight className="rotate-[-45deg] text-green-500 w-4 h-4" />
                   ) : (
-                    <tr>
-                      <td colSpan={4} className="px-4 py-8 text-center text-text-tertiary">
-                        Ничего не найдено
-                      </td>
-                    </tr>
+                    <CreditCard className="w-4 h-4" />
                   )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+                </div>
+                <div className="flex flex-col">
+                  <span
+                    className="font-medium text-foreground truncate max-w-[200px]"
+                    title={tx.title}
+                  >
+                    {tx.title}
+                  </span>
+                  <span className="text-xs text-text-tertiary">
+                    {tx.type === 'income' ? 'Доход' : 'Расход'}
+                  </span>
+                </div>
+              </div>
+            ),
+          },
+          {
+            key: 'category',
+            header: 'Категория',
+            className: 'col-span-3',
+            render: (tx: any) => {
+              const catConfig = getCategoryConfig(tx.categoryId);
+              return (
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: catConfig.color }} />
+                  <span className="text-foreground">{catConfig.label}</span>
+                </div>
+              );
+            },
+          },
+          {
+            key: 'date',
+            header: 'Дата',
+            className: 'col-span-2',
+            render: (tx: any) => (
+              <span className="text-sm text-text-secondary">{formatDate(tx.date)}</span>
+            ),
+          },
+          {
+            key: 'amount',
+            header: 'Сумма',
+            className: 'col-span-3 text-right',
+            render: (tx: any) => (
+              <span
+                className={cn(
+                  'text-sm font-semibold',
+                  tx.type === 'income' ? 'text-green-500' : 'text-foreground',
+                )}
+              >
+                {formatCurrency(tx.amount)}
+              </span>
+            ),
+          },
+        ]}
+        rows={visibleItems}
+        getRowId={(tx: any, idx: number) => tx.id ?? `tx-${idx}`}
+        lastRowRef={lastElementRef}
+        emptyMessage="Ничего не найдено"
+      />
     </BlurFade>
   );
 };
@@ -330,7 +242,7 @@ const MLDetailsList = ({ transactions }: { transactions: any[] }) => {
   const [page, setPage] = useState(1);
   const observer = useRef<IntersectionObserver | null>(null);
   const lastElementRef = useCallback(
-    (node: HTMLTableRowElement | null) => {
+    (node: HTMLDivElement | null) => {
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && transactions.length > page * 20) {
@@ -346,85 +258,68 @@ const MLDetailsList = ({ transactions }: { transactions: any[] }) => {
 
   return (
     <BlurFade>
-      <Card>
-        <CardHeader>
-          <CardTitle>Детализация ML</CardTitle>
-          <CardDescription>Подробные метрики по каждой транзакции</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-xl border border-border overflow-hidden">
-            <div className="max-h-[600px] overflow-auto custom-scrollbar relative">
-              <table className="w-full text-sm">
-                <thead className="bg-fill-secondary/50 text-text-secondary font-medium sticky top-0 z-10 backdrop-blur">
-                  <tr>
-                    <th className="px-4 py-3 text-left">Транзакция</th>
-                    <th className="px-4 py-3 text-left">Предсказание</th>
-                    <th className="px-4 py-3 text-left w-1/3">Топ категорий (Вероятности)</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/50">
-                  {visibleItems.length > 0 ? (
-                    visibleItems.map((tx, idx) => {
-                      const catConfig = getCategoryConfig(tx.categoryId);
-                      const isLast = idx === visibleItems.length - 1;
-                      const probs = tx.probabilities || {};
-                      // Sort probs
-                      const sortedProbs = Object.entries(probs)
-                        .sort(([, a], [, b]) => (b as number) - (a as number))
-                        .slice(0, 3); // Top 3
+      <DashboardTable
+        title="Детализация ML"
+        subtitle={`Всего: ${transactions.length}`}
+        columns={[
+          {
+            key: 'title',
+            header: 'Транзакция',
+            className: 'col-span-4',
+            render: (tx: any) => <span className="font-medium text-foreground">{tx.title}</span>,
+          },
+          {
+            key: 'prediction',
+            header: 'Предсказание',
+            className: 'col-span-3',
+            render: (tx: any) => {
+              const catConfig = getCategoryConfig(tx.categoryId);
+              return (
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ background: catConfig.color }} />
+                  <span className="text-foreground">{catConfig.label}</span>
+                </div>
+              );
+            },
+          },
+          {
+            key: 'probabilities',
+            header: 'Топ категорий',
+            className: 'col-span-5',
+            render: (tx: any) => {
+              const probs = tx.probabilities || {};
+              const sortedProbs = Object.entries(probs)
+                .sort(([, a], [, b]) => (b as number) - (a as number))
+                .slice(0, 3);
 
-                      return (
-                        <tr
-                          key={tx.id + idx}
-                          ref={isLast ? lastElementRef : undefined}
-                          className="group hover:bg-fill-secondary/30"
-                        >
-                          <td className="px-4 py-3 font-medium">{tx.title}</td>
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-2">
-                              <div
-                                className="w-2 h-2 rounded-full"
-                                style={{ background: catConfig.color }}
-                              />
-                              <span>{catConfig.label}</span>
-                            </div>
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="flex flex-col gap-1.5">
-                              {sortedProbs.map(([cat, prob]) => (
-                                <div key={cat} className="flex items-center gap-2 text-xs">
-                                  <span className="w-24 truncate text-text-secondary" title={cat}>
-                                    {cat}
-                                  </span>
-                                  <div className="flex-1 h-1.5 bg-fill-secondary rounded-full overflow-hidden">
-                                    <div
-                                      className="h-full bg-primary/70"
-                                      style={{ width: `${(prob as number) * 100}%` }}
-                                    />
-                                  </div>
-                                  <span className="w-8 text-right text-text-tertiary">
-                                    {((prob as number) * 100).toFixed(0)}%
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  ) : (
-                    <tr>
-                      <td colSpan={3} className="p-4 text-center">
-                        Нет данных
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+              return (
+                <div className="flex flex-col gap-1.5">
+                  {sortedProbs.map(([cat, prob]) => (
+                    <div key={cat} className="flex items-center gap-2 text-xs">
+                      <span className="w-24 truncate text-text-secondary" title={cat}>
+                        {cat}
+                      </span>
+                      <div className="flex-1 h-1.5 bg-fill-secondary rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-primary/70"
+                          style={{ width: `${(prob as number) * 100}%` }}
+                        />
+                      </div>
+                      <span className="w-8 text-right text-text-tertiary">
+                        {((prob as number) * 100).toFixed(0)}%
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              );
+            },
+          },
+        ]}
+        rows={visibleItems}
+        getRowId={(tx: any, idx: number) => tx.id ?? `ml-${idx}`}
+        lastRowRef={lastElementRef}
+        emptyMessage="Нет данных"
+      />
     </BlurFade>
   );
 };
@@ -519,11 +414,12 @@ const MainPageAsync = () => {
 
   // Derived state for Donut Chart Content
   const activeChartItem = useMemo(() => {
-    if (activeSegmentLabel) {
-      return chartData.find((d) => d.label === activeSegmentLabel);
+    const displayedSegmentLabel = hoveredLegendLabel || activeSegmentLabel;
+    if (displayedSegmentLabel) {
+      return chartData.find((d) => d.label === displayedSegmentLabel);
     }
     return null;
-  }, [activeSegmentLabel, chartData]);
+  }, [activeSegmentLabel, hoveredLegendLabel, chartData]);
   const centerDisplayValue = activeChartItem ? activeChartItem.value : totalBudget;
   const centerDisplayLabel = activeChartItem ? activeChartItem.label : 'Всего';
 
@@ -636,7 +532,7 @@ const MainPageAsync = () => {
               {isRealData ? (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <BlurFade delay={0.6} className="lg:col-span-2">
-                    <Card className="bg-card border shadow-sm h-full">
+                    <Card className="bg-background/60 backdrop-blur border border-border/60 shadow-sm h-full">
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                           <div className="p-1.5 bg-primary/10 rounded-lg text-primary">
@@ -655,7 +551,7 @@ const MainPageAsync = () => {
                               data={chartData}
                               size={260}
                               strokeWidth={24}
-                              activeSegmentLabel={activeSegmentLabel}
+                              activeSegmentLabel={hoveredLegendLabel || activeSegmentLabel}
                               onSegmentHover={(seg) =>
                                 setActiveSegmentLabel(seg ? seg.label : null)
                               }
@@ -756,7 +652,10 @@ const MainPageAsync = () => {
             </TabsContent>
 
             {/* TAB: GOALS */}
-            <TabsContent value="goals" className="space-y-6 focus-visible:outline-none">
+            <TabsContent
+              value="goals"
+              className="space-y-6 focus-visible:outline-none bg-background/60 backdrop-blur"
+            >
               {isRealData ? (
                 <div className="p-4 rounded-xl border border-dashed border-border text-center text-text-tertiary">
                   Функционал целей доступен в расширенной версии.
