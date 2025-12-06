@@ -43,6 +43,7 @@ import { useTheme } from '@/shared/hooks';
 // API
 import { api, HealthResponse, UploadResponse } from '@/shared/api/api';
 import { useDashboardContext } from '@/pages/dashboard/main/model/DashboardProvider';
+import { AIChatWidget } from '@/features/ai-chat/AIChatWidget';
 
 // --- Data Configuration ---
 
@@ -699,6 +700,7 @@ const MainPageAsync = () => {
           </BlurFade>
         )}
       </div>
+      <AIChatWidget />
     </StarsBackground>
   );
 };
