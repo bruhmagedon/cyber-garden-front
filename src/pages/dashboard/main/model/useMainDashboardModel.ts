@@ -135,8 +135,11 @@ export const useMainDashboardModel = () => {
   useEffect(() => {
     if (apiData) {
       setActiveTab('overview');
-      // Set default to latest year/month
-      const dates = apiData.rows.map(r => new Date(r.date));
+      // Set default to latest year/month WITH EXPENSES
+      const expenseRows = apiData.rows.filter(r => r.withdrawal > 0);
+      const rowsToUse = expenseRows.length > 0 ? expenseRows : apiData.rows;
+      
+      const dates = rowsToUse.map(r => new Date(r.date));
       if (dates.length > 0) {
         const maxDate = new Date(Math.max(...dates.map(d => d.getTime())));
         setOverviewYear(maxDate.getFullYear().toString());
@@ -151,10 +154,15 @@ export const useMainDashboardModel = () => {
 
   const currentTransactions = useMemo(() => mapApiTransactions(apiData), [apiData]);
 
-  // Extract available years
+  // Extract available years (only with expenses)
   const availableYears = useMemo(() => {
       if (!apiData) return [];
-      const years = new Set(apiData.rows.map(r => new Date(r.date).getFullYear()));
+      const years = new Set<number>();
+      apiData.rows.forEach(r => {
+          if (r.withdrawal > 0) {
+              years.add(new Date(r.date).getFullYear());
+          }
+      });
       return Array.from(years).sort((a, b) => b - a).map(String);
   }, [apiData]);
 

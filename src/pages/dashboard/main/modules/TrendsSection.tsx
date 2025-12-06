@@ -49,23 +49,34 @@ const comparisonConfig = {
 // --- Helpers (Native Date) ---
 const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
 const parseDate = (str: string) => new Date(str);
+const formatDateYM = (date: Date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    return `${y}-${m}`;
+};
 const formatMonthName = (month: number) => {
     return new Date(2000, month).toLocaleString('ru-RU', { month: 'long' });
 };
 
 export const TrendsSection = ({ transactions }: TrendsSectionProps) => {
-  // Initialize with the most recent transaction date
+  // Initialize with the most recent transaction date (prioritize expenses)
   const [selectedYear, setSelectedYear] = useState<string>(() => {
-     if (transactions.length > 0) {
-          const dates = transactions.map(t => new Date(t.date).getFullYear());
+      const expenseTrans = transactions.filter(t => t.withdrawal > 0);
+      const transToUse = expenseTrans.length > 0 ? expenseTrans : transactions;
+      
+      if (transToUse.length > 0) {
+          const dates = transToUse.map(t => new Date(t.date).getFullYear());
           return Math.max(...dates).toString();
       }
       return new Date().getFullYear().toString();
   });
 
   const [selectedMonth, setSelectedMonth] = useState<string>(() => {
-       if (transactions.length > 0) {
-          const dates = transactions.map(t => new Date(t.date));
+       const expenseTrans = transactions.filter(t => t.withdrawal > 0);
+       const transToUse = expenseTrans.length > 0 ? expenseTrans : transactions;
+
+       if (transToUse.length > 0) {
+          const dates = transToUse.map(t => new Date(t.date));
           const maxDate = new Date(Math.max(...dates.map(d => d.getTime())));
           return (maxDate.getMonth() + 1).toString(); // 1-12
       }
@@ -74,14 +85,19 @@ export const TrendsSection = ({ transactions }: TrendsSectionProps) => {
 
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  // Computed Available Years
+  // Computed Available Years (only with expenses)
   const years = useMemo(() => {
-      const ys = new Set(transactions.map(t => new Date(t.date).getFullYear()));
+      const ys = new Set<number>();
+      transactions.forEach(t => {
+          if (t.withdrawal > 0) {
+              ys.add(new Date(t.date).getFullYear());
+          }
+      });
       return Array.from(ys).sort((a, b) => b - a).map(String);
   }, [transactions]);
 
   // Computed Available Months for selected Year
-   const months = useMemo(() => {
+  const months = useMemo(() => {
       const ms = new Set(
           transactions
             .filter(t => new Date(t.date).getFullYear().toString() === selectedYear)
@@ -89,6 +105,7 @@ export const TrendsSection = ({ transactions }: TrendsSectionProps) => {
       );
       return Array.from(ms).sort((a, b) => b - a).map(String);
   }, [transactions, selectedYear]);
+
 
   // Ensure selected month is valid when year changes
   useMemo(() => {
@@ -175,11 +192,7 @@ export const TrendsSection = ({ transactions }: TrendsSectionProps) => {
     return Array.from(cats).sort();
   }, [transactions]);
 
-  // Extract unique months
-  const months = useMemo(() => {
-      const ms = new Set(transactions.map(t => formatDateYM(parseDate(t.date))));
-      return Array.from(ms).sort().reverse();
-  }, [transactions]);
+
 
 
   return (
