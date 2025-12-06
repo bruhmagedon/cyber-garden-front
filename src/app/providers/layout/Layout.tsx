@@ -1,9 +1,8 @@
 import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
-import { Loader, SidebarInset, SidebarProvider } from '@/shared/ui';
+import { Loader } from '@/shared/ui';
 import { DashboardProvider } from '@/pages/dashboard/main/model/DashboardProvider';
 import { LayoutHeader } from './LayoutHeader/LayoutHeader';
-import { LayoutSidebar } from './LayoutSidebar/LayoutSidebar';
 
 export const HomeLayout = () => {
   return (

@@ -18,7 +18,7 @@ import {
   type DialogTitleProps as DialogTitlePrimitiveProps,
   type DialogBackdropProps as DialogBackdropPrimitiveProps,
   type DialogCloseProps as DialogClosePrimitiveProps,
-} from 'src/components/animate-ui/primitives/headless/dialog';
+} from '@/shared/ui/AnimatedDialog/dialog';
 import { XIcon } from 'lucide-react';
 import { cn } from '@/shared/utils';
 

@@ -13,7 +13,7 @@ import {
 import { cn } from '@/shared/utils';
 import { MOCK_DATA } from '@/pages/dashboard/main/mockData';
 import { FileUpload, FileUploadDropzone } from '@/shared/ui/file-upload';
-import { UploadListContent } from '@/pages/dashboard/main/components/UploadListContent';
+import { UploadListContent } from '@/pages/dashboard/main/ui/UploadListContent';
 import { useDashboardContext } from '@/pages/dashboard/main/model/DashboardProvider';
 
 interface HeaderProps {
@@ -50,7 +50,10 @@ export const LayoutHeader = ({ className }: HeaderProps) => {
         {/* Welcome Section */}
         <div className="flex items-center gap-5">
           <div className="flex items-center gap-2">
-            <h1 className="animate-in fade-in slide-in-from-left-4 duration-500 text-2xl font-bold tracking-tight md:text-3xl">
+            <h1
+              onClick={() => navigate('/')}
+              className="animate-in fade-in slide-in-from-left-4 duration-500 text-2xl font-bold tracking-tight md:text-3xl cursor-pointer hover:opacity-80 transition-opacity"
+            >
               <span className="bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
                 {'Unknown'}
               </span>
@@ -86,7 +89,10 @@ export const LayoutHeader = ({ className }: HeaderProps) => {
               <span>Загрузить CSV</span>
             </button>
             <Dialog open={isUploadDialogOpen} onClose={() => setIsUploadDialogOpen(false)}>
-              <DialogPanel className="max-w-md rounded-2xl border border-border bg-background p-6 shadow-2xl" showCloseButton={false}>
+              <DialogPanel
+                className="max-w-md rounded-2xl border border-border bg-background p-6 shadow-2xl"
+                showCloseButton={false}
+              >
                 <DialogClose
                   type="button"
                   className="absolute right-4 top-4 rounded-full p-1 text-muted-foreground transition hover:bg-fill-secondary hover:text-foreground"
@@ -133,7 +139,10 @@ export const LayoutHeader = ({ className }: HeaderProps) => {
               )}
             </button>
             <Dialog open={isNotificationsOpen} onClose={() => setIsNotificationsOpen(false)}>
-              <DialogPanel className="max-w-lg rounded-2xl border border-border bg-background p-6 shadow-2xl" showCloseButton={false}>
+              <DialogPanel
+                className="max-w-lg rounded-2xl border border-border bg-background p-6 shadow-2xl"
+                showCloseButton={false}
+              >
                 <DialogClose
                   type="button"
                   className="absolute right-4 top-4 rounded-full p-1 text-muted-foreground transition hover:bg-fill-secondary hover:text-foreground"
