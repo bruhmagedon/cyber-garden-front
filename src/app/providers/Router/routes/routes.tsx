@@ -1,5 +1,5 @@
 import { RouteObject } from 'react-router-dom';
-import { MainPage, MeetingsPage, ProjectsPage, SettingsPage } from '@/pages/dashboard';
+import { MainPage, SettingsPage } from '@/pages/dashboard';
 
 export const DASHBOARD_ROUTES = {
   index: {
@@ -10,14 +10,6 @@ export const DASHBOARD_ROUTES = {
   settings: {
     path: '/settings',
     element: <SettingsPage />,
-  } satisfies RouteObject,
-  meetings: {
-    path: '/meetings',
-    element: <MeetingsPage />,
-  } satisfies RouteObject,
-  projects: {
-    path: '/projects',
-    element: <ProjectsPage />,
   } satisfies RouteObject,
 };
 
