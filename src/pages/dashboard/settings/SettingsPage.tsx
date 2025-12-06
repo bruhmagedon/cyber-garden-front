@@ -96,7 +96,7 @@ const SettingsPageAsync = () => {
               <RadioGroup
                 value={theme}
                 onValueChange={(value) => setTheme(value as Theme)}
-                className="flex w-full min-w-0 gap-7 overflow-x-auto pb-2"
+                className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full"
               >
                 <ThemeCard
                   theme="dark"

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { UploadCloud, X } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Bell from '@/assets/icons/Bell.svg?react';
 import {
   Dialog,
@@ -25,7 +25,15 @@ export const LayoutHeader = ({ className }: HeaderProps) => {
     useDashboardContext();
   const isRealData = Boolean(apiData);
   const navigate = useNavigate();
+  const location = useLocation();
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+
+  const handleUploadWrapper = async (files: File[]) => {
+    await handleUpload(files);
+    if (location.pathname !== '/') {
+      navigate('/');
+    }
+  };
 
   return (
     <header
@@ -93,7 +101,7 @@ export const LayoutHeader = ({ className }: HeaderProps) => {
                   </DialogDescription>
                 </DialogHeader>
                 <div className="mt-4">
-                  <FileUpload accept="text/csv" maxFiles={1} onUpload={handleUpload}>
+                  <FileUpload accept="text/csv" maxFiles={1} onUpload={handleUploadWrapper}>
                     <FileUploadDropzone className="group cursor-pointer rounded-xl border-2 border-dashed border-border p-8 text-center transition-colors hover:bg-muted/50">
                       <div className="flex flex-col items-center gap-3">
                         <div className="rounded-full bg-primary/10 p-4 text-primary transition-transform duration-300 group-hover:scale-110 group-hover:bg-primary/20">

@@ -30,14 +30,6 @@ import { StarsBackground } from '@/shared/ui/backgrounds/stars';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/Tabs/Tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/Card/Card';
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/ui/Select/Select';
-
 import { MetricCircle } from './components/MetricCircle';
 
 // Magic UI
