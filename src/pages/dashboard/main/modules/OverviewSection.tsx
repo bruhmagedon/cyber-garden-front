@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Target } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/Card/Card';
 import { DonutChart } from '@/shared/ui/donut-chart';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/Select/Select';
 import BlurFade from '@/shared/ui/magic/blur-fade';
 import NumberTicker from '@/shared/ui/magic/number-ticker';
 import { cn } from '@/shared/utils';
@@ -17,6 +18,13 @@ type OverviewSectionProps = {
   activeChartItem: ChartSlice | null;
   centerDisplayValue: number;
   centerDisplayLabel: string;
+  // Filters
+  selectedYear: string;
+  onYearChange: (val: string) => void;
+  selectedMonth: string;
+  onMonthChange: (val: string) => void;
+  years: string[];
+  months: string[];
 };
 
 export const OverviewSection = ({
@@ -29,18 +37,53 @@ export const OverviewSection = ({
   activeChartItem,
   centerDisplayValue,
   centerDisplayLabel,
-}: OverviewSectionProps) => (
+  selectedYear,
+  onYearChange,
+  selectedMonth,
+  onMonthChange,
+  years,
+  months
+}: OverviewSectionProps) => {
+    const formatMonth = (m: string) => new Date(2000, parseInt(m) - 1).toLocaleString('ru-RU', { month: 'long' });
+
+    return (
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <BlurFade delay={0.6} className="lg:col-span-2">
       <Card className="bg-background/60 backdrop-blur border border-border/60 shadow-sm h-full">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <div className="p-1.5 bg-primary/10 rounded-lg text-primary">
-              <Target className="w-4 h-4" />
-            </div>
-            Анализ Расходов
-          </CardTitle>
-          <CardDescription>Распределение фактических трат по категориям</CardDescription>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="space-y-1.5">
+                <CardTitle className="flex items-center gap-2">
+                    <div className="p-1.5 bg-primary/10 rounded-lg text-primary">
+                    <Target className="w-4 h-4" />
+                    </div>
+                    Анализ Расходов
+                </CardTitle>
+                <CardDescription>Распределение фактических трат по категориям</CardDescription>
+              </div>
+              <div className="flex items-center gap-2">
+                   <Select value={selectedYear} onValueChange={onYearChange}>
+                        <SelectTrigger className="w-[90px] h-8 text-xs">
+                            <SelectValue placeholder="Год" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {years.map(y => (
+                                <SelectItem key={y} value={y}>{y}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <Select value={selectedMonth} onValueChange={onMonthChange}>
+                        <SelectTrigger className="w-[120px] h-8 text-xs">
+                            <SelectValue placeholder="Месяц" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {months.map(m => (
+                                <SelectItem key={m} value={m}>{formatMonth(m)}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+              </div>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col xl:flex-row items-center justify-around gap-8 py-4 px-2">
@@ -123,3 +166,4 @@ export const OverviewSection = ({
     </BlurFade>
   </div>
 );
+};

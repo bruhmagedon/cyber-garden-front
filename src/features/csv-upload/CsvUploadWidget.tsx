@@ -32,7 +32,7 @@ export const CsvUploadWidget = () => {
       <button
         type="button"
         onClick={() => setIsUploadDialogOpen(true)}
-        className="group relative flex items-center gap-2 overflow-hidden rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:bg-primary/90 hover:shadow-primary/40 active:scale-95"
+        className="group relative flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-primary to-violet-600 px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:shadow-primary/40 active:scale-95"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 transition-opacity group-hover:animate-shimmer" />
         <UploadCloud

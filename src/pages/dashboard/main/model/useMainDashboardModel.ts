@@ -103,6 +103,10 @@ export const useMainDashboardModel = () => {
   const [resolvedTheme, setResolvedTheme] = useState<'dark' | 'light'>('dark');
   const [health, setHealth] = useState<HealthResponse | null>(null);
 
+  // Filters for Overview Chart
+  const [overviewYear, setOverviewYear] = useState<string>('');
+  const [overviewMonth, setOverviewMonth] = useState<string>('');
+
   useEffect(() => {
     let isMounted = true;
     api.checkHealth().then((response) => {
@@ -127,15 +131,86 @@ export const useMainDashboardModel = () => {
     setResolvedTheme(theme === 'dark' ? 'dark' : 'light');
   }, [theme]);
 
+  // Reset filters when data changes
   useEffect(() => {
     if (apiData) {
       setActiveTab('overview');
+      // Set default to latest year/month
+      const dates = apiData.rows.map(r => new Date(r.date));
+      if (dates.length > 0) {
+        const maxDate = new Date(Math.max(...dates.map(d => d.getTime())));
+        setOverviewYear(maxDate.getFullYear().toString());
+        setOverviewMonth((maxDate.getMonth() + 1).toString());
+      } else {
+        const now = new Date();
+        setOverviewYear(now.getFullYear().toString());
+        setOverviewMonth((now.getMonth() + 1).toString());
+      }
     }
   }, [apiData]);
 
   const currentTransactions = useMemo(() => mapApiTransactions(apiData), [apiData]);
 
-  const chartData = useMemo(() => mapChartData(apiData), [apiData]);
+  // Extract available years
+  const availableYears = useMemo(() => {
+      if (!apiData) return [];
+      const years = new Set(apiData.rows.map(r => new Date(r.date).getFullYear()));
+      return Array.from(years).sort((a, b) => b - a).map(String);
+  }, [apiData]);
+
+  // Extract available months for the selected year
+  const availableMonths = useMemo(() => {
+      if (!apiData || !overviewYear) return [];
+      const months = new Set(
+          apiData.rows
+            .filter(r => new Date(r.date).getFullYear().toString() === overviewYear)
+            .map(r => new Date(r.date).getMonth() + 1)
+      );
+      return Array.from(months).sort((a, b) => b - a).map(String);
+  }, [apiData, overviewYear]);
+
+
+  // Client-side aggregation for Donut Chart
+  const chartData = useMemo(() => {
+      if (!apiData) {
+           return mapChartData(null); // Fallback to mock
+      }
+
+      // Filter rows
+      const filteredRows = apiData.rows.filter(row => {
+          const d = new Date(row.date);
+          return d.getFullYear().toString() === overviewYear && (d.getMonth() + 1).toString() === overviewMonth;
+      });
+
+      // Aggregate expenses by category
+      const categoryMap = new Map<string, number>();
+      filteredRows.forEach(row => {
+          // Check if it's an expense (using withdrawal > 0 from api logic or type logic)
+          // Based on mapApiTransactions: amount = withdrawal > 0 ? withdrawal : deposit. type = deposit > 0 ? income : expense.
+          // We only want expenses for the donut chart usually?
+          // Looking at mapChartData original, it used Summary which usually implies expenses for budget charts.
+          // Let's assume we sum withdrawals.
+          if (row.withdrawal > 0) {
+             const cat = row.actual_category || row.predicted_category || 'Uncategorized';
+             categoryMap.set(cat, (categoryMap.get(cat) || 0) + row.withdrawal);
+          }
+      });
+
+      // Map to ChartSlice
+      const entries = Array.from(categoryMap.entries()).map(([cat, value]) => {
+          const config = getCategoryConfig(cat);
+          return {
+              value: value,
+              color: config.color,
+              label: cat, // Use category name directly or mapped label if exists in config
+              categoryId: cat,
+          };
+      });
+      
+      return entries.sort((a, b) => b.value - a.value);
+
+  }, [apiData, overviewYear, overviewMonth]);
+
 
   const totalBudget = useMemo(
     () => chartData.reduce((sum, slice) => sum + slice.value, 0),
@@ -191,5 +266,12 @@ export const useMainDashboardModel = () => {
     centerDisplayValue,
     centerDisplayLabel,
     isRealData,
+    // New exports
+    overviewYear,
+    setOverviewYear,
+    overviewMonth,
+    setOverviewMonth,
+    availableYears,
+    availableMonths,
   };
 };

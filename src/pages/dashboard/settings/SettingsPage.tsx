@@ -110,11 +110,6 @@ const SettingsPageAsync = () => {
             <SettingsSection id="notifications" title={t('sections.notifications.title')}>
               <div className="flex flex-col gap-8">
                 <NotificationToggle
-                  label={t('sections.notifications.meeting_reminders')}
-                  checked={notifyMeetings}
-                  onChange={setNotifyMeetings}
-                />
-                <NotificationToggle
                   label={t('sections.notifications.result_notifications')}
                   checked={notifyResults}
                   onChange={setNotifyResults}

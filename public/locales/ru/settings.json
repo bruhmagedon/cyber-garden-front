@@ -30,8 +30,7 @@
     },
     "notifications": {
       "title": "Уведомления",
-      "meeting_reminders": "Напоминания о запланированных встречах",
-      "result_notifications": "Уведомления о сформированных итогах и to-do"
+      "result_notifications": "Уведомления о финансах"
     },
     "storage": {
       "title": "Хранение и экспорт",

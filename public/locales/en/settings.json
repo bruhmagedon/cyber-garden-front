@@ -30,8 +30,7 @@
     },
     "notifications": {
       "title": "Notifications",
-      "meeting_reminders": "Reminders for scheduled meetings",
-      "result_notifications": "Notifications about generated results and to-do"
+      "result_notifications": "Notifications about finance"
     },
     "storage": {
       "title": "Storage and Export",

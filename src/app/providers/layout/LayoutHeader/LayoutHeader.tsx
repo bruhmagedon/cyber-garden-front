@@ -44,7 +44,7 @@ export const LayoutHeader = ({ className }: HeaderProps) => {
               className="animate-in fade-in slide-in-from-left-4 duration-500 text-2xl font-bold tracking-tight md:text-3xl cursor-pointer hover:opacity-80 transition-opacity"
             >
               <span className="bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
-                {'Unknown'}
+                {'Финансовый помощник'}
               </span>
             </h1>
           </div>

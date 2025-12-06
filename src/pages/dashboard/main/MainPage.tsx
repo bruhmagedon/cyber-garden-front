@@ -13,6 +13,7 @@ import { GoalsSection } from '@/pages/dashboard/main/modules/GoalsSection';
 import { MLDetailsSection } from '@/pages/dashboard/main/modules/MLDetailsSection';
 import { MetricsSection } from '@/pages/dashboard/main/modules/MetricsSection';
 import { MetaStatsGrid } from '@/pages/dashboard/main/modules/MetaStatsGrid';
+import { TrendsSection } from '@/pages/dashboard/main/modules/TrendsSection';
 import { UploadPlaceholder } from '@/pages/dashboard/main/modules/UploadPlaceholder';
 import { AIChatWidget } from '@/features/ai-chat/AIChatWidget';
 
@@ -35,6 +36,12 @@ const MainPageAsync = () => {
     currentTransactions,
     apiData,
     txSearch,
+    overviewYear,
+    setOverviewYear,
+    overviewMonth,
+    setOverviewMonth,
+    availableYears,
+    availableMonths,
   } = useMainDashboardModel();
 
   const handleTabChange = useCallback(
@@ -71,7 +78,7 @@ const MainPageAsync = () => {
                 )}
               </TabsList>
             </BlurFade>
-            {apiData && <MetaStatsGrid meta={apiData.meta} />}
+
             <TabsContent value="overview" className="space-y-6 focus-visible:outline-none">
               {isRealData ? (
                 <OverviewSection
@@ -84,10 +91,17 @@ const MainPageAsync = () => {
                   activeChartItem={activeChartItem}
                   centerDisplayValue={centerDisplayValue}
                   centerDisplayLabel={centerDisplayLabel}
+                  selectedYear={overviewYear}
+                  onYearChange={setOverviewYear}
+                  selectedMonth={overviewMonth}
+                  onMonthChange={setOverviewMonth}
+                  years={availableYears}
+                  months={availableMonths}
                 />
               ) : (
                 <UploadPlaceholder />
               )}
+              {isRealData && <TrendsSection transactions={apiData!.rows} />}
             </TabsContent>
             <TabsContent
               value="transactions"
@@ -107,11 +121,13 @@ const MainPageAsync = () => {
             </TabsContent>
             {isRealData && (
               <TabsContent value="ml_details" className="space-y-6 focus-visible:outline-none">
+                <MetaStatsGrid meta={apiData!.meta} />
                 <MLDetailsSection transactions={currentTransactions} />
               </TabsContent>
             )}
             {apiData?.metrics && (
               <TabsContent value="metrics" className="space-y-6 focus-visible:outline-none">
+                <MetaStatsGrid meta={apiData.meta} />
                 <MetricsSection metrics={apiData.metrics} />
               </TabsContent>
             )}
