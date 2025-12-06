@@ -58,14 +58,24 @@ export function ThemeProvider({
   }, [theme]);
 
   const setTheme = (newTheme: Theme) => {
-    // При выборе системного режима удаляем ключ из localStorage,
-    // иначе сохраняем выбранную тему
+    const root = window.document.documentElement;
+    root.classList.add('disable-transitions');
+    
+    // Force reflow
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    window.getComputedStyle(root).opacity;
+
     if (newTheme === 'system') {
       localStorage.removeItem(storageKey);
     } else {
       localStorage.setItem(storageKey, newTheme);
     }
     setThemeState(newTheme);
+
+    // Remove class after a small delay to allow the theme change to apply without animation
+    setTimeout(() => {
+      root.classList.remove('disable-transitions');
+    }, 0);
   };
 
   const value: ThemeProviderState = { theme, setTheme };

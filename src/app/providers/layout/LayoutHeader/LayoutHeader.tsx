@@ -38,9 +38,9 @@ export const LayoutHeader = ({ className }: HeaderProps) => {
   return (
     <header
       className={cn(
-        'sticky top-0 z-40 w-full',
+        'sticky top-6 mt-6 z-40 w-[92%] max-w-7xl mx-auto rounded-2xl',
         'h-(--header-height)',
-        'border-b border-border/40 bg-background/10 backdrop-blur-xl',
+        'border border-white/10 bg-background/60 backdrop-blur-xl shadow-xl shadow-black/5',
         'px-6 py-4 md:px-8',
         'transition-all duration-300',
         className,

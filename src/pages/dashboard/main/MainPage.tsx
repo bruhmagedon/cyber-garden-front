@@ -1,9 +1,6 @@
 'use client';
 
 import { useCallback } from 'react';
-import { cn } from '@/shared/utils';
-import { StarsBackground } from '@/shared/ui/backgrounds/stars';
-import DotPattern from '@/shared/ui/magic/dot-pattern';
 import BlurFade from '@/shared/ui/magic/blur-fade';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/Tabs/Tabs';
 import {
@@ -21,7 +18,7 @@ import { AIChatWidget } from '@/features/ai-chat/AIChatWidget';
 
 const MainPageAsync = () => {
   const {
-    starColor,
+
     isRealData,
     activeTab,
     setActiveTab,
@@ -46,20 +43,7 @@ const MainPageAsync = () => {
   );
 
   return (
-    <StarsBackground
-      starColor={starColor}
-      className={cn(
-        'min-h-(--main-height) bg-background overflow-x-hidden relative px-20 py-10',
-        'dark:bg-[radial-gradient(ellipse_at_bottom,#262626_0%,#000_100%)]',
-        'bg-[radial-gradient(ellipse_at_bottom,#f5f5f5_0%,#fff_100%)]',
-      )}
-    >
-      <DotPattern
-        className={cn(
-          '[mask-image:radial-gradient(800px_circle_at_center,white,transparent)]',
-          'opacity-30 dark:opacity-20 fixed inset-0 z-0 text-primary/50',
-        )}
-      />
+    <>
 
       <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-8 relative z-10">
         {isRealData ? (
@@ -87,9 +71,7 @@ const MainPageAsync = () => {
                 )}
               </TabsList>
             </BlurFade>
-
             {apiData && <MetaStatsGrid meta={apiData.meta} />}
-
             <TabsContent value="overview" className="space-y-6 focus-visible:outline-none">
               {isRealData ? (
                 <OverviewSection
@@ -107,7 +89,6 @@ const MainPageAsync = () => {
                 <UploadPlaceholder />
               )}
             </TabsContent>
-
             <TabsContent
               value="transactions"
               className="space-y-6 focus-visible:outline-none relative z-10"
@@ -118,20 +99,17 @@ const MainPageAsync = () => {
                 <UploadPlaceholder />
               )}
             </TabsContent>
-
             <TabsContent
               value="goals"
               className="space-y-6 focus-visible:outline-none bg-background/60 backdrop-blur"
             >
               {isRealData ? <GoalsSection hasData /> : <UploadPlaceholder />}
             </TabsContent>
-
             {isRealData && (
               <TabsContent value="ml_details" className="space-y-6 focus-visible:outline-none">
                 <MLDetailsSection transactions={currentTransactions} />
               </TabsContent>
             )}
-
             {apiData?.metrics && (
               <TabsContent value="metrics" className="space-y-6 focus-visible:outline-none">
                 <MetricsSection metrics={apiData.metrics} />
@@ -145,7 +123,7 @@ const MainPageAsync = () => {
         )}
       </div>
       <AIChatWidget />
-    </StarsBackground>
+    </>
   );
 };
 

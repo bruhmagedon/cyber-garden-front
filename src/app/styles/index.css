@@ -185,3 +185,8 @@
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-text-tertiary;
 }
+
+.disable-transitions * {
+  transition: none !important;
+  animation: none !important;
+}
