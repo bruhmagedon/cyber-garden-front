@@ -44,13 +44,64 @@ const TypewriterText = ({ text, onComplete }: { text: string; onComplete?: () =>
   return <span>{displayedText}</span>;
 };
 
+// --- Subcomponent: Chat Input ---
+const ChatInput = ({ 
+  onSendMessage, 
+  isAiProcessing 
+}: { 
+  onSendMessage: (text: string) => void; 
+  isAiProcessing: boolean;
+}) => {
+  const [inputValue, setInputValue] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const text = inputValue.trim();
+    if (!text || isAiProcessing) return;
+    
+    onSendMessage(text);
+    setInputValue('');
+  };
+
+  return (
+    <div className="p-4 bg-background/40 backdrop-blur-md border-t border-border/40">
+      <form 
+        onSubmit={handleSubmit} 
+        className={cn(
+          "relative flex items-center gap-2 p-1.5 pl-4 rounded-full transition-all duration-300",
+          "bg-fill-secondary/50 border border-transparent focus-within:bg-background focus-within:border-primary/20 focus-within:shadow-lg focus-within:shadow-primary/5"
+        )}
+      >
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder="Спросите что-нибудь..."
+          className="flex-1 bg-transparent text-sm outline-none placeholder:text-text-tertiary min-w-0"
+        />
+        <button
+          type="submit"
+          disabled={!inputValue.trim() || isAiProcessing}
+          className={cn(
+             "p-2.5 rounded-full transition-all duration-200 shrink-0",
+             inputValue.trim() && !isAiProcessing
+               ? "bg-primary text-primary-foreground shadow-md hover:scale-105 active:scale-95" 
+               : "bg-fill-tertiary text-text-tertiary cursor-not-allowed opacity-50"
+          )}
+        >
+          <Send className={cn("w-4 h-4", inputValue.trim() && !isAiProcessing && "ml-0.5")} />
+        </button>
+      </form>
+    </div>
+  );
+};
+
 export const AIChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     { id: 'welcome', text: 'Привет! Я ваш AI-ассистент. Спросите меня о ваших финансах!', from: 'assistant', isTyping: false },
   ]);
-  const [inputValue, setInputValue] = useState('');
   const [isAiProcessing, setIsAiProcessing] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -70,11 +121,7 @@ export const AIChatWidget = () => {
     scrollToBottom();
   }, [messages, isAiProcessing, isOpen]);
 
-  const handleSendMessage = (e?: React.FormEvent) => {
-    e?.preventDefault();
-    const text = inputValue.trim();
-    if (!text) return;
-
+  const handleSendMessage = (text: string) => {
     // 1. User Message
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
@@ -83,7 +130,6 @@ export const AIChatWidget = () => {
     };
 
     setMessages((prev) => [...prev, newMessage]);
-    setInputValue('');
     setIsAiProcessing(true);
 
     // 2. Mock AI Delay & Response
@@ -217,35 +263,7 @@ export const AIChatWidget = () => {
             </div>
 
             {/* --- Input Area --- */}
-            <div className="p-4 bg-background/40 backdrop-blur-md border-t border-border/40">
-              <form 
-                onSubmit={handleSendMessage} 
-                className={cn(
-                  "relative flex items-center gap-2 p-1.5 pl-4 rounded-full transition-all duration-300",
-                  "bg-fill-secondary/50 border border-transparent focus-within:bg-background focus-within:border-primary/20 focus-within:shadow-lg focus-within:shadow-primary/5"
-                )}
-              >
-                <input
-                  type="text"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Спросите что-нибудь..."
-                  className="flex-1 bg-transparent text-sm outline-none placeholder:text-text-tertiary min-w-0"
-                />
-                <button
-                  type="submit"
-                  disabled={!inputValue.trim() || isAiProcessing}
-                  className={cn(
-                     "p-2.5 rounded-full transition-all duration-200 shrink-0",
-                     inputValue.trim() && !isAiProcessing
-                       ? "bg-primary text-primary-foreground shadow-md hover:scale-105 active:scale-95" 
-                       : "bg-fill-tertiary text-text-tertiary cursor-not-allowed opacity-50"
-                  )}
-                >
-                  <Send className={cn("w-4 h-4", inputValue.trim() && !isAiProcessing && "ml-0.5")} />
-                </button>
-              </form>
-            </div>
+            <ChatInput onSendMessage={handleSendMessage} isAiProcessing={isAiProcessing} />
           </motion.div>
         )}
       </AnimatePresence>

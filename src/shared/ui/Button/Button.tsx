@@ -17,8 +17,8 @@ const buttonVariants = cva(
         // Стандартная кнопка (для совместимости с shadcn)
         default: 'bg-primary text-on-primary hover:bg-primary-hover',
         destructive: 'bg-destructive text-white hover:bg-destructive/90',
-        outline: 'border border-fill-quaternary bg-transparent hover:bg-hover-primary',
-        ghost: 'hover:bg-hover-primary',
+        outline: 'border border-fill-quaternary bg-transparent hover:bg-fill-secondary',
+        ghost: 'hover:bg-fill-secondary',
         link: 'text-primary underline-offset-4 hover:underline',
       },
       size: {

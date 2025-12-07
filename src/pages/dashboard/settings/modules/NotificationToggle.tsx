@@ -18,9 +18,6 @@ export const NotificationToggle = ({ label, checked, onChange }: NotificationTog
 
         <Switch checked={checked} onCheckedChange={onChange} />
       </div>
-
-      {/* Разделитель */}
-      <div className="h-px bg-fill-quaternary" />
     </div>
   );
 };

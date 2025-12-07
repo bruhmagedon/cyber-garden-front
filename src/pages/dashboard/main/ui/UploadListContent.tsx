@@ -6,6 +6,7 @@ import {
   FileUploadList,
   useFileUpload,
 } from '@/shared/ui/file-upload';
+import { Button } from '@/shared/ui';
 
 export const UploadListContent = ({ isUploading }: { isUploading: boolean }) => {
   const files = useFileUpload((state) => Array.from(state.files.keys()));
@@ -30,9 +31,9 @@ export const UploadListContent = ({ isUploading }: { isUploading: boolean }) => 
             <Loader2 className="animate-spin text-primary" size={20} />
           ) : (
             <FileUploadItemDelete asChild>
-              <button className="rounded p-1 text-red-500 hover:bg-red-50">
+              <Button variant={'ghost'} className="p-1 text-red-500" size="icon">
                 <XCircle size={18} />
-              </button>
+              </Button>
             </FileUploadItemDelete>
           )}
         </FileUploadItem>

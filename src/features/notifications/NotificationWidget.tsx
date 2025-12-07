@@ -10,14 +10,14 @@ import { Skeleton } from '@/shared/ui';
 export const NotificationWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   // Simulate fetching
   useEffect(() => {
-     if (isOpen) {
-        setIsLoading(true);
-        const timer = setTimeout(() => setIsLoading(false), 1500);
-        return () => clearTimeout(timer);
-     }
+    if (isOpen) {
+      setIsLoading(true);
+      const timer = setTimeout(() => setIsLoading(false), 1500);
+      return () => clearTimeout(timer);
+    }
   }, [isOpen]); // This generic useState usage is incorrect for side effects, should be useEffect. Fixing in content.
 
   // Local state for notifications to allow "mark as read" / "delete"
@@ -42,13 +42,13 @@ export const NotificationWidget = () => {
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "group relative rounded-full p-2.5 transition-all outline-none",
-          isOpen 
-            ? "bg-primary/10 text-primary border border-primary/20" 
-            : "bg-background/50 border border-border/50 text-text-secondary hover:border-border hover:bg-fill-secondary hover:text-foreground hover:shadow-sm"
+          'group relative rounded-full p-2.5 transition-all outline-none',
+          isOpen
+            ? 'bg-primary/10 text-primary border border-primary/20'
+            : 'bg-background/50 border border-border/50 text-text-secondary hover:border-border hover:bg-fill-secondary hover:text-foreground hover:shadow-sm',
         )}
       >
-        <Bell className={cn("h-5 w-5", isOpen && "fill-current")} />
+        <Bell className={cn('h-5 w-5', isOpen && 'fill-current')} />
         {unreadCount > 0 && (
           <span className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-background animate-[pulse_3s_infinite]" />
         )}
@@ -61,7 +61,7 @@ export const NotificationWidget = () => {
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ type: "spring", duration: 0.3 }}
+            transition={{ type: 'spring', duration: 0.3 }}
             className="absolute right-0 mt-3 w-[380px] origin-top-right rounded-2xl border border-border bg-background/95 backdrop-blur-xl shadow-2xl overflow-hidden"
           >
             {/* Header */}
@@ -88,17 +88,17 @@ export const NotificationWidget = () => {
             {/* List */}
             <div className="max-h-[400px] overflow-y-auto custom-scrollbar p-2 space-y-1">
               {isLoading ? (
-                 <div className="space-y-3 p-2">
-                    {[1, 2, 3].map((i) => (
-                       <div key={i} className="flex gap-3 items-start">
-                          <Skeleton className="w-8 h-8 rounded-full shrink-0" />
-                          <div className="space-y-2 flex-1">
-                             <Skeleton className="h-4 w-3/4" />
-                             <Skeleton className="h-10 w-full" />
-                          </div>
-                       </div>
-                    ))}
-                 </div>
+                <div className="space-y-3 p-2">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex gap-3 items-start">
+                      <Skeleton className="w-8 h-8 rounded-full shrink-0" />
+                      <div className="space-y-2 flex-1">
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-10 w-full" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               ) : notifications.length > 0 ? (
                 notifications.map((note) => (
                   <motion.div
@@ -108,20 +108,26 @@ export const NotificationWidget = () => {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, height: 0, padding: 0, margin: 0 }}
                     className={cn(
-                      "relative group flex gap-3 p-3 rounded-xl transition-all border border-transparent",
-                      note.read 
-                        ? "hover:bg-fill-secondary/50 text-text-secondary" 
-                        : "bg-primary/5 border-primary/10 hover:bg-primary/10 text-foreground"
+                      'relative group flex gap-3 p-3 rounded-xl transition-all border border-transparent',
+                      note.read
+                        ? 'hover:bg-fill-secondary/50 text-text-secondary'
+                        : 'bg-primary/5 border-primary/10 hover:bg-primary/10 text-foreground',
                     )}
                   >
                     {/* Icon */}
-                    <div className={cn(
-                      "shrink-0 w-8 h-8 rounded-full flex items-center justify-center border",
-                      note.type === 'budget_limit'
-                        ? "bg-red-500/10 border-red-500/20 text-red-500"
-                        : "bg-blue-500/10 border-blue-500/20 text-blue-500"
-                    )}>
-                      {note.type === 'budget_limit' ? <AlertCircle className="w-4 h-4" /> : <Info className="w-4 h-4" />}
+                    <div
+                      className={cn(
+                        'shrink-0 w-8 h-8 rounded-full flex items-center justify-center border',
+                        note.type === 'budget_limit'
+                          ? 'bg-red-500/10 border-red-500/20 text-red-500'
+                          : 'bg-blue-500/10 border-blue-500/20 text-blue-500',
+                      )}
+                    >
+                      {note.type === 'budget_limit' ? (
+                        <AlertCircle className="w-4 h-4" />
+                      ) : (
+                        <Info className="w-4 h-4" />
+                      )}
                     </div>
 
                     {/* Content */}
@@ -137,21 +143,23 @@ export const NotificationWidget = () => {
                       <p className="text-xs leading-relaxed opacity-90 line-clamp-2">
                         {note.type === 'budget_limit'
                           ? `Внимание! Вы превышаете лимит бюджета в категории "Рестораны".`
-                          : typeof note.payload === 'object' ? 'Обновление системы успешно завершено.' : String(note.payload)}
+                          : typeof note.payload === 'object'
+                            ? 'Обновление системы успешно завершено.'
+                            : String(note.payload)}
                       </p>
                     </div>
 
                     {/* Delete Action (visible on hover) */}
                     <button
                       onClick={(e) => handleDelete(note.id, e)}
-                      className="absolute top-2 right-2 p-1.5 rounded-lg bg-background border border-border opacity-0 group-hover:opacity-100 transition-all hover:bg-red-50 hover:text-red-500 hover:border-red-200"
+                      className="absolute top-2 right-2 p-1.5 rounded-lg bg-background border border-border opacity-0 group-hover:opacity-100 transition-all hover:bg-fill-secondary"
                     >
                       <Trash2 className="w-3 h-3" />
                     </button>
-                    
+
                     {/* Unread Indicator */}
                     {!note.read && (
-                       <div className="absolute top-3 left-0 w-1 h-6 bg-primary rounded-r-full" />
+                      <div className="absolute top-3 left-0 w-1 h-6 bg-primary rounded-r-full" />
                     )}
                   </motion.div>
                 ))
@@ -174,11 +182,9 @@ export const NotificationWidget = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      
+
       {/* Backdrop to close when clicking outside (alternative to click-outside hook for simplicity) */}
-      {isOpen && (
-        <div className="fixed inset-0 z-[-1]" onClick={() => setIsOpen(false)} />
-      )}
+      {isOpen && <div className="fixed inset-0 z-[-1]" onClick={() => setIsOpen(false)} />}
     </div>
   );
 };
