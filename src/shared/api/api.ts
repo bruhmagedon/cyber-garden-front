@@ -156,17 +156,12 @@ export const api = {
         return res.json();
     },
 
-    getTransactions: async (limit: number = 50, offset: number = 0): Promise<UploadResponse> => {
-        const params = new URLSearchParams({
-            limit: limit.toString(),
-            offset: offset.toString(),
-        });
-
-        const res = await fetch(`${API_BASE_URL}/transactions?${params.toString()}`, {
-             headers: {
+    getTransactions: async (): Promise<UploadResponse> => {
+        const res = await fetch(`${API_BASE_URL}/transactions/analytics`, {
+            headers: {
                 'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-             },
-             credentials: 'include',
+            },
+            credentials: 'include',
         });
 
         if (!res.ok) {
@@ -174,6 +169,13 @@ export const api = {
         }
 
         const data = await res.json();
+
+        // If backend already returns UploadResponse shape, use it directly
+        if (data && Array.isArray(data.rows)) {
+            return data as UploadResponse;
+        }
+
+        // Fallback: if items array returned, normalize it
         const items = Array.isArray(data) ? data : Array.isArray(data?.items) ? data.items : [];
         return normalizeTransactions(items);
     }

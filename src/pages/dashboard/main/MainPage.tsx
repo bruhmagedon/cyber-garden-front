@@ -16,6 +16,7 @@ import { MetaStatsGrid } from '@/pages/dashboard/main/modules/MetaStatsGrid';
 import { TrendsSection } from '@/pages/dashboard/main/modules/TrendsSection';
 import { UploadPlaceholder } from '@/pages/dashboard/main/modules/UploadPlaceholder';
 import { AIChatWidget } from '@/features/ai-chat/AIChatWidget';
+import { Loader } from '@/shared/ui';
 
 const MainPageAsync = () => {
   const {
@@ -26,6 +27,7 @@ const MainPageAsync = () => {
     setActiveSegmentLabel,
     hoveredLegendLabel,
     setHoveredLegendLabel,
+    isLoading,
     chartData,
     totalBudget,
     activeChartItem,
@@ -51,6 +53,11 @@ const MainPageAsync = () => {
   return (
     <>
       <div className="w-full mx-auto max-w-7xl p-4 md:p-6 space-y-8 relative z-10">
+        {isLoading && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center rounded-3xl bg-background/60 backdrop-blur">
+            <Loader classNameIcon="h-12 w-12 text-primary" />
+          </div>
+        )}
         {isRealData ? (
           <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full space-y-6">
             <BlurFade delay={0.2}>

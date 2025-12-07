@@ -8,6 +8,7 @@ type DashboardContextValue = {
   apiData: UploadResponse | null;
   setApiData: React.Dispatch<React.SetStateAction<UploadResponse | null>>;
   isUploading: boolean;
+  isLoading: boolean;
   isUploadDialogOpen: boolean;
   setIsUploadDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   handleUpload: (files: File[]) => Promise<void>;
@@ -35,7 +36,7 @@ export const DashboardProvider = ({ children }: { children: React.ReactNode }) =
         await uploadCsv(files[0]);
 
         // 2. Fetch processed data (using limit=1000 to get enough data for charts)
-        const result = await api.getTransactions(100, 0);
+        const result = await api.getTransactions();
 
         setApiData(result as UploadResponse);
 
@@ -57,6 +58,7 @@ export const DashboardProvider = ({ children }: { children: React.ReactNode }) =
       apiData,
       setApiData,
       isUploading: isUploading || isFetching,
+      isLoading: isUploading || isFetching,
       isUploadDialogOpen,
       setIsUploadDialogOpen,
       handleUpload,
@@ -69,7 +71,7 @@ export const DashboardProvider = ({ children }: { children: React.ReactNode }) =
     const load = async () => {
       try {
         setIsFetching(true);
-        const result = await api.getTransactions(100, 0);
+        const result = await api.getTransactions();
         setApiData(result);
       } catch (error) {
         console.error('Failed to fetch transactions', error);

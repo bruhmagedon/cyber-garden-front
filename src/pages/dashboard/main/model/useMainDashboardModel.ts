@@ -92,7 +92,7 @@ const mapChartData = (data: UploadResponse | null): ChartSlice[] => {
 };
 
 export const useMainDashboardModel = () => {
-  const { apiData, user } = useDashboardContext();
+  const { apiData, user, isLoading } = useDashboardContext();
   const { theme } = useTheme();
 
   const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
@@ -275,6 +275,7 @@ export const useMainDashboardModel = () => {
     centerDisplayValue,
     centerDisplayLabel,
     isRealData,
+    isLoading,
     // New exports
     overviewYear,
     setOverviewYear,
