@@ -1,11 +1,12 @@
+
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/features/auth/model/store/authStore';
 import { getWebSocketUrl } from '@/shared/config/api/config';
 
 export interface Notification {
-  id: number;
-  type: 'budget_limit' | 'system';
-  payload: string;
+  id: string;
+  type: string;
+  text: string;
   createdAt: string;
   read: boolean;
 }
@@ -20,7 +21,7 @@ export const useNotificationSocket = () => {
       return;
     }
 
-    const wsUrl = `${getWebSocketUrl()}/ws/notifications?token=${accessToken}`;
+    const wsUrl = `${getWebSocketUrl()}/api/ws/notifications?token=${accessToken}`;
     const socket = new WebSocket(wsUrl);
 
     socket.onopen = () => {
@@ -31,17 +32,15 @@ export const useNotificationSocket = () => {
     socket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        // Assuming the backend sends a single notification object or a list
-        // Adjust based on actual backend format.
-        // For now, let's assume it sends a new notification object.
-        const newNotification = {
-            ...data,
+        
+        // Handle the specific incoming format
+        // { user_id: "...", text: "...", type: "..." }
+        const newNotification: Notification = {
+            id: crypto.randomUUID(), // Generate unique ID to fix deletion bug
+            type: data.type || 'system',
+            text: data.text || '', 
+            createdAt: new Date().toISOString(),
             read: false,
-             // Ensure id exists or generate one if missing (though backend usually provides it)
-             // and ensure other fields are present.
-             // If payload is a string, keep it. If object, maybe stringify or extract message?
-             // The mock data had payload as simple content.
-             // We might need to map backend data to our Notification interface if they differ.
         };
 
         setNotifications((prev) => [newNotification, ...prev]);
@@ -65,7 +64,7 @@ export const useNotificationSocket = () => {
     };
   }, [accessToken]);
 
-  const markAsRead = (id: number) => {
+  const markAsRead = (id: string) => {
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, read: true } : n))
     );
@@ -77,7 +76,7 @@ export const useNotificationSocket = () => {
     );
   };
 
-  const removeNotification = (id: number) => {
+  const removeNotification = (id: string) => {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
   };
 

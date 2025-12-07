@@ -23,7 +23,7 @@ export const NotificationWidget = () => {
     markAllAsRead();
   };
 
-  const handleDelete = (id: number, e: React.MouseEvent) => {
+  const handleDelete = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     removeNotification(id);
   };
@@ -111,6 +111,8 @@ export const NotificationWidget = () => {
                     >
                       {note.type === 'budget_limit' ? (
                         <AlertCircle className="w-4 h-4" />
+                      ) : note.type === 'transaction-classifier' ? (
+                         <Check className="w-4 h-4" />
                       ) : (
                         <Info className="w-4 h-4" />
                       )}
@@ -120,18 +122,18 @@ export const NotificationWidget = () => {
                     <div className="flex-1 flex flex-col gap-0.5 min-w-0">
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-xs font-semibold truncate">
-                          {note.type === 'budget_limit' ? 'Лимит бюджета' : 'Системное сообщение'}
+                          {note.type === 'budget_limit' 
+                            ? 'Лимит бюджета' 
+                            : note.type === 'transaction-classifier'
+                              ? 'Классификация транзакций'
+                              : 'Системное сообщение'}
                         </span>
                         <span className="text-[10px] text-text-tertiary shrink-0">
                           {new Date(note.createdAt).toLocaleDateString()}
                         </span>
                       </div>
                       <p className="text-xs leading-relaxed opacity-90 line-clamp-2">
-                        {note.type === 'budget_limit'
-                          ? note.payload // Assuming payload is the message for budget limits too, or fall back to static text if structure differs
-                          : typeof note.payload === 'object'
-                            ? JSON.stringify(note.payload)
-                            : String(note.payload)}
+                        {note.text}
                       </p>
                     </div>
 
