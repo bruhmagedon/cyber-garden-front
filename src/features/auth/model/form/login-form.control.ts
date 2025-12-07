@@ -5,13 +5,7 @@ import { VALIDATION_MESSAGES } from './validation-messages';
 
 const LoginFormSchema = z.object({
   email: z.string().min(1, VALIDATION_MESSAGES.required).email(VALIDATION_MESSAGES.invalid_email),
-  password: z
-    .string()
-    .min(8, VALIDATION_MESSAGES.password_min_length)
-    .regex(/\d/, VALIDATION_MESSAGES.password_must_contain_number)
-    .regex(/[A-Z]/, VALIDATION_MESSAGES.password_must_contain_uppercase)
-    .regex(/[a-z]/, VALIDATION_MESSAGES.password_must_contain_lowercase)
-    .regex(/[^A-Za-z0-9]/, VALIDATION_MESSAGES.password_must_contain_special),
+  password: z.string().min(1, VALIDATION_MESSAGES.required),
 });
 
 export type LoginFormValues = z.infer<typeof LoginFormSchema>;

@@ -38,6 +38,14 @@ html {
     --fill-secondary: #f8f9fa;
     --fill-tertiary: #e8eaed;
     --fill-quaternary: #dadce0;
+
+    /* Input Component Colors */
+    --muted-foreground: #5f6368;
+    --primary-foreground: #ffffff;
+    --input: #dbdbdb;
+    --ring: #2463eb;
+    --destructive: #ff6a55;
+    --destructive-foreground: #ffffff;
   }
 
   /* ==================== DARK THEME ==================== */
@@ -72,6 +80,14 @@ html {
     --hover-primary: #1f2326;
     --hover-secondary: #2f353d;
     --hover-tertiary: #3d444d;
+
+    /* Input Component Colors */
+    --muted-foreground: #6f767e;
+    --primary-foreground: #e9ecf3;
+    --input: #3b4048;
+    --ring: #2463eb;
+    --destructive: #ff6a55;
+    --destructive-foreground: #ffffff;
   }
 }
 

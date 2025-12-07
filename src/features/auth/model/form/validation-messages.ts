@@ -1,7 +1,7 @@
 export const VALIDATION_MESSAGES = {
   required: 'Это поле обязательно для заполнения',
   invalid_email: 'Введите корректный email адрес',
-  password_min_length: 'Пароль должен содержать минимум 8 символов',
+  password_min_length: 'Это поле обязательно для заполнения',
   password_must_contain_number: 'Пароль должен содержать хотя бы одну цифру',
   password_must_contain_uppercase: 'Пароль должен содержать хотя бы одну заглавную букву',
   password_must_contain_lowercase: 'Пароль должен содержать хотя бы одну строчную букву',

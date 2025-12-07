@@ -51,6 +51,13 @@
   --color-background-secondary: var(--background-secondary);
   --color-foreground: var(--foreground);
   --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-muted-foreground: var(--muted-foreground);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
 
   --color-danger: #ff6a55;
 
@@ -149,9 +156,6 @@
       transform: rotate(270deg);
     }
   }
-  --color-destructive-foreground: oklch(1 0 0);
-  --color-color-destructive-foreground: var(----color-destructive-foreground);
-  --color-color-color-destructive-foreground: var(----color-color-destructive-foreground)
 }
 /*---break---*/
 @layer base {
@@ -168,7 +172,6 @@
 :root {
   scrollbar-width: thin;
   scrollbar-color: var(--fill-quaternary) transparent;
-  --destructive-foreground: oklch(1 0 0);
 }
 
 ::-webkit-scrollbar {
@@ -198,7 +201,6 @@
 /*---break---*/
 
 .dark {
-  --destructive-foreground: oklch(1 0 0);
 }
 
 /*---break---*/

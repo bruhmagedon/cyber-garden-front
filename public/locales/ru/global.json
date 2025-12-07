@@ -82,7 +82,7 @@
   "validation": {
     "required": "Это поле обязательно",
     "invalid_email": "Неверный формат email",
-    "invalid_password": "Пароль должен содержать минимум 8 символов",
+    "invalid_password": "Это поле обязательно для заполнения",
     "passwords_not_match": "Пароли не совпадают",
     "min_length": "Минимальная длина: {{count}} символов",
     "max_length": "Максимальная длина: {{count}} символов",

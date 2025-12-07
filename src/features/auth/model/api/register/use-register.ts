@@ -40,7 +40,7 @@ export function useRegister() {
       body: {
         email: data.email,
         password: data.password,
-        fullName: (data as any).full_name ?? (data as any).fullName ?? '',
+        full_name: (data as any).full_name ?? (data as any).fullName ?? '',
       } as any,
       headers: { 'Content-Type': 'application/json' } as any,
     });

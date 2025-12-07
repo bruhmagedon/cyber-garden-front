@@ -24,6 +24,13 @@ export const LoginForm = () => {
     }
   }, [isSuccess, navigate, reset]);
 
+  // Сброс формы при размонтировании
+  useEffect(() => {
+    return () => {
+      reset();
+    };
+  }, [reset]);
+
   const onSubmit = (data: LoginFormValues) => {
     login(data.email, data.password);
   };

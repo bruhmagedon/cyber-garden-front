@@ -27,6 +27,13 @@ export const RegisterForm = () => {
     }
   }, [isSuccess, navigate, reset]);
 
+  // Сброс формы при размонтировании
+  useEffect(() => {
+    return () => {
+      reset();
+    };
+  }, [reset]);
+
   const onSubmit = (data: RegisterFormValues) => {
     registerUser({
       full_name: data.fullName,
@@ -47,54 +54,37 @@ export const RegisterForm = () => {
         <div className="flex w-full flex-col gap-5">
           <div className="flex w-full flex-col gap-3">
             <Label className="flex-1">Введите имя и фамилию</Label>
-            <Input
-              type="text"
-              {...register('fullName')}
-              placeholder="Имя Фамилия"
-              className="text-text-secondary placeholder:text-text-secondary"
-            />
+            <Input type="text" {...register('fullName')} placeholder="Имя Фамилия" />
             <FormError message={errors.fullName?.message} />
           </div>
 
           <div className="flex w-full flex-col gap-3">
             <Label className="flex-1">Введите почту</Label>
-            <Input
-              type="email"
-              {...register('email')}
-              placeholder="example@mail.com"
-              className="text-text-primary"
-            />
+            <Input type="email" {...register('email')} placeholder="example@mail.com" />
             <FormError message={errors.email?.message} />
           </div>
 
           <div className="flex w-full flex-col gap-3">
             <Label className="flex-1">Придумайте пароль</Label>
             <div className="relative flex w-full items-center">
-              {passwordFocused && password && <PasswordValidator password={password} />}
               <PasswordInput
                 {...register('password')}
                 onFocus={() => setPasswordFocused(true)}
                 onBlur={() => setPasswordFocused(false)}
                 placeholder="Введите пароль"
-                className="text-text-secondary placeholder:text-text-secondary"
               />
             </div>
             <FormError message={errors.password?.message} />
           </div>
-
           <div className="flex w-full flex-col gap-3">
             <Label className="py-0.5 text-text-primary">Подтвердите пароль</Label>
             <PasswordInput
               {...register('confirmPassword')}
               placeholder="Введите пароль"
-              className="text-text-secondary placeholder:text-text-secondary"
             />
             <FormError message={errors.confirmPassword?.message} />
           </div>
-
-
         </div>
-
         <div className="flex w-full flex-col items-center gap-5">
           <Button
             onClick={handleSubmit(onSubmit)}
@@ -105,7 +95,6 @@ export const RegisterForm = () => {
           >
             Зарегистрироваться
           </Button>
-
           <AuthNavLink text="Есть аккаунт?" linkText="Войти" onClick={handleLogin} />
         </div>
       </AuthFormWrapper>

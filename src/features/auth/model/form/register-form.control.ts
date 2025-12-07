@@ -7,15 +7,8 @@ const RegisterFormSchema = z
   .object({
     fullName: z.string().min(1, VALIDATION_MESSAGES.required),
     email: z.string().min(1, VALIDATION_MESSAGES.required).email(VALIDATION_MESSAGES.invalid_email),
-    password: z
-      .string()
-      .min(8, VALIDATION_MESSAGES.password_min_length)
-      .regex(/\d/, VALIDATION_MESSAGES.password_must_contain_number)
-      .regex(/[A-Z]/, VALIDATION_MESSAGES.password_must_contain_uppercase)
-      .regex(/[a-z]/, VALIDATION_MESSAGES.password_must_contain_lowercase)
-      .regex(/[^A-Za-z0-9]/, VALIDATION_MESSAGES.password_must_contain_special),
+    password: z.string().min(1, VALIDATION_MESSAGES.required),
     confirmPassword: z.string().min(1, VALIDATION_MESSAGES.required),
-    acceptTerms: z.boolean().refine((val) => val === true, VALIDATION_MESSAGES.must_accept_terms),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: VALIDATION_MESSAGES.passwords_must_match,
@@ -29,7 +22,6 @@ export const defaultRegisterValues: RegisterFormValues = {
   email: '',
   password: '',
   confirmPassword: '',
-  acceptTerms: false,
 };
 
 export const {
