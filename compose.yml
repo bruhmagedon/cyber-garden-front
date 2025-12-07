@@ -1,0 +1,13 @@
+services:
+  frontend:
+    build: .
+    environment:
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+    ports:
+      - "127.0.0.1:8101:80"
+    networks:
+      - ci-net
+
+networks:
+  ci-net:
+    external: true
