@@ -19,7 +19,6 @@ import { AIChatWidget } from '@/features/ai-chat/AIChatWidget';
 
 const MainPageAsync = () => {
   const {
-
     isRealData,
     activeTab,
     setActiveTab,
@@ -51,7 +50,6 @@ const MainPageAsync = () => {
 
   return (
     <>
-
       <div className="w-full mx-auto p-4 md:p-6 space-y-8 relative z-10">
         {isRealData ? (
           <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full space-y-6">

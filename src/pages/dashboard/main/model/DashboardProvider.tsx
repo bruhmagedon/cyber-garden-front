@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { MOCK_DATA } from '@/pages/dashboard/main/mockData';
 import { UploadResponse, api } from '@/shared/api/api';
 import { useImportTransactions } from '@/features/csv-upload/model/use-import-transactions';
@@ -37,12 +37,7 @@ export const DashboardProvider = ({ children }: { children: React.ReactNode }) =
         // 2. Fetch processed data (using limit=1000 to get enough data for charts)
         const result = await api.getTransactions(100, 0);
 
-        // If backend returns detailed rows, store them; otherwise keep mock data
-        if (result && Array.isArray((result as any).rows)) {
-          setApiData(result as UploadResponse);
-        } else {
-          setApiData(null);
-        }
+        setApiData(result as UploadResponse);
 
         if (result) {
           setIsUploadDialogOpen(false);
@@ -68,6 +63,23 @@ export const DashboardProvider = ({ children }: { children: React.ReactNode }) =
     }),
     [apiData, handleUpload, isUploadDialogOpen, isUploading, isFetching],
   );
+
+  useEffect(() => {
+    // Initial fetch of transactions on mount
+    const load = async () => {
+      try {
+        setIsFetching(true);
+        const result = await api.getTransactions(100, 0);
+        setApiData(result);
+      } catch (error) {
+        console.error('Failed to fetch transactions', error);
+      } finally {
+        setIsFetching(false);
+      }
+    };
+
+    load();
+  }, []);
 
   return <DashboardContext.Provider value={value}>{children}</DashboardContext.Provider>;
 };
