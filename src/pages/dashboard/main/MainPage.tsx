@@ -50,7 +50,7 @@ const MainPageAsync = () => {
 
   return (
     <>
-      <div className="w-full mx-auto max-w-[1150px] p-4 md:p-6 space-y-8 relative z-10">
+      <div className="w-full mx-auto max-w-7xl p-4 md:p-6 space-y-8 relative z-10">
         {isRealData ? (
           <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full space-y-6">
             <BlurFade delay={0.2}>
