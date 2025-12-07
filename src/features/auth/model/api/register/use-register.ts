@@ -1,15 +1,53 @@
-import { publicRqClient } from '@/shared/api/instance';
-import type { ApiSchemas } from '@/shared/api/schema';
+import { useMutation } from '@tanstack/react-query';
+import { API_CONFIG } from '@/shared/config/api/config';
 import { useAuthStore } from '../../store';
 import type { AuthTokenResponse } from '../../types';
 import { normalizeAuthUser } from '../../types';
 import { formatErrorMessage } from '../utils/format-error';
 
+type RegisterPayload = {
+  email: string;
+  name: string;
+  password: string;
+};
+
+type ValidationErrorItem = {
+  loc: (string | number)[];
+  msg: string;
+  type: string;
+};
+
+type RegisterError = {
+  detail?: string | ValidationErrorItem[];
+  message?: string;
+};
+
+const registerRequest = async ({ email, name, password }: RegisterPayload): Promise<AuthTokenResponse> => {
+  const response = await fetch(`${API_CONFIG.API_BASE_URL}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ email, name, password }),
+  });
+
+  const data = (await response.json().catch(() => null)) as AuthTokenResponse | RegisterError | null;
+
+  if (!response.ok || !data) {
+    const errorPayload = (data as RegisterError) ?? {};
+    throw {
+      detail: errorPayload.detail ?? errorPayload.message ?? 'Не удалось выполнить регистрацию',
+    } satisfies RegisterError;
+  }
+
+  return data as AuthTokenResponse;
+};
+
 export function useRegister() {
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
   const setUser = useAuthStore((state) => state.setUser);
 
-  const registerMutation = publicRqClient.useMutation('post', '/register' as any, {
+  const registerMutation = useMutation<AuthTokenResponse, RegisterError, RegisterPayload>({
+    mutationFn: registerRequest,
     onSuccess(data) {
       console.log('Registration successful:', data);
 
@@ -35,19 +73,12 @@ export function useRegister() {
     },
   });
 
-  const register = (data: ApiSchemas['UserRegisterDTO']) => {
-    registerMutation.mutate({
-      body: {
-        email: data.email,
-        password: data.password,
-        full_name: (data as any).full_name ?? (data as any).fullName ?? '',
-      } as any,
-      headers: { 'Content-Type': 'application/json' } as any,
-    });
+  const register = (data: RegisterPayload) => {
+    registerMutation.mutate(data);
   };
 
   const errorMessage = registerMutation.isError
-    ? formatErrorMessage(registerMutation.error.detail)
+    ? formatErrorMessage(registerMutation.error?.detail ?? undefined)
     : undefined;
 
   return {

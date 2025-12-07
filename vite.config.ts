@@ -36,10 +36,15 @@ export default defineConfig(({ mode }) => {
       host: true,
       port: 7001,
       cors: true,
-      open: env.VITE_APP_IS_OPEN === 'true',
+      // open: env.VITE_APP_IS_OPEN === 'true',.
       strictPort: false,
-      hmr: {
-        port: 24678,
+      allowedHosts: ['fin.svetocore.ru'],
+      proxy: {
+        '/api': {
+          target: env.BACKEND_URL || 'https://fin.svetocore.ru',
+          changeOrigin: true,
+          secure: false,
+        },
       },
     },
     preview: {

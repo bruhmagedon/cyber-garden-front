@@ -36,7 +36,7 @@ export const RegisterForm = () => {
 
   const onSubmit = (data: RegisterFormValues) => {
     registerUser({
-      full_name: data.fullName,
+      name: data.fullName,
       email: data.email,
       password: data.password,
     });

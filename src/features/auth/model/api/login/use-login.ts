@@ -1,14 +1,52 @@
-import { publicRqClient } from '@/shared/api/instance';
+import { useMutation } from '@tanstack/react-query';
+import { API_CONFIG } from '@/shared/config/api/config';
 import { useAuthStore } from '../../store';
 import type { AuthTokenResponse } from '../../types';
 import { normalizeAuthUser } from '../../types';
 import { formatErrorMessage } from '../utils/format-error';
 
+type LoginPayload = {
+  email: string;
+  password: string;
+};
+
+type ValidationErrorItem = {
+  loc: (string | number)[];
+  msg: string;
+  type: string;
+};
+
+type LoginError = {
+  detail?: string | ValidationErrorItem[];
+  message?: string;
+};
+
+const loginRequest = async ({ email, password }: LoginPayload): Promise<AuthTokenResponse> => {
+  const response = await fetch(`${API_CONFIG.API_BASE_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ email, password }),
+  });
+
+  const data = (await response.json().catch(() => null)) as AuthTokenResponse | LoginError | null;
+
+  if (!response.ok || !data) {
+    const errorPayload = (data as LoginError) ?? {};
+    throw {
+      detail: errorPayload.detail ?? errorPayload.message ?? 'Не удалось выполнить вход',
+    } satisfies LoginError;
+  }
+
+  return data as AuthTokenResponse;
+};
+
 export function useLogin() {
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
   const setUser = useAuthStore((state) => state.setUser);
 
-  const loginMutation = publicRqClient.useMutation('post', '/auth' as any, {
+  const loginMutation = useMutation<AuthTokenResponse, LoginError, LoginPayload>({
+    mutationFn: loginRequest,
     onSuccess(data) {
       console.log('✅ Login API Success:', data);
 
@@ -40,16 +78,12 @@ export function useLogin() {
   });
 
   const login = (email: string, password: string) => {
-    loginMutation.mutate({
-      body: {
-        email,
-        password,
-      } as any,
-      headers: { 'Content-Type': 'application/json' } as any,
-    });
+    loginMutation.mutate({ email, password });
   };
 
-  const errorMessage = loginMutation.isError ? formatErrorMessage(loginMutation.error.detail) : undefined;
+  const errorMessage = loginMutation.isError
+    ? formatErrorMessage(loginMutation.error?.detail ?? undefined)
+    : undefined;
 
   return {
     login,
