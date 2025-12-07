@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Theme } from '@/app/providers';
 import { useAuthMe } from '@/features/auth/model/api';
 import { useAuthStore } from '@/features/auth/model/store';
+import type { AuthUser } from '@/features/auth/model/types';
 import { Language } from '@/shared/constants/language';
 import { useLanguage } from '@/shared/hooks/useLanguage/useLanguage';
 import { useTheme } from '@/shared/hooks/useTheme/useTheme';
@@ -27,7 +28,7 @@ const SettingsPageAsync = () => {
   const { setTheme, theme } = useTheme();
   const [notifyMeetings, setNotifyMeetings] = useState(true);
   const [notifyResults, setNotifyResults] = useState(false);
-  const userProfile = fetchedUser ?? storedUser;
+  const userProfile: AuthUser | null = fetchedUser ?? storedUser;
 
   // Установка плавного скролла
   useEffect(() => {

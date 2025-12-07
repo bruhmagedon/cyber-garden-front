@@ -1,13 +1,13 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { MOCK_DATA } from '@/pages/dashboard/main/mockData';
-import { api, UploadResponse } from '@/shared/api/api';
+import { UploadResponse } from '@/shared/api/api';
+import { useImportTransactions } from '@/features/csv-upload/model/use-import-transactions';
 
 type DashboardContextValue = {
   user: (typeof MOCK_DATA)['users'][number];
   apiData: UploadResponse | null;
   setApiData: React.Dispatch<React.SetStateAction<UploadResponse | null>>;
   isUploading: boolean;
-  setIsUploading: React.Dispatch<React.SetStateAction<boolean>>;
   isUploadDialogOpen: boolean;
   setIsUploadDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   handleUpload: (files: File[]) => Promise<void>;
@@ -17,26 +17,35 @@ const DashboardContext = createContext<DashboardContextValue | null>(null);
 
 export const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
   const [apiData, setApiData] = useState<UploadResponse | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+  const {
+    uploadCsv,
+    isPending: isUploading,
+  } = useImportTransactions();
 
   const handleUpload = useCallback(
     async (files: File[]) => {
       if (!files.length) {
         return;
       }
-      setIsUploading(true);
       try {
-        const data = await api.uploadTransactions(files[0]);
-        setApiData(data);
-        setIsUploadDialogOpen(false);
+        const result = await uploadCsv(files[0]);
+
+        // If backend returns detailed rows, store them; otherwise keep mock data
+        if (result && Array.isArray((result as any).rows)) {
+          setApiData(result as UploadResponse);
+        } else {
+          setApiData(null);
+        }
+
+        if (result) {
+          setIsUploadDialogOpen(false);
+        }
       } catch (error) {
         console.error('Upload failed', error);
-      } finally {
-        setIsUploading(false);
       }
     },
-    [],
+    [uploadCsv],
   );
 
   const value = useMemo(
@@ -45,7 +54,6 @@ export const DashboardProvider = ({ children }: { children: React.ReactNode }) =
       apiData,
       setApiData,
       isUploading,
-      setIsUploading,
       isUploadDialogOpen,
       setIsUploadDialogOpen,
       handleUpload,
