@@ -163,7 +163,7 @@ export const AIChatWidget = () => {
             animate={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
             exit={{ opacity: 0, scale: 0.9, y: 20, filter: 'blur(10px)' }}
             transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
-            className="w-[420px] h-[600px] flex flex-col bg-background/80 backdrop-blur-xl border border-white/10 shadow-2xl rounded-[24px] overflow-hidden dark:shadow-primary/5 dark:bg-zinc-900/80"
+            className="w-[420px] h-[600px] max-[525px]:fixed max-[525px]:inset-0 max-[525px]:w-full max-[525px]:h-full max-[525px]:rounded-none flex flex-col bg-background/80 backdrop-blur-xl border border-white/10 shadow-2xl rounded-[24px] overflow-hidden dark:shadow-primary/5 dark:bg-zinc-900/80"
           >
             {/* --- Premium Header --- */}
             <div className="relative flex items-center justify-between p-5 border-b border-border/40 bg-gradient-to-r from-primary/10 via-transparent to-transparent">
@@ -276,8 +276,8 @@ export const AIChatWidget = () => {
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "h-16 w-16 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 z-50",
-          isOpen 
-            ? "bg-background border border-border text-foreground hover:rotate-90" 
+           isOpen 
+            ? "bg-background border border-border text-foreground hover:rotate-90 max-[525px]:hidden" 
             : "bg-gradient-to-tr from-primary to-violet-600 text-primary-foreground shadow-primary/40 ring-4 ring-primary/10"
         )}
       >
