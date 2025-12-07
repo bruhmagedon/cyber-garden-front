@@ -37,18 +37,17 @@ export const LayoutHeader = ({ className }: HeaderProps) => {
   return (
     <header
       className={cn(
-        'sticky top-6 mt-6 z-40 w-[240px] rounded-2xl',
-        'h-[calc(100vh-3rem)]',
+        'sticky top-6 mt-6 z-40 w-[92%] max-w-7xl mx-auto rounded-2xl',
+        'h-(--header-height)',
         'border border-white/10 bg-background/60 backdrop-blur-xl shadow-xl shadow-black/5',
         'px-6 py-4 md:px-8',
         'transition-all duration-300',
-        'flex flex-col', // Added flex-col for vertical layout
         className,
       )}
     >
-      <div className="flex h-full flex-col items-center justify-between gap-4">
+      <div className="mx-auto flex max-w-7xl flex-row items-center justify-between gap-4">
         {/* Welcome Section */}
-        <div className="flex flex-col items-center gap-5">
+        <div className="flex items-center gap-5">
           {/* Mobile Menu */}
           <div className="md:hidden">
             <Sheet>
@@ -165,7 +164,7 @@ export const LayoutHeader = ({ className }: HeaderProps) => {
         </div>
 
         {/* Actions Section */}
-        <div className="flex flex-col items-center gap-3 md:gap-4">
+        <div className="flex items-center gap-3 md:gap-4">
           {/* Upload Button */}
           <div className="hidden md:block">
             <CsvUploadWidget />
