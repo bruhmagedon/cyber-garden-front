@@ -62,7 +62,7 @@ export const NotificationWidget = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ type: 'spring', duration: 0.3 }}
-            className="absolute right-0 mt-3 w-[380px] origin-top-right rounded-2xl border border-border bg-background/95 backdrop-blur-xl shadow-2xl overflow-hidden"
+            className="fixed left-4 right-4 top-24 sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-3 sm:w-[380px] sm:inset-auto origin-top-right rounded-2xl border border-border bg-background/95 backdrop-blur-xl shadow-2xl overflow-hidden"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-border/40 bg-fill-tertiary/20">
