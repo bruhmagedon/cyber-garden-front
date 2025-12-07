@@ -41,7 +41,6 @@ export const LoginForm = () => {
 
   return (
     <AuthCard>
-      <AuthHeader />
       <AuthFormWrapper>
         <div className="flex w-full flex-col gap-6">
           <div className="flex w-full flex-col gap-3">

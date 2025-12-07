@@ -14,7 +14,7 @@ type ThemeProviderState = {
 };
 
 const initialState: ThemeProviderState = {
-  theme: 'system',
+  theme: 'dark',
   setTheme: () => null,
 };
 
@@ -22,12 +22,12 @@ export const ThemeProviderContext = createContext<ThemeProviderState>(initialSta
 
 export function ThemeProvider({
   children,
-  defaultTheme = 'system',
+  defaultTheme = 'dark',
   storageKey = 'theme',
   ...props
 }: ThemeProviderProps) {
   // Инициализируем тему из localStorage, если задано значение "dark" или "light".
-  // В противном случае используем defaultTheme (обычно "system").
+  // В противном случае используем defaultTheme (по умолчанию "dark").
   const [theme, setThemeState] = useState<Theme>(() => {
     const stored = localStorage.getItem(storageKey);
     if (stored === 'dark' || stored === 'light') {

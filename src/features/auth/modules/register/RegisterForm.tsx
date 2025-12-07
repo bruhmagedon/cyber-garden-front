@@ -48,8 +48,6 @@ export const RegisterForm = () => {
 
   return (
     <AuthCard>
-      <AuthHeader />
-
       <AuthFormWrapper>
         <div className="flex w-full flex-col gap-5">
           <div className="flex w-full flex-col gap-3">
@@ -78,10 +76,7 @@ export const RegisterForm = () => {
           </div>
           <div className="flex w-full flex-col gap-3">
             <Label className="py-0.5 text-text-primary">Подтвердите пароль</Label>
-            <PasswordInput
-              {...register('confirmPassword')}
-              placeholder="Введите пароль"
-            />
+            <PasswordInput {...register('confirmPassword')} placeholder="Введите пароль" />
             <FormError message={errors.confirmPassword?.message} />
           </div>
         </div>
@@ -90,10 +85,11 @@ export const RegisterForm = () => {
             onClick={handleSubmit(onSubmit)}
             variant="primary"
             size="lg"
-            className="w-full text-base"
+            className="group relative w-full overflow-hidden bg-gradient-to-r from-primary to-violet-600 shadow-lg shadow-primary/25 transition-all hover:shadow-primary/40 active:scale-95 border-0 hover:bg-none"
             disabled={isPending}
           >
-            Зарегистрироваться
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 transition-opacity group-hover:animate-shimmer" />
+            <span className="relative z-10">Зарегистрироваться</span>
           </Button>
           <AuthNavLink text="Есть аккаунт?" linkText="Войти" onClick={handleLogin} />
         </div>
