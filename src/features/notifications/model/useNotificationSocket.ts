@@ -20,7 +20,7 @@ export const useNotificationSocket = () => {
       return;
     }
 
-    const wsUrl = `${getWebSocketUrl()}/notifications/ws?token=${accessToken}`;
+    const wsUrl = `${getWebSocketUrl()}/ws/notifications?token=${accessToken}`;
     const socket = new WebSocket(wsUrl);
 
     socket.onopen = () => {
