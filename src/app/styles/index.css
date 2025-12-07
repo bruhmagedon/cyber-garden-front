@@ -61,6 +61,9 @@
 
   --color-danger: #ff6a55;
 
+  /* Border radius */
+  --radius: 0.75rem;
+
   /* CUSTOM BREAKPOINT  */
   --breakpoint-xs: 450px;
 }
@@ -204,5 +207,4 @@
 }
 
 /*---break---*/
-
 

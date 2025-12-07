@@ -1,5 +1,6 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/shared/api/query-client';
+import { Toaster } from '@/shared/ui/sonner';
 import { RouterProvider } from './app/providers';
 
 export const AppInitializer = () => {
@@ -27,6 +28,7 @@ export const AppInitializer = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <RouterProvider />
+      <Toaster position="bottom-right" />
     </QueryClientProvider>
   );
 };

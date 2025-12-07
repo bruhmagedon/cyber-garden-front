@@ -1,4 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { API_CONFIG } from '@/shared/config/api/config';
 import { useAuthStore } from '@/features/auth/model/store';
 import { formatErrorMessage } from '@/features/auth/model/api/utils/format-error';
@@ -53,6 +54,14 @@ export const useImportTransactions = () => {
 
   const mutation = useMutation<ImportResponse, ImportError, File>({
     mutationFn: (file) => importRequest(file, getAccessToken()),
+    onSuccess: (data) => {
+      const uploadedCount = data?.count;
+      toast.success(
+        uploadedCount !== undefined
+          ? `Файл загружен. Обработано ${uploadedCount} записей`
+          : 'Файл успешно загружен',
+      );
+    },
   });
 
   const uploadCsv = (file: File) => mutation.mutateAsync(file);
