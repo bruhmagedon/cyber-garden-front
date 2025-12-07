@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AlertTriangle } from 'lucide-react';
 import { useRegister } from '@/features/auth/model/api';
 import { PasswordValidator } from '@/features/auth/ui/PasswordValidator';
 import { Button, Input, Label } from '@/shared/ui';
@@ -15,7 +16,7 @@ import { PasswordInput } from '../../ui/PasswordInput';
 export const RegisterForm = () => {
   const [passwordFocused, setPasswordFocused] = useState(false);
   const { register, handleSubmit, watch, errors, reset } = useRegisterForm();
-  const { register: registerUser, isPending, isSuccess } = useRegister();
+  const { register: registerUser, isPending, isSuccess, isError, errorMessage } = useRegister();
   const password = watch('password');
   const navigate = useNavigate();
 
@@ -80,6 +81,16 @@ export const RegisterForm = () => {
             <FormError message={errors.confirmPassword?.message} />
           </div>
         </div>
+
+        {isError && errorMessage && (
+          <div className="flex w-full items-center gap-2 rounded-2xl border border-red-500/40 bg-red-500/5 px-3 py-2 text-sm text-red-200 shadow-[0_15px_35px_rgba(239,68,68,0.15)]">
+            <AlertTriangle className="h-4 w-4 flex-shrink-0 text-red-300" />
+            <span className="text-left font-medium">
+              {errorMessage || 'Регистрация не удалась'}
+            </span>
+          </div>
+        )}
+
         <div className="flex w-full flex-col items-center gap-5">
           <Button
             onClick={handleSubmit(onSubmit)}
