@@ -85,5 +85,24 @@ export const api = {
         }
 
         return res.json();
+    },
+
+    getTransactions: async (limit: number = 50, offset: number = 0): Promise<UploadResponse> => {
+        const params = new URLSearchParams({
+            limit: limit.toString(),
+            offset: offset.toString(),
+        });
+
+        const res = await fetch(`${API_BASE_URL}/transactions?${params.toString()}`, {
+             headers: {
+                'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+             }
+        });
+
+        if (!res.ok) {
+            throw new Error(`Failed to fetch transactions: ${res.statusText}`);
+        }
+
+        return res.json();
     }
 };

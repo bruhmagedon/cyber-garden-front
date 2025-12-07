@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { MOCK_DATA } from '@/pages/dashboard/main/mockData';
-import { UploadResponse } from '@/shared/api/api';
+import { UploadResponse, api } from '@/shared/api/api';
 import { useImportTransactions } from '@/features/csv-upload/model/use-import-transactions';
 
 type DashboardContextValue = {
@@ -18,6 +18,7 @@ const DashboardContext = createContext<DashboardContextValue | null>(null);
 export const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
   const [apiData, setApiData] = useState<UploadResponse | null>(null);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
   const {
     uploadCsv,
     isPending: isUploading,
@@ -29,7 +30,12 @@ export const DashboardProvider = ({ children }: { children: React.ReactNode }) =
         return;
       }
       try {
-        const result = await uploadCsv(files[0]);
+        setIsFetching(true);
+        // 1. Upload File
+        await uploadCsv(files[0]);
+
+        // 2. Fetch processed data (using limit=1000 to get enough data for charts)
+        const result = await api.getTransactions(100, 0);
 
         // If backend returns detailed rows, store them; otherwise keep mock data
         if (result && Array.isArray((result as any).rows)) {
@@ -43,6 +49,8 @@ export const DashboardProvider = ({ children }: { children: React.ReactNode }) =
         }
       } catch (error) {
         console.error('Upload failed', error);
+      } finally {
+        setIsFetching(false);
       }
     },
     [uploadCsv],
@@ -53,12 +61,12 @@ export const DashboardProvider = ({ children }: { children: React.ReactNode }) =
       user: MOCK_DATA.users[0],
       apiData,
       setApiData,
-      isUploading,
+      isUploading: isUploading || isFetching,
       isUploadDialogOpen,
       setIsUploadDialogOpen,
       handleUpload,
     }),
-    [apiData, handleUpload, isUploadDialogOpen, isUploading],
+    [apiData, handleUpload, isUploadDialogOpen, isUploading, isFetching],
   );
 
   return <DashboardContext.Provider value={value}>{children}</DashboardContext.Provider>;

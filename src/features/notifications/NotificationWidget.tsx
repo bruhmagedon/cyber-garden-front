@@ -1,37 +1,31 @@
-'use client';
-
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Bell, Check, Trash2, AlertCircle, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/shared/utils';
-import { MOCK_DATA } from '@/pages/dashboard/main/mockData';
 import { Skeleton } from '@/shared/ui';
+import { useNotificationSocket } from './model/useNotificationSocket';
 
 export const NotificationWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Simulate fetching
-  useEffect(() => {
-    if (isOpen) {
-      setIsLoading(true);
-      const timer = setTimeout(() => setIsLoading(false), 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [isOpen]); // This generic useState usage is incorrect for side effects, should be useEffect. Fixing in content.
-
-  // Local state for notifications to allow "mark as read" / "delete"
-  const [notifications, setNotifications] = useState(MOCK_DATA.notificationsLog);
+  
+  // Use custom hook for WebSocket notifications
+  const { 
+    notifications, 
+    isConnected, 
+    markAsRead, 
+    markAllAsRead, 
+    removeNotification 
+  } = useNotificationSocket();
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const handleMarkAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    markAllAsRead();
   };
 
   const handleDelete = (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
+    removeNotification(id);
   };
 
   return (
@@ -52,6 +46,8 @@ export const NotificationWidget = () => {
         {unreadCount > 0 && (
           <span className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-background animate-[pulse_3s_infinite]" />
         )}
+        {/* Connection Status Indicator (Optional, but good for debugging) */}
+        <span className={cn("absolute bottom-0 right-0 h-2 w-2 rounded-full", isConnected ? "bg-green-500" : "bg-red-500")} title={isConnected ? "Connected" : "Disconnected"} />
       </motion.button>
 
       {/* Dropdown Panel */}
@@ -87,18 +83,8 @@ export const NotificationWidget = () => {
 
             {/* List */}
             <div className="max-h-[400px] overflow-y-auto custom-scrollbar p-2 space-y-1">
-              {isLoading ? (
-                <div className="space-y-3 p-2">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="flex gap-3 items-start">
-                      <Skeleton className="w-8 h-8 rounded-full shrink-0" />
-                      <div className="space-y-2 flex-1">
-                        <Skeleton className="h-4 w-3/4" />
-                        <Skeleton className="h-10 w-full" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              {!isConnected && notifications.length === 0 ? (
+                 <div className="p-4 text-center text-xs text-text-tertiary">Connecting...</div>
               ) : notifications.length > 0 ? (
                 notifications.map((note) => (
                   <motion.div
@@ -142,9 +128,9 @@ export const NotificationWidget = () => {
                       </div>
                       <p className="text-xs leading-relaxed opacity-90 line-clamp-2">
                         {note.type === 'budget_limit'
-                          ? `Внимание! Вы превышаете лимит бюджета в категории "Рестораны".`
+                          ? note.payload // Assuming payload is the message for budget limits too, or fall back to static text if structure differs
                           : typeof note.payload === 'object'
-                            ? 'Обновление системы успешно завершено.'
+                            ? JSON.stringify(note.payload)
                             : String(note.payload)}
                       </p>
                     </div>
