@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { createBrowserRouter, RouterProvider as ReactRouterProvider, RouteObject } from 'react-router-dom';
+import { createHashRouter, RouterProvider as ReactRouterProvider, RouteObject } from 'react-router-dom';
 import {
   ErrorPage,
   LoginPage,
@@ -13,7 +13,7 @@ import { AuthRoute } from './AuthRoute';
 import { ProtectedRoute } from './ProtectedRoute';
 import { DASHBOARD_ROUTES } from './routes/routes';
 
-const appRouter = createBrowserRouter([
+const appRouter = createHashRouter([
   {
     path: '/',
     errorElement: (
