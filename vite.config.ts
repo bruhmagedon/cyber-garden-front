@@ -36,7 +36,7 @@ export default defineConfig(({ mode }) => {
       host: true,
       port: 7001,
       cors: true,
-      // open: env.VITE_APP_IS_OPEN === 'true',.
+      // open: env.VITE_APP_IS_OPEN === 'true',
       strictPort: false,
       allowedHosts: ['fin.svetocore.ru'],
       proxy: {
